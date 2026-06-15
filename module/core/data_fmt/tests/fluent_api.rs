@@ -97,10 +97,10 @@ fn test_tree_config_builder()
   use data_fmt::{ TreeConfig, TreeFormatter, TreeBuilder };
 
   let config = TreeConfig::new()
-    .show_branches( false )
-    .show_root( true )
-    .indent_size( 2 )
-    .max_depth( Some( 3 ) );
+    .with_show_branches( false )
+    .with_show_root( true )
+    .with_indent_size( 2 )
+    .with_max_depth( Some( 3 ) );
 
   let tree = TreeBuilder::new( "root" )
     .insert( &[ "dir", "file.txt" ], 100 )
@@ -118,9 +118,9 @@ fn test_table_config_builder()
   use data_fmt::{ TableConfig, TableFormatter, RowBuilder, BorderVariant, Format };
 
   let config = TableConfig::new()
-    .border_variant( BorderVariant::None )
-    .column_widths( vec![ 10, 15 ] )
-    .align_right( vec![ false, true ] );
+    .with_border_variant( BorderVariant::None )
+    .with_column_widths( vec![ 10, 15 ] )
+    .with_align_right( vec![ false, true ] );
 
   let view = RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
     .add_row( vec![ "Item".into(), "123".into() ] )
@@ -139,8 +139,8 @@ fn test_expanded_config_builder()
   use data_fmt::{ ExpandedConfig, ExpandedFormatter, RowBuilder, Format };
 
   let config = ExpandedConfig::new()
-    .record_separator( "--- Record {} ---".into() )
-    .key_value_separator( " = ".into() );
+    .with_record_separator( "--- Record {} ---".into() )
+    .with_key_value_separator( " = ".into() );
 
   let view = RowBuilder::new( vec![ "Key".into() ] )
     .add_row( vec![ "Value".into() ] )
@@ -153,15 +153,15 @@ fn test_expanded_config_builder()
   assert!( output.contains( " = " ) );
 }
 
-// T05: Builder chain with .border_variant() and .column_separator() — survives field-privacy change
+// T05: Builder chain with .with_border_variant() and .with_column_separator() — survives field-privacy change
 #[ test ]
 fn test_table_config_builder_border_and_separator()
 {
   use data_fmt::{ TableConfig, TableFormatter, RowBuilder, BorderVariant, ColumnSeparator, Format };
 
   let config = TableConfig::new()
-  .border_variant( BorderVariant::Unicode )
-  .column_separator( ColumnSeparator::Character( '│' ) );
+  .with_border_variant( BorderVariant::Unicode )
+  .with_column_separator( ColumnSeparator::Character( '│' ) );
 
   let view = RowBuilder::new( vec![ "Name".into(), "Value".into() ] )
   .add_row( vec![ "Alice".into(), "42".into() ] )

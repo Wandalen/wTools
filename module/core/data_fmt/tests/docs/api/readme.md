@@ -13,5 +13,5 @@
 |----|------|---------|--------|
 | 001 | [data_types](001_data_types.md) | API contracts for `TreeNode`, `TableView`, `TableMetadata`, `ColumnData`, `DataType` | 7 ✅ |
 | 002 | [builders](002_builders.md) | API contracts for `RowBuilder`, `TreeBuilder`, `FlattenConfig`, flatten functions | 7 ✅ |
-| 003 | [config_types](003_config_types.md) | API contracts for `TableConfig` builder additions (`border_color`, `caption`) and `TableCaption` type | 6 ✅ |
+| 003 | [config_types](003_config_types.md) | API contracts for config builder setters, `Heading` type, `with_` prefix convention | 6 ✅ 2 ⏳ |
 | 004 | [formatters](004_formatters.md) | API contracts for formatter constructors, `Format` trait, `FormatError`, `visual_len`, `pad_to_width` | 7 ✅ |

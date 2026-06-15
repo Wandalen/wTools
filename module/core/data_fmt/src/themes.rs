@@ -175,17 +175,17 @@ impl ColorTheme
   pub fn apply_to_table( &self, config : TableConfig ) -> TableConfig
   {
     let config = config
-      .colorize_header( !self.header_color.is_empty() )
-      .header_color( self.header_color.clone() )
-      .alternating_rows( !self.row_color2.is_empty() )
-      .row_colors( self.row_color1.clone(), self.row_color2.clone() );
+      .with_colorize_header( !self.header_color.is_empty() )
+      .with_header_color( self.header_color.clone() )
+      .with_alternating_rows( !self.row_color2.is_empty() )
+      .with_row_colors( self.row_color1.clone(), self.row_color2.clone() );
     if self.border_color.is_empty()
     {
       config
     }
     else
     {
-      config.border_color( self.border_color.clone() )
+      config.with_border_color( self.border_color.clone() )
     }
   }
 
@@ -195,8 +195,8 @@ impl ColorTheme
   pub fn apply_to_expanded( &self, config : ExpandedConfig ) -> ExpandedConfig
   {
     config
-      .colorize_keys( !self.header_color.is_empty() )
-      .key_color( self.header_color.clone() )
+      .with_colorize_keys( !self.header_color.is_empty() )
+      .with_key_color( self.header_color.clone() )
   }
 
   /// Apply theme to `TreeConfig`
@@ -204,7 +204,7 @@ impl ColorTheme
   /// Configures branch symbol color.
   pub fn apply_to_tree( &self, config : TreeConfig ) -> TreeConfig
   {
-    config.branch_color( self.branch_color.clone() )
+    config.with_branch_color( self.branch_color.clone() )
   }
 }
 

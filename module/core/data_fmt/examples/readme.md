@@ -32,6 +32,8 @@ Demonstrates all three output formats (Table, Expanded, Tree) and library featur
 | `verify_truncation.rs` | Visual verification: column truncation behavior |
 | `verify_multiline.rs` | Visual verification: multiline cell rendering |
 | `verify_combined.rs` | Visual verification: truncation and multiline combined |
+| `heading_basic.rs` | Demonstrates minimal Heading titled rule above a table |
+| `heading_styles.rs` | Demonstrates Heading with fields across multiple border styles |
 | `verify_runner.rs` | Runs all visual verification scenarios in sequence |
 
 ## Available Examples

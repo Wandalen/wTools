@@ -206,7 +206,7 @@ fn t07_custom_indent()
     .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "note" ) ) )
     .build_view();
 
-  let cfg = TableConfig::plain().sub_row_indent( ">>> ".to_string() );
+  let cfg = TableConfig::plain().with_sub_row_indent( ">>> ".to_string() );
   let fmt = TableFormatter::with_config( cfg );
   let out = Format::format( &fmt, &view ).unwrap();
 
@@ -225,7 +225,7 @@ fn t08_empty_indent_flush_left()
     .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( DecoratedText::from( "flush" ) ) )
     .build_view();
 
-  let cfg = TableConfig::plain().sub_row_indent( String::new() );
+  let cfg = TableConfig::plain().with_sub_row_indent( String::new() );
   let fmt = TableFormatter::with_config( cfg );
   let out = Format::format( &fmt, &view ).unwrap();
 
@@ -513,8 +513,8 @@ fn t20_detail_not_colored_with_alternating_rows()
     .build_view();
 
   let cfg = TableConfig::plain()
-    .alternating_rows( true )
-    .row_colors( "\x1b[41m".to_string(), "\x1b[42m".to_string() );
+    .with_alternating_rows( true )
+    .with_row_colors( "\x1b[41m".to_string(), "\x1b[42m".to_string() );
   let fmt = TableFormatter::with_config( cfg );
   let out = Format::format( &fmt, &view ).unwrap();
 
@@ -677,8 +677,8 @@ fn t27_multiline_color_detail_triple()
     .build_view();
 
   let cfg = TableConfig::plain()
-    .alternating_rows( true )
-    .row_colors( "\x1b[41m".to_string(), "\x1b[42m".to_string() );
+    .with_alternating_rows( true )
+    .with_row_colors( "\x1b[41m".to_string(), "\x1b[42m".to_string() );
   let fmt = TableFormatter::with_config( cfg );
   let out = Format::format( &fmt, &view ).unwrap();
 
@@ -825,7 +825,7 @@ fn t31_custom_indent_with_colored_detail()
   let yellow = "\x1b[33m";
   let indent = ">>> ";
   let ct = DecoratedText::from( "note" ).with_color( yellow );
-  let config = TableConfig::plain().sub_row_indent( indent.to_string() );
+  let config = TableConfig::plain().with_sub_row_indent( indent.to_string() );
   let view = RowBuilder::new( vec![ "Name".into() ] )
     .add_row_with_detail( vec![ DecoratedText::from( "Alice" ) ], Some( ct ) )
     .build_view();

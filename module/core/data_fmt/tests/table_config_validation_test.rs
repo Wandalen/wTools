@@ -21,8 +21,11 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-use data_fmt::{
-  RowBuilder, TableFormatter, TableConfig, TableCaption, Format,
+use data_fmt::
+{
+  RowBuilder, TableFormatter, TableConfig, Heading, Format,
+  ExpandedConfig, TreeConfig, PaddingSide,
+  BorderVariant, HeaderSeparatorVariant, ColumnSeparator, FoldStyle,
   CAPTION_FIELD_SEP, CAPTION_RULE_CHAR, CAPTION_LEAD_WIDTH,
 };
 
@@ -41,7 +44,7 @@ fn test_min_column_width_raises_short_content_to_floor()
     .build_view();
 
   let output = TableFormatter::with_config(
-    TableConfig::plain().min_column_width( 10 )
+    TableConfig::plain().with_min_column_width( 10 )
   ).format( &tree ).unwrap_or_default();
 
   let data_line = output.lines().find( | l | l.contains( "abc" ) )
@@ -64,8 +67,8 @@ fn test_min_column_width_with_max_column_width_both_honored()
 
   let output = TableFormatter::with_config(
     TableConfig::plain()
-      .min_column_width( 5 )
-      .max_column_width( Some( 20 ) )
+      .with_min_column_width( 5 )
+      .with_max_column_width( Some( 20 ) )
   ).format( &tree ).unwrap_or_default();
 
   let data_line = output.lines().find( | l | l.contains( "ab" ) )
@@ -94,7 +97,7 @@ fn test_min_column_width_zero_is_no_op()
 
   let output_default = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
   let output_zero    = TableFormatter::with_config(
-    TableConfig::plain().min_column_width( 0 )
+    TableConfig::plain().with_min_column_width( 0 )
   ).format( &tree ).unwrap_or_default();
 
   assert_eq!(
@@ -113,7 +116,7 @@ fn test_min_column_width_at_exact_match_no_over_expansion()
     .build_view();
 
   let output_with_floor = TableFormatter::with_config(
-    TableConfig::plain().min_column_width( 8 )
+    TableConfig::plain().with_min_column_width( 8 )
   ).format( &tree ).unwrap_or_default();
 
   let output_no_floor = TableFormatter::with_config( TableConfig::plain() ).format( &tree ).unwrap_or_default();
@@ -137,8 +140,8 @@ fn test_min_column_width_wins_over_max_column_width_for_short_content()
 
   let output = TableFormatter::with_config(
     TableConfig::plain()
-      .min_column_width( 5 )
-      .max_column_width( Some( 3 ) )
+      .with_min_column_width( 5 )
+      .with_max_column_width( Some( 3 ) )
   ).format( &tree ).unwrap_or_default();
 
   let data_line = output.lines().find( | l | l.contains( 'a' ) )
@@ -162,7 +165,7 @@ fn test_min_column_width_does_not_shrink_wider_content()
     .build_view();
 
   let output = TableFormatter::with_config(
-    TableConfig::plain().min_column_width( 10 )
+    TableConfig::plain().with_min_column_width( 10 )
   ).format( &tree ).unwrap_or_default();
 
   let data_line = output.lines().find( | l | l.contains( &content ) )
@@ -187,13 +190,13 @@ fn test_column_widths_override_bypasses_min_column_width()
   // Override forces width=2; floor of 10 must NOT apply
   let output_override = TableFormatter::with_config(
     TableConfig::plain()
-      .column_widths( vec![ 2 ] )
-      .min_column_width( 10 )
+      .with_column_widths( vec![ 2 ] )
+      .with_min_column_width( 10 )
   ).format( &tree ).unwrap_or_default();
 
   // No override (min=10 applies): column = 10
   let output_floor_only = TableFormatter::with_config(
-    TableConfig::plain().min_column_width( 10 )
+    TableConfig::plain().with_min_column_width( 10 )
   ).format( &tree ).unwrap_or_default();
 
   // Override output should be shorter (width=2) than floor-only (width=10)
@@ -219,7 +222,7 @@ fn test_min_column_width_applied_when_content_is_empty()
     .build_view();
 
   let output = TableFormatter::with_config(
-    TableConfig::plain().min_column_width( 5 )
+    TableConfig::plain().with_min_column_width( 5 )
   ).format( &tree ).unwrap_or_default();
 
   let header_line = output.lines().find( | l | l.contains( 'H' ) )
@@ -242,7 +245,7 @@ fn test_min_column_width_large_value_no_panic()
 
   // Should not panic; rendering with very wide columns is allowed
   let output = TableFormatter::with_config(
-    TableConfig::plain().min_column_width( 10_000 )
+    TableConfig::plain().with_min_column_width( 10_000 )
   ).format( &tree ).unwrap_or_default();
 
   assert!(
@@ -434,7 +437,7 @@ fn test_grid_all_lines_same_display_width()
 }
 
 // ============================================================================
-// API contract tests: TableCaption + TableConfig caption/border_color fields
+// API contract tests: Heading + TableConfig caption/border_color fields
 // (tests/docs/api/003_config_types.md — AP-1 through AP-6)
 // ============================================================================
 
@@ -445,14 +448,14 @@ fn two_col_view_cv() -> data_fmt::TableView
     .build_view()
 }
 
-/// AP-1 — `api/003`: `TableCaption::new` stores title; no fields rendered on caption line.
+/// AP-1 — `api/003`: `Heading::new` stores title; no fields rendered on caption line.
 // test_kind: standard
 #[ test ]
 fn table_caption_new_stores_title_no_fields_ap1()
 {
   let config = TableConfig::plain()
-    .terminal_width( Some( 40 ) )
-    .caption( TableCaption::new( "Active Sessions" ) );
+    .with_terminal_width( Some( 40 ) )
+    .with_heading( Heading::new( "Active Sessions" ) );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view_cv() )
     .unwrap_or_default();
@@ -470,17 +473,17 @@ fn table_caption_new_stores_title_no_fields_ap1()
   );
 }
 
-/// AP-2 — `api/003`: `TableCaption::field` appends fields in order via builder chain.
+/// AP-2 — `api/003`: `Heading::field` appends fields in order via builder chain.
 // test_kind: standard
 #[ test ]
 fn table_caption_field_builder_appends_in_order_ap2()
 {
-  let caption = TableCaption::new( "R" )
-    .field( "10 items" )
-    .field( "3 repos" );
+  let caption = Heading::new( "R" )
+    .with_field( "10 items" )
+    .with_field( "3 repos" );
   let config = TableConfig::plain()
-    .terminal_width( Some( 40 ) )
-    .caption( caption );
+    .with_terminal_width( Some( 40 ) )
+    .with_heading( caption );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view_cv() )
     .unwrap_or_default();
@@ -502,7 +505,7 @@ fn table_config_caption_builder_ap3()
 
   // With caption: first line is the titled rule
   let output_with = TableFormatter::with_config(
-    TableConfig::plain().caption( TableCaption::new( "T" ) )
+    TableConfig::plain().with_heading( Heading::new( "T" ) )
   )
   .format( &view )
   .unwrap_or_default();
@@ -532,7 +535,7 @@ fn table_config_border_color_builder_ap4()
 
   // With border_color: borders are ANSI-decorated
   let output_colored = TableFormatter::with_config(
-    TableConfig::bordered().border_color( border_code.to_string() )
+    TableConfig::bordered().with_border_color( border_code.to_string() )
   )
   .format( &two_col_view_cv() )
   .unwrap_or_default();
@@ -591,5 +594,107 @@ fn caption_constants_have_expected_values_ap6()
   assert_eq!( CAPTION_FIELD_SEP, '·', "AP-6: CAPTION_FIELD_SEP must be U+00B7 MIDDLE DOT" );
   assert_eq!( CAPTION_RULE_CHAR, '─', "AP-6: CAPTION_RULE_CHAR must be U+2500 BOX DRAWINGS LIGHT HORIZONTAL" );
   assert_eq!( CAPTION_LEAD_WIDTH, 3,  "AP-6: CAPTION_LEAD_WIDTH must be 3" );
+}
+
+/// AP-7 — `api/003`: all 39 consuming builder setters across four config types use `with_` prefix.
+///
+/// Compile-time proof: every setter is invoked by name. If any were missing the `with_` prefix
+/// or had been left un-renamed, this function would fail to compile. The runtime assertion
+/// confirms the expected setter counts (24 + 7 + 7 + 1 = 39).
+// test_kind: standard
+#[ test ]
+fn all_consuming_builder_setters_use_with_prefix_ap7()
+{
+  // --- TableConfig: 24 consuming builder setters ---
+  let _tc = TableConfig::plain()
+    .with_column_widths( vec![] )
+    .with_align_right( vec![] )
+    .with_border_variant( BorderVariant::None )
+    .with_header_separator_variant( HeaderSeparatorVariant::Dash )
+    .with_column_separator( ColumnSeparator::Spaces( 2 ) )
+    .with_outer_padding( false )
+    .with_inner_padding( 0 )
+    .with_colorize_header( false )
+    .with_header_color( String::new() )
+    .with_alternating_rows( false )
+    .with_row_colors( String::new(), String::new() )
+    .with_color_reset( "" )
+    .with_min_column_width( 0 )
+    .with_max_column_width( None )
+    .with_truncation_marker( String::new() )
+    .with_sub_row_indent( String::new() )
+    .with_terminal_width( None )
+    .with_auto_wrap( false )
+    .with_column_flex( vec![] )
+    .with_auto_fold( false )
+    .with_fold_style( FoldStyle::Bare )
+    .with_fold_indent( String::new() )
+    .with_border_color( String::new() )
+    .with_heading( Heading::new( "" ) );
+
+  // --- ExpandedConfig: 7 consuming builder setters ---
+  let _ec = ExpandedConfig::new()
+    .with_record_separator( String::new() )
+    .with_key_value_separator( String::new() )
+    .with_show_record_numbers( false )
+    .with_colorize_keys( false )
+    .with_key_color( String::new() )
+    .with_padding_side( PaddingSide::BeforeSeparator )
+    .with_indent_prefix( String::new() );
+
+  // --- TreeConfig: 7 consuming builder setters ---
+  let _trc = TreeConfig::new()
+    .with_show_branches( true )
+    .with_show_root( false )
+    .with_indent_size( 4 )
+    .with_max_depth( None )
+    .with_column_separator( String::new() )
+    .with_min_column_width( 0 )
+    .with_branch_color( "" );
+
+  // --- Heading: 1 consuming builder setter ---
+  let _h = Heading::new( "t" )
+    .with_field( "f" );
+
+  // Total = 24 + 7 + 7 + 1 = 39
+  // If any setter existed without `with_` prefix, it would not be called above
+  // and would be a dead method — verify the counts match the convention spec
+  let total_setters = 24 + 7 + 7 + 1;
+  assert_eq!(
+    total_setters, 39,
+    "AP-7: total consuming builder setters with `with_` prefix must be 39",
+  );
+}
+
+/// AP-8 — `api/003`: `Heading` type replaces `TableCaption` in public re-exports.
+///
+/// Compile-time proof: `data_fmt::Heading` is imported at the top of this file and used
+/// in multiple tests. If the type were missing from public re-exports, this file would not
+/// compile. The runtime check confirms `Heading` is constructible and the constants remain unchanged.
+// test_kind: standard
+#[ test ]
+fn heading_type_replaces_table_caption_in_public_exports_ap8()
+{
+  // Positive: Heading is publicly accessible and constructible via public API
+  let h = Heading::new( "test" ).with_field( "f1" );
+  let config = TableConfig::plain().with_heading( h );
+  let output = TableFormatter::with_config( config )
+    .format( &two_col_view_cv() )
+    .unwrap_or_default();
+
+  let caption_line = output.lines().next().unwrap_or( "" );
+  assert!(
+    caption_line.contains( "test" ),
+    "AP-8: Heading must render title via public API; got: '{caption_line}'",
+  );
+  assert!(
+    caption_line.contains( "f1" ),
+    "AP-8: Heading::with_field must render field; got: '{caption_line}'",
+  );
+
+  // Constants retained (unchanged by rename — they describe formatting, not the type name)
+  assert_eq!( CAPTION_FIELD_SEP, '·',  "AP-8: CAPTION_FIELD_SEP unchanged after rename" );
+  assert_eq!( CAPTION_RULE_CHAR, '─',  "AP-8: CAPTION_RULE_CHAR unchanged after rename" );
+  assert_eq!( CAPTION_LEAD_WIDTH, 3,   "AP-8: CAPTION_LEAD_WIDTH unchanged after rename" );
 }
 

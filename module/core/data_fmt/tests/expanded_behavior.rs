@@ -74,7 +74,7 @@ fn test_expanded_show_record_numbers_false_suppresses_number()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .show_record_numbers( false )
+      .with_show_record_numbers( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -108,7 +108,7 @@ fn test_expanded_show_record_numbers_true_keeps_number()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .show_record_numbers( true )
+      .with_show_record_numbers( true )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -136,8 +136,8 @@ fn test_expanded_show_record_numbers_false_empty_separator_no_effect()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .record_separator( String::new() )
-      .show_record_numbers( false )
+      .with_record_separator( String::new() )
+      .with_show_record_numbers( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -159,8 +159,8 @@ fn test_expanded_show_record_numbers_false_separator_without_placeholder()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .record_separator( "---".to_string() )
-      .show_record_numbers( false )
+      .with_record_separator( "---".to_string() )
+      .with_show_record_numbers( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -183,8 +183,8 @@ fn test_expanded_show_record_numbers_false_with_indent_prefix()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .show_record_numbers( false )
-      .indent_prefix( "  ".into() )
+      .with_show_record_numbers( false )
+      .with_indent_prefix( "  ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -226,7 +226,7 @@ fn test_expanded_before_separator_alignment_with_indent()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .indent_prefix( ">> ".into() )
+      .with_indent_prefix( ">> ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -253,10 +253,10 @@ fn test_expanded_after_separator_alignment_with_indent()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .indent_prefix( "  ".into() )
-      .key_value_separator( ": ".to_string() )
-      .colorize_keys( false )
-      .padding_side( data_fmt::PaddingSide::AfterSeparator )
+      .with_indent_prefix( "  ".into() )
+      .with_key_value_separator( ": ".to_string() )
+      .with_colorize_keys( false )
+      .with_padding_side( data_fmt::PaddingSide::AfterSeparator )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -285,7 +285,7 @@ fn test_expanded_write_to_matches_format_with_indent()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::property_style()
-      .indent_prefix( "  ".into() )
+      .with_indent_prefix( "  ".into() )
   );
 
   let via_format = Format::format( &formatter, &view ).unwrap();
@@ -312,7 +312,7 @@ fn test_expanded_indent_prefix_with_empty_cell_value()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .indent_prefix( "  ".into() )
+      .with_indent_prefix( "  ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -373,7 +373,7 @@ fn test_expanded_no_separator_blank_lines_between_records()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .record_separator( String::new() )
+      .with_record_separator( String::new() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -398,7 +398,7 @@ fn test_expanded_single_record_empty_separator_no_blanks()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .record_separator( String::new() )
+      .with_record_separator( String::new() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -422,7 +422,7 @@ fn test_expanded_separator_without_placeholder_verbatim()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .record_separator( "---".to_string() )
+      .with_record_separator( "---".to_string() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -486,7 +486,7 @@ fn test_expanded_tab_indent_prefix()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .indent_prefix( "\t".into() )
+      .with_indent_prefix( "\t".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -513,7 +513,7 @@ fn test_expanded_unicode_indent_prefix()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .indent_prefix( "→ ".into() )
+      .with_indent_prefix( "→ ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 

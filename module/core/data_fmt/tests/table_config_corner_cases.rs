@@ -110,7 +110,7 @@ fn test_inner_padding_zero_removes_cell_spaces()
 
   // Use bordered() as base (inner_padding defaults to 1 there) then override to 0
   let output = TableFormatter::with_config(
-    TableConfig::bordered().inner_padding( 0 )
+    TableConfig::bordered().with_inner_padding( 0 )
   ).format( &tree ).unwrap_or_default();
 
   // With inner_padding=0, rows should start with "|" immediately (no "|  " prefix)
@@ -140,7 +140,7 @@ fn test_inner_padding_three_adds_cell_spaces()
     .build_view();
 
   let output = TableFormatter::with_config(
-    TableConfig::bordered().inner_padding( 3 )
+    TableConfig::bordered().with_inner_padding( 3 )
   ).format( &tree ).unwrap_or_default();
 
   // With inner_padding=3 + bordered + AsciiGrid → rows start with "|   " (pipe + 3 spaces)
@@ -161,11 +161,11 @@ fn test_outer_padding_false_with_spaces_separator()
 
   // plain() has outer_padding=true by default; override it
   let output_no_outer = TableFormatter::with_config(
-    TableConfig::plain().outer_padding( false )
+    TableConfig::plain().with_outer_padding( false )
   ).format( &tree ).unwrap_or_default();
 
   let output_with_outer = TableFormatter::with_config(
-    TableConfig::plain().outer_padding( true )
+    TableConfig::plain().with_outer_padding( true )
   ).format( &tree ).unwrap_or_default();
 
   // With outer_padding=false and Spaces(2) separator, content should differ from outer=true
@@ -189,7 +189,7 @@ fn test_column_separator_pipe_character_appears_in_output()
     .build_view();
 
   let output = TableFormatter::with_config(
-    TableConfig::new().column_separator( ColumnSeparator::Character( '|' ) )
+    TableConfig::new().with_column_separator( ColumnSeparator::Character( '|' ) )
   ).format( &tree ).unwrap_or_default();
 
   assert!(
@@ -212,7 +212,7 @@ fn test_max_column_width_none_preserves_full_content()
     .build_view();
 
   let output = TableFormatter::with_config(
-    TableConfig::plain().max_column_width( None )
+    TableConfig::plain().with_max_column_width( None )
   ).format( &tree ).unwrap_or_default();
 
   assert!(
@@ -236,12 +236,12 @@ fn test_align_right_mixed_produces_different_padding()
 
   let output_mixed = TableFormatter::with_config(
     TableConfig::plain()
-      .align_right( vec![ true, false, true ] )
+      .with_align_right( vec![ true, false, true ] )
   ).format( &tree ).unwrap_or_default();
 
   let output_all_left = TableFormatter::with_config(
     TableConfig::plain()
-      .align_right( vec![ false, false, false ] )
+      .with_align_right( vec![ false, false, false ] )
   ).format( &tree ).unwrap_or_default();
 
   // Both must contain data
@@ -378,7 +378,7 @@ fn test_align_right_empty_vec_means_left_aligned()
 
   // Empty align_right should not panic and should produce output
   let output = TableFormatter::with_config(
-    TableConfig::plain().align_right( vec![] )
+    TableConfig::plain().with_align_right( vec![] )
   ).format( &tree ).unwrap_or_default();
 
   assert!(
@@ -397,7 +397,7 @@ fn test_align_right_fewer_entries_than_columns_no_panic()
 
   // Only specify alignment for first column — columns 2 and 3 get default (left)
   let output = TableFormatter::with_config(
-    TableConfig::plain().align_right( vec![ true ] )
+    TableConfig::plain().with_align_right( vec![ true ] )
   ).format( &tree ).unwrap_or_default();
 
   assert!(
@@ -416,7 +416,7 @@ fn test_align_right_more_entries_than_columns_no_panic()
 
   // Specify alignment for 5 columns but table only has 1
   let output = TableFormatter::with_config(
-    TableConfig::plain().align_right( vec![ true, false, true, false, true ] )
+    TableConfig::plain().with_align_right( vec![ true, false, true, false, true ] )
   ).format( &tree ).unwrap_or_default();
 
   assert!(
@@ -439,7 +439,7 @@ fn test_column_widths_wider_than_content_adds_padding()
 
   // Force a 20-char column for 1-char content
   let output = TableFormatter::with_config(
-    TableConfig::plain().column_widths( vec![ 20 ] )
+    TableConfig::plain().with_column_widths( vec![ 20 ] )
   ).format( &tree ).unwrap_or_default();
 
   // The row should be padded to 20 chars for the column (plus any outer padding)
@@ -467,7 +467,7 @@ fn test_column_widths_narrower_than_content_no_panic()
 
   // Force 3-char column for 17-char content
   let output = TableFormatter::with_config(
-    TableConfig::plain().column_widths( vec![ 3 ] )
+    TableConfig::plain().with_column_widths( vec![ 3 ] )
   ).format( &tree ).unwrap_or_default();
 
   // Must not panic and must render data (content will overflow width but that's OK)
@@ -486,7 +486,7 @@ fn test_column_widths_empty_vec_uses_auto_sizing()
     .build_view();
 
   let output_auto = TableFormatter::with_config(
-    TableConfig::plain().column_widths( vec![] )
+    TableConfig::plain().with_column_widths( vec![] )
   ).format( &tree ).unwrap_or_default();
 
   let output_default = TableFormatter::with_config(
@@ -648,7 +648,7 @@ fn test_max_column_width_zero_no_panic()
 
   // Should not panic regardless of output
   let output = TableFormatter::with_config(
-    TableConfig::plain().max_column_width( Some( 0 ) )
+    TableConfig::plain().with_max_column_width( Some( 0 ) )
   ).format( &tree ).unwrap_or_default();
 
   assert!( !output.is_empty(), "max_column_width(0) must produce non-empty output; output:{output:?}" );
@@ -667,8 +667,8 @@ fn test_truncation_at_exact_max_width_no_truncation_marker()
 
   let output = TableFormatter::with_config(
     TableConfig::plain()
-      .max_column_width( Some( 10 ) )
-      .truncation_marker( "...".to_string() )
+      .with_max_column_width( Some( 10 ) )
+      .with_truncation_marker( "...".to_string() )
   ).format( &tree ).unwrap_or_default();
 
   assert!(

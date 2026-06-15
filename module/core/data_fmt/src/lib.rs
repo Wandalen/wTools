@@ -76,7 +76,7 @@
 //!
 //! // Gray keys for terminal output (PostgreSQL style)
 //! let formatter = ExpandedFormatter::with_config(
-//!   ExpandedConfig::new().colorize_keys( true )
+//!   ExpandedConfig::new().with_colorize_keys( true )
 //! );
 //! let output = formatter.format( &view ).unwrap_or_default();
 //! # }
@@ -182,7 +182,7 @@ pub use color_tools::DecoratedText;
 pub use config::{
   TreeConfig, TableConfig, ExpandedConfig, PaddingSide, TreeSymbols,
   BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex, FoldStyle,
-  TableCaption,
+  Heading,
   CAPTION_FIELD_SEP, CAPTION_RULE_CHAR, CAPTION_LEAD_WIDTH,
 };
 #[ cfg( feature = "enabled" ) ]

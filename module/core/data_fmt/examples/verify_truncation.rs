@@ -25,7 +25,7 @@ fn main()
       .build_view();
 
     let config = TableConfig::plain()
-      .max_column_width( Some( 20 ) );
+      .with_max_column_width( Some( 20 ) );
 
     let formatter = TableFormatter::with_config( config );
     let output = formatter.format( &data ).unwrap_or_default();
@@ -48,7 +48,7 @@ fn main()
       .build_view();
 
     let config = TableConfig::plain()
-      .max_column_width( Some( 25 ) );
+      .with_max_column_width( Some( 25 ) );
 
     let formatter = TableFormatter::with_config( config );
     let output = formatter.format( &data ).unwrap_or_default();
@@ -70,8 +70,8 @@ fn main()
       .build_view();
 
     let config = TableConfig::plain()
-      .max_column_width( Some( 20 ) )
-      .truncation_marker( "→".to_string() );
+      .with_max_column_width( Some( 20 ) )
+      .with_truncation_marker( "→".to_string() );
 
     let formatter = TableFormatter::with_config( config );
     let output = formatter.format( &data ).unwrap_or_default();
@@ -91,8 +91,8 @@ fn main()
       .build_view();
 
     let config = TableConfig::plain()
-      .max_column_width( Some( 5 ) )
-      .truncation_marker( ".........".to_string() );
+      .with_max_column_width( Some( 5 ) )
+      .with_truncation_marker( ".........".to_string() );
 
     let formatter = TableFormatter::with_config( config );
     let output = formatter.format( &data ).unwrap_or_default();
@@ -115,7 +115,7 @@ fn main()
       .build_view();
 
     let config = TableConfig::plain()
-      .max_column_width( Some( 20 ) );
+      .with_max_column_width( Some( 20 ) );
 
     let formatter = TableFormatter::with_config( config );
     let output = formatter.format( &data ).unwrap_or_default();
@@ -157,7 +157,7 @@ fn main()
       .build_view();
 
     let config = TableConfig::plain()
-      .max_column_width( Some( 15 ) );
+      .with_max_column_width( Some( 15 ) );
 
     let formatter = TableFormatter::with_config( config );
     let output = formatter.format( &data ).unwrap_or_default();
@@ -179,7 +179,7 @@ fn main()
       .build_view();
 
     let config = TableConfig::plain()
-      .max_column_width( Some( 20 ) );
+      .with_max_column_width( Some( 20 ) );
 
     let formatter = TableFormatter::with_config( config );
     let output = formatter.format( &data ).unwrap_or_default();

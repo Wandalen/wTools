@@ -57,8 +57,8 @@ const DEFAULT_INDENT : &str = "    "; // 4 spaces — default fold_indent
 fn fold_config() -> TableConfig
 {
   TableConfig::plain()
-    .terminal_width( Some( 40 ) )
-    .column_flex( vec![
+    .with_terminal_width( Some( 40 ) )
+    .with_column_flex( vec![
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
     ] )
@@ -96,7 +96,7 @@ fn table_fits_no_fold_occurs()
   // Wide-enough terminal: all 6 columns fit, no fold needed
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 120 ) ).column_flex( vec![
+    TableConfig::plain().with_terminal_width( Some( 120 ) ).with_column_flex( vec![
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
     ] )
@@ -131,7 +131,7 @@ fn labeled_fold_produces_continuation()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
-    fold_config().fold_style( FoldStyle::Labeled )
+    fold_config().with_fold_style( FoldStyle::Labeled )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -148,7 +148,7 @@ fn bare_fold_style_renders_values_without_labels()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
-    fold_config().fold_style( FoldStyle::Bare )
+    fold_config().with_fold_style( FoldStyle::Bare )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -170,7 +170,7 @@ fn stacked_fold_style_each_column_on_own_line()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
-    fold_config().fold_style( FoldStyle::Stacked )
+    fold_config().with_fold_style( FoldStyle::Stacked )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -188,7 +188,7 @@ fn custom_fold_indent_appears_on_continuation_lines()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
-    fold_config().fold_indent( ">>> ".to_string() )
+    fold_config().with_fold_indent( ">>> ".to_string() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -209,7 +209,7 @@ fn auto_fold_false_disables_folding()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
-    fold_config().auto_fold( false )
+    fold_config().with_auto_fold( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -226,7 +226,7 @@ fn csv_preset_auto_disables_folding()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
-    TableConfig::csv().terminal_width( Some( 40 ) )
+    TableConfig::csv().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -248,7 +248,7 @@ fn tsv_preset_auto_disables_folding()
 {
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
-    TableConfig::tsv().terminal_width( Some( 40 ) )
+    TableConfig::tsv().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -276,8 +276,8 @@ fn fold_plus_wrap_combination()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 40 ) )
-      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
+      .with_terminal_width( Some( 40 ) )
+      .with_column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -363,8 +363,8 @@ fn single_overflow_column_produces_one_continuation_line()
   // terminal=60: cumulative reaches fold_point=5 (only "Source" column folds)
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 60 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 60 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
@@ -394,8 +394,8 @@ fn very_narrow_terminal_all_columns_fold_except_first()
   // terminal=10: fold_point=1, only ID stays in table
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 10 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 10 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
@@ -430,8 +430,8 @@ fn fold_with_sub_row_detail_both_render()
   .build_view();
 
   let config = TableConfig::plain()
-    .terminal_width( Some( 40 ) )
-    .column_flex( vec![
+    .with_terminal_width( Some( 40 ) )
+    .with_column_flex( vec![
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
     ] );
@@ -470,8 +470,8 @@ fn fold_with_alternating_colors_continuation_lines_exist()
 
   let formatter = TableFormatter::with_config(
     fold_config()
-      .alternating_rows( true )
-      .row_colors( "\x1b[48;5;236m".to_string(), "\x1b[48;5;237m".to_string() )
+      .with_alternating_rows( true )
+      .with_row_colors( "\x1b[48;5;236m".to_string(), "\x1b[48;5;237m".to_string() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -490,8 +490,8 @@ fn fold_with_bordered_style_primary_bordered_continuation_plain()
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
     TableConfig::bordered()
-      .terminal_width( Some( 40 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 40 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
@@ -512,8 +512,8 @@ fn fold_with_unicode_box_style_continuation_outside_box()
   let tree = fold_table_single_row();
   let formatter = TableFormatter::with_config(
     TableConfig::unicode_box()
-      .terminal_width( Some( 40 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 40 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
@@ -599,8 +599,8 @@ fn format_trait_path_fold_works()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 40 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 40 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
@@ -638,8 +638,8 @@ fn explicit_column_flex_mixed_triggers_fold_at_fixed_overflow()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 30 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 30 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
         ColumnFlex::Flex, ColumnFlex::Flex, ColumnFlex::Flex,
       ] )
@@ -695,9 +695,9 @@ fn bare_fold_style_wraps_long_continuation_line()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 40 ) )
-      .fold_style( FoldStyle::Bare )
-      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
+      .with_terminal_width( Some( 40 ) )
+      .with_fold_style( FoldStyle::Bare )
+      .with_column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -752,8 +752,8 @@ fn fold_point_zero_preserves_first_column_in_header()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 3 ) )
-      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed ] )
+      .with_terminal_width( Some( 3 ) )
+      .with_column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed ] )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 

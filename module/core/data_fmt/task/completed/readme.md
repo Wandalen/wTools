@@ -15,3 +15,6 @@ Archive of completed tasks for data_fmt.
 | `005_columns_env_fallback.md` | Read $COLUMNS before terminal_size fallback in resolve_terminal_width |
 | `006_terminal_size_feature_bundle.md` | Add dep:terminal_size to format_table_visual Cargo feature |
 | `007_table_caption.md` | Add TableCaption struct and TableConfig::caption() builder |
+| `008_fix_caption_width.md` | Fix caption trailing rule to fill rendered table width instead of terminal width |
+| `009_api_consistency_with_prefix.md` | Add with_ prefix to 39 builder setters and rename TableCaption to Heading |
+| `010_heading_examples.md` | Add heading_basic and heading_styles example binaries |

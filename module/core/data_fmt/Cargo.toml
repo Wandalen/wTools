@@ -126,3 +126,11 @@ format_meta_visual = [ "format_table", "format_expanded", "format_tree", "format
 format_meta_web    = [ "format_html", "format_sql" ]
 format_meta_data   = [ "format_json", "format_yaml", "format_toml" ]
 all_formats        = [ "format_meta_visual", "format_meta_web", "format_meta_data", "format_text", "themes" ]
+
+[[example]]
+name = "heading_basic"
+required-features = [ "enabled" ]
+
+[[example]]
+name = "heading_styles"
+required-features = [ "enabled" ]

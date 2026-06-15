@@ -35,10 +35,10 @@ fn auto_wrap_natural_fit_no_wrapping()
     .build_view();
 
   let fmt_wrap = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 120 ) )
+    TableConfig::plain().with_terminal_width( Some( 120 ) )
   );
   let fmt_no_wrap = TableFormatter::with_config(
-    TableConfig::plain().auto_wrap( false )
+    TableConfig::plain().with_auto_wrap( false )
   );
 
   let output_wrap = fmt_wrap.format( &tree ).unwrap_or_default();
@@ -57,7 +57,7 @@ fn auto_wrap_wraps_flex_column()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 40 ) )
+    TableConfig::plain().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -90,7 +90,7 @@ fn auto_wrap_all_fixed_no_wrapping()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 60 ) )
+    TableConfig::plain().with_terminal_width( Some( 60 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -111,7 +111,7 @@ fn auto_wrap_two_flex_columns_share_budget()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 50 ) )
+    TableConfig::plain().with_terminal_width( Some( 50 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -140,8 +140,8 @@ fn auto_wrap_explicit_column_flex_override()
   // Only middle column is Flex — only it should wrap
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 60 ) )
-      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Flex, ColumnFlex::Fixed ] )
+      .with_terminal_width( Some( 60 ) )
+      .with_column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Flex, ColumnFlex::Fixed ] )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -163,10 +163,10 @@ fn auto_wrap_false_is_byte_identical()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::plain().auto_wrap( false )
+    TableConfig::plain().with_auto_wrap( false )
   );
   let fmt_default_no_term = TableFormatter::with_config(
-    TableConfig::plain().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::plain().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
 
   let output1 = fmt_disabled.format( &tree ).unwrap_or_default();
@@ -189,7 +189,7 @@ fn csv_preset_auto_disables_wrapping()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::csv().terminal_width( Some( 30 ) )
+    TableConfig::csv().with_terminal_width( Some( 30 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -210,7 +210,7 @@ fn tsv_preset_auto_disables_wrapping()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::tsv().terminal_width( Some( 30 ) )
+    TableConfig::tsv().with_terminal_width( Some( 30 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -230,7 +230,7 @@ fn auto_wrap_multiline_alignment()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 40 ) )
+    TableConfig::plain().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -259,7 +259,7 @@ fn auto_wrap_ansi_colors_preserved()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 40 ) )
+    TableConfig::plain().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -284,7 +284,7 @@ fn auto_wrap_bordered_style()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::bordered().terminal_width( Some( 50 ) )
+    TableConfig::bordered().with_terminal_width( Some( 50 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -314,7 +314,7 @@ fn auto_wrap_unicode_box_style()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::unicode_box().terminal_width( Some( 50 ) )
+    TableConfig::unicode_box().with_terminal_width( Some( 50 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -342,7 +342,7 @@ fn auto_wrap_with_existing_newlines()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 40 ) )
+    TableConfig::plain().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -366,8 +366,8 @@ fn auto_wrap_min_column_width_wins()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 20 ) )
-      .min_column_width( 15 )
+      .with_terminal_width( Some( 20 ) )
+      .with_min_column_width( 15 )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -395,13 +395,13 @@ fn auto_wrap_column_widths_override_bypass()
 
   let fmt_override = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 30 ) )
-      .column_widths( vec![ 5, 70 ] )
+      .with_terminal_width( Some( 30 ) )
+      .with_column_widths( vec![ 5, 70 ] )
   );
   let fmt_no_wrap = TableFormatter::with_config(
     TableConfig::plain()
-      .auto_wrap( false )
-      .column_widths( vec![ 5, 70 ] )
+      .with_auto_wrap( false )
+      .with_column_widths( vec![ 5, 70 ] )
   );
 
   let output1 = fmt_override.format( &tree ).unwrap_or_default();
@@ -423,7 +423,7 @@ fn auto_wrap_single_row()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 40 ) )
+    TableConfig::plain().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -446,7 +446,7 @@ fn auto_wrap_empty_table_headers_only()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 20 ) )
+    TableConfig::plain().with_terminal_width( Some( 20 ) )
   );
   let output = Format::format( &formatter, &view ).unwrap();
 
@@ -467,7 +467,7 @@ fn auto_wrap_terminal_width_zero()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 0 ) )
+    TableConfig::plain().with_terminal_width( Some( 0 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -487,10 +487,10 @@ fn auto_wrap_heuristic_short_is_fixed()
     .build_view();
 
   let fmt_wrap = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 30 ) )
+    TableConfig::plain().with_terminal_width( Some( 30 ) )
   );
   let fmt_no_wrap = TableFormatter::with_config(
-    TableConfig::plain().auto_wrap( false )
+    TableConfig::plain().with_auto_wrap( false )
   );
 
   let output_wrap = fmt_wrap.format( &tree ).unwrap_or_default();
@@ -512,7 +512,7 @@ fn auto_wrap_heuristic_long_is_flex()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 40 ) )
+    TableConfig::plain().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -540,7 +540,7 @@ fn auto_wrap_with_sub_row_detail()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 50 ) )
+    TableConfig::plain().with_terminal_width( Some( 50 ) )
   );
   let result = Format::format( &formatter, &view ).unwrap();
 
@@ -567,7 +567,7 @@ fn auto_wrap_format_trait_path()
     .build_view();
 
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 40 ) )
+    TableConfig::plain().with_terminal_width( Some( 40 ) )
   );
   let result = Format::format( &formatter, &view ).unwrap();
 
@@ -595,8 +595,8 @@ fn auto_wrap_all_fixed_columns_exceed_terminal()
   // All three columns forced Fixed; each is ~49 chars wide, total >> 40
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 40 ) )
-      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
+      .with_terminal_width( Some( 40 ) )
+      .with_column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed ] )
   );
   // Must not panic; output must be non-empty and contain all cell words
   let output = formatter.format( &tree ).unwrap_or_default();

@@ -222,7 +222,7 @@ fn test_table_config_builder_border_style()
   // border_variant is stored but not yet rendered by TableFormatter;
   // the setter must compile and not affect data rendering
   let output = TableFormatter::with_config(
-    TableConfig::new().border_variant( BorderVariant::None )
+    TableConfig::new().with_border_variant( BorderVariant::None )
   ).format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "Alice" ), "border_variant setter must not break rendering; output:\n{output}" );
@@ -233,7 +233,7 @@ fn test_table_config_builder_header_separator()
 {
   let tree = sample_data();
   let output = TableFormatter::with_config(
-    TableConfig::new().header_separator_variant( HeaderSeparatorVariant::Dash )
+    TableConfig::new().with_header_separator_variant( HeaderSeparatorVariant::Dash )
   ).format( &tree ).unwrap_or_default();
 
   // Dash separator → dash line between header and rows
@@ -246,7 +246,7 @@ fn test_table_config_builder_column_separator()
 {
   let tree = sample_data();
   let output = TableFormatter::with_config(
-    TableConfig::new().column_separator( ColumnSeparator::Spaces( 4 ) )
+    TableConfig::new().with_column_separator( ColumnSeparator::Spaces( 4 ) )
   ).format( &tree ).unwrap_or_default();
 
   // Spaces(4) → no | separator in output
@@ -263,8 +263,8 @@ fn test_table_config_builder_padding()
   // Use bordered() as base since it has character separator (visible borders)
   let output_padded = TableFormatter::with_config(
     TableConfig::bordered()
-      .outer_padding( true )
-      .inner_padding( 2 )
+      .with_outer_padding( true )
+      .with_inner_padding( 2 )
   ).format( &tree ).unwrap_or_default();
 
   // With outer_padding=true and inner_padding=2, rows start with |  (border + 2 spaces)
@@ -276,8 +276,8 @@ fn test_table_config_builder_padding()
   // outer_padding=false: rows start with | but NO leading spaces after border
   let output_no_outer = TableFormatter::with_config(
     TableConfig::bordered()
-      .outer_padding( false )
-      .inner_padding( 2 )
+      .with_outer_padding( false )
+      .with_inner_padding( 2 )
   ).format( &tree ).unwrap_or_default();
 
   // With outer_padding=false, rows should NOT start with |  (no extra spaces)
@@ -298,10 +298,10 @@ fn test_table_config_builder_colors()
   let tree = sample_data();
   let output = TableFormatter::with_config(
     TableConfig::new()
-      .colorize_header( true )
-      .header_color( "\x1b[36m".to_string() )
-      .alternating_rows( true )
-      .row_colors( "\x1b[0m".to_string(), "\x1b[48;5;236m".to_string() )
+      .with_colorize_header( true )
+      .with_header_color( "\x1b[36m".to_string() )
+      .with_alternating_rows( true )
+      .with_row_colors( "\x1b[0m".to_string(), "\x1b[48;5;236m".to_string() )
   ).format( &tree ).unwrap_or_default();
 
   assert!( output.contains( "Alice" ), "color-configured table must still render data; output:\n{output}" );
@@ -317,8 +317,8 @@ fn test_table_config_builder_width_constraints()
 
   let output = TableFormatter::with_config(
     TableConfig::new()
-      .max_column_width( Some( 8 ) )
-      .truncation_marker( "…".to_string() )
+      .with_max_column_width( Some( 8 ) )
+      .with_truncation_marker( "…".to_string() )
   ).format( &tree ).unwrap_or_default();
 
   // max_column_width=8 truncates long content; "…" marker appears
@@ -334,9 +334,9 @@ fn test_table_config_builder_chaining()
   let tree = sample_data();
   let output = TableFormatter::with_config(
     TableConfig::plain()
-      .colorize_header( true )
-      .header_color( "\x1b[1;36m".to_string() )
-      .min_column_width( 5 )
+      .with_colorize_header( true )
+      .with_header_color( "\x1b[1;36m".to_string() )
+      .with_min_column_width( 5 )
   ).format( &tree ).unwrap_or_default();
 
   // plain() base is preserved: no | borders
@@ -490,7 +490,7 @@ fn min_column_width_raises_column_to_floor_ft7()
     .build_view();
 
   let config_natural = TableConfig::plain();
-  let config_min = TableConfig::plain().min_column_width( 10 );
+  let config_min = TableConfig::plain().with_min_column_width( 10 );
 
   let out_natural = TableFormatter::with_config( config_natural ).format( &view ).unwrap_or_default();
   let out_min = TableFormatter::with_config( config_min ).format( &view ).unwrap_or_default();

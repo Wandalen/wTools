@@ -66,16 +66,22 @@ impl TableFormatter
     let content_width : usize = column_widths.iter().sum();
     let sep_count = column_widths.len() - 1;
     let sep_total = self.separator_visual_width() * sep_count;
-    let outer = if self.config.has_outer_padding()
+    // Fix(BUG-017): padding is applied before AND after every cell (2 * N units),
+    //   not just at the outer edges (2 units).
+    // Root cause: `inner_padding * 2` counted only two padding units total,
+    //   but rendering emits `inner_padding` spaces before and after each of the N cells.
+    // Pitfall: any overhead formula (here, compute_column_budgets, determine_fold_point)
+    //   must use `inner_padding * 2 * n_cols` — not `inner_padding * 2`.
+    let padding = if self.config.has_outer_padding()
     {
-      self.config.cell_inner_padding() * 2
+      self.config.cell_inner_padding() * 2 * column_widths.len()
     }
     else
     {
       0
     };
     let border = if self.needs_border_pipes() { 2 } else { 0 };
-    content_width + sep_total + outer + border
+    content_width + sep_total + padding + border
   }
 
   /// Determine if auto-wrapping should be applied
@@ -128,7 +134,7 @@ impl TableFormatter
     let terminal = self.resolve_terminal_width();
     let sep_count = if column_widths.len() > 1 { column_widths.len() - 1 } else { 0 };
     let overhead = self.separator_visual_width() * sep_count
-      + if self.config.has_outer_padding() { self.config.cell_inner_padding() * 2 } else { 0 }
+      + if self.config.has_outer_padding() { self.config.cell_inner_padding() * 2 * column_widths.len() } else { 0 }
       + if self.needs_border_pipes() { 2 } else { 0 };
 
     let fixed_total : usize = column_widths
@@ -231,7 +237,7 @@ impl TableFormatter
   {
     let terminal = self.resolve_terminal_width();
     let sep_width = self.separator_visual_width();
-    let outer = if self.config.has_outer_padding()
+    let pad_per_col = if self.config.has_outer_padding()
     {
       self.config.cell_inner_padding() * 2
     }
@@ -240,14 +246,14 @@ impl TableFormatter
       0
     };
     let border = if self.needs_border_pipes() { 2 } else { 0 };
-    let overhead = outer + border;
 
     let mut content_so_far = 0usize;
     for ( i, &w ) in column_widths.iter().enumerate()
     {
       content_so_far += w;
       let sep_total = i.saturating_mul( sep_width );
-      if content_so_far + sep_total + overhead > terminal
+      let pad_total = pad_per_col * ( i + 1 );
+      if content_so_far + sep_total + pad_total + border > terminal
       {
         // Fix(BUG-007): clamp to 1 so the first column always stays
         // in the primary table (Invariant 1: header row must never be empty).

@@ -58,8 +58,8 @@ fn test_t013_p01_colorize_header_wraps_header_in_escape_codes()
 {
   let tree = sample_data();
   let config = TableConfig::plain()
-    .colorize_header( true )
-    .header_color( "\x1b[1m".to_string() );
+    .with_colorize_header( true )
+    .with_header_color( "\x1b[1m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -89,8 +89,8 @@ fn test_t013_p02_alternating_rows_colors_even_odd()
     .build_view();
 
   let config = TableConfig::plain()
-    .alternating_rows( true )
-    .row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
+    .with_alternating_rows( true )
+    .with_row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -126,10 +126,10 @@ fn test_t013_p03_header_and_row_coloring_independent()
     .build_view();
 
   let config = TableConfig::plain()
-    .colorize_header( true )
-    .header_color( "\x1b[1m".to_string() )
-    .alternating_rows( true )
-    .row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
+    .with_colorize_header( true )
+    .with_header_color( "\x1b[1m".to_string() )
+    .with_alternating_rows( true )
+    .with_row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -182,8 +182,8 @@ fn test_t013_p05_reset_appears_before_newline()
 {
   let tree = sample_data();
   let config = TableConfig::plain()
-    .colorize_header( true )
-    .header_color( "\x1b[1m".to_string() );
+    .with_colorize_header( true )
+    .with_header_color( "\x1b[1m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -227,8 +227,8 @@ fn test_t013_n02_empty_color_strings_suppress_escapes()
 {
   let tree = sample_data();
   let config = TableConfig::plain()
-    .alternating_rows( true )
-    .row_colors( String::new(), String::new() );
+    .with_alternating_rows( true )
+    .with_row_colors( String::new(), String::new() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -250,8 +250,8 @@ fn test_t013_n03_single_row_only_color1()
     .build_view();
 
   let config = TableConfig::plain()
-    .alternating_rows( true )
-    .row_colors( "\x1b[31m".to_string(), String::new() );
+    .with_alternating_rows( true )
+    .with_row_colors( "\x1b[31m".to_string(), String::new() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -294,8 +294,8 @@ fn test_t013_n05_grid_borders_and_colors_coexist()
 {
   let tree = sample_data();
   let config = TableConfig::grid()
-    .colorize_header( true )
-    .header_color( "\x1b[1m".to_string() );
+    .with_colorize_header( true )
+    .with_header_color( "\x1b[1m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -359,8 +359,8 @@ fn test_t013_m01_multiline_data_row_reset_before_each_newline()
     .build_view();
 
   let config = TableConfig::plain()
-    .alternating_rows( true )
-    .row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
+    .with_alternating_rows( true )
+    .with_row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -400,8 +400,8 @@ fn test_t013_m02_multiline_header_reset_before_each_newline()
     .build_view();
 
   let config = TableConfig::plain()
-    .colorize_header( true )
-    .header_color( "\x1b[1m".to_string() );
+    .with_colorize_header( true )
+    .with_header_color( "\x1b[1m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -428,8 +428,8 @@ fn test_t013_n06_header_colored_data_uncolored_single_row()
     .build_view();
 
   let config = TableConfig::plain()
-    .colorize_header( true )
-    .header_color( "\x1b[1m".to_string() );
+    .with_colorize_header( true )
+    .with_header_color( "\x1b[1m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -458,8 +458,8 @@ fn test_t013_m03_colorize_header_false_ignores_header_color()
 {
   let tree = sample_data();
   let config = TableConfig::plain()
-    .colorize_header( false )
-    .header_color( "\x1b[1m".to_string() );
+    .with_colorize_header( false )
+    .with_header_color( "\x1b[1m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -480,8 +480,8 @@ fn test_t013_m04_alternating_only_color2_even_rows_uncolored()
     .build_view();
 
   let config = TableConfig::plain()
-    .alternating_rows( true )
-    .row_colors( String::new(), "\x1b[32m".to_string() );
+    .with_alternating_rows( true )
+    .with_row_colors( String::new(), "\x1b[32m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -509,8 +509,8 @@ fn test_t013_m05_empty_header_color_with_flag_true_suppresses_escapes()
 {
   let tree = sample_data();
   let config = TableConfig::plain()
-    .colorize_header( true )
-    .header_color( String::new() );
+    .with_colorize_header( true )
+    .with_header_color( String::new() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 
@@ -559,8 +559,8 @@ fn test_t013_m06_multiline_colored_row_correct_width_and_reset()
     .build_view();
 
   let config = TableConfig::plain()
-    .alternating_rows( true )
-    .row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
+    .with_alternating_rows( true )
+    .with_row_colors( "\x1b[31m".to_string(), "\x1b[32m".to_string() );
 
   let output = TableFormatter::with_config( config ).format( &tree ).unwrap_or_default();
 

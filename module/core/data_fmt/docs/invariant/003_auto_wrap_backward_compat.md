@@ -30,7 +30,7 @@
 
 When `TableConfig::auto_wrap(false)` is set, the output of `TableFormatter::format()` must be **byte-identical** to the output produced before the auto-wrap feature was added, for all 9 table style presets (`plain`, `minimal`, `bordered`, `markdown`, `grid`, `unicode_box`, `csv`, `tsv`, `compact`) and for any input data.
 
-Formally: for any headers, rows, and preset `P`, the output produced by `P()` must be byte-identical to the output produced by `P().auto_wrap(false)`.
+Formally: for any headers, rows, and preset `P`, the output produced by `P()` must be byte-identical to the output produced by `P().with_auto_wrap(false)`.
 
 ### Enforcement Mechanism
 

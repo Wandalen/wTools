@@ -40,7 +40,7 @@ fn test_expanded_indent_prefix_t02_property_two_space_indent()
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
-      .indent_prefix( "  ".into() )
+      .with_indent_prefix( "  ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -69,7 +69,7 @@ fn test_expanded_indent_prefix_t03_postgres_indent_separator_unaffected()
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::postgres_style()
-      .indent_prefix( "  ".into() )
+      .with_indent_prefix( "  ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -108,7 +108,7 @@ fn test_expanded_indent_prefix_t04_two_records_custom_prefix()
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
-      .indent_prefix( "> ".into() )
+      .with_indent_prefix( "> ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -138,7 +138,7 @@ fn test_expanded_indent_prefix_t05_empty_data_no_panic()
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
-      .indent_prefix( "  ".into() )
+      .with_indent_prefix( "  ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -156,7 +156,7 @@ fn test_expanded_indent_prefix_t06_explicit_empty_string()
   let with_explicit_empty = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
-      .indent_prefix( String::new() )
+      .with_indent_prefix( String::new() )
   );
   let without = ExpandedFormatter::with_config( ExpandedConfig::property_style() );
 
@@ -177,9 +177,9 @@ fn test_expanded_indent_prefix_t07_colorize_keys_indent_before_color()
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
-      .colorize_keys( true )
-      .key_color( "\x1b[90m".into() )
-      .indent_prefix( "  ".into() )
+      .with_colorize_keys( true )
+      .with_key_color( "\x1b[90m".into() )
+      .with_indent_prefix( "  ".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 

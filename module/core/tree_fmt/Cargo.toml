@@ -1,0 +1,17 @@
+[package]
+name = "tree_fmt"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+format_json = []
+format_table = []
+format_yaml = []
+format_tree = []
+format_expanded = []
+table_plain = []
+table_bordered = []
+tree_hierarchical = []
+tree_aligned = []
+
+[dependencies]

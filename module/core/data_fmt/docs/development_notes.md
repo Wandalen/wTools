@@ -537,7 +537,7 @@ style group.
 **Structural fix (task 011 — ✅ DONE, commit `80660b59` 2026-03-31):** `TableConfig` fields
 are now private. Struct literal initialization outside `src/config.rs` is a compile error.
 External callers must use preset constructors (`plain()`, `unicode_box()`, etc.) or builder
-setter methods (`.border_variant()`, `.column_separator()`, etc.).
+setter methods (`.with_border_variant()`, `.with_column_separator()`, etc.).
 
 **Call-site fix (task 011 — ✅ DONE, commit `80660b59` 2026-03-31):** The `gi_infra` call site
 (`gi_infra/src/formatters/style.rs`) was migrated to `TableConfig::unicode_box()` as part of task

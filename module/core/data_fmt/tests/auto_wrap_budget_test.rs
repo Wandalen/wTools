@@ -37,8 +37,8 @@ fn csv_bypasses_budget_allocation_ac6()
 
   let formatter = TableFormatter::with_config(
     TableConfig::csv()
-      .auto_wrap( true )
-      .terminal_width( Some( 30 ) )
+      .with_auto_wrap( true )
+      .with_terminal_width( Some( 30 ) )
   );
   let output = formatter.format( &view ).expect( "CSV formatting must not fail" );
 
@@ -81,8 +81,8 @@ fn flex_remainder_to_leftmost_column_ac7()
   // budget = 35 - 4 = 31; 31 % 3 = 1 → leftmost gets 11 chars, others get 10
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 35 ) )
-      .column_flex( vec![ ColumnFlex::Flex, ColumnFlex::Flex, ColumnFlex::Flex ] )
+      .with_terminal_width( Some( 35 ) )
+      .with_column_flex( vec![ ColumnFlex::Flex, ColumnFlex::Flex, ColumnFlex::Flex ] )
   );
   let output = formatter.format( &view ).expect( "must not fail with remainder budget" );
   assert!( !output.is_empty(), "output must be non-empty" );
@@ -125,8 +125,8 @@ fn flex_budget_floored_at_minimum_ac8()
   // terminal_width(5) is narrower than fixed column (15 chars) + overhead → flex budget ≤ 0
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 5 ) )
-      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Flex ] )
+      .with_terminal_width( Some( 5 ) )
+      .with_column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Flex ] )
   );
   let output = formatter.format( &view )
     .expect( "must not panic when flex budget would be negative" );
@@ -155,7 +155,7 @@ fn unicode_box_auto_wrap_false_byte_identical_in3()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::unicode_box().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::unicode_box().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
   let fmt_baseline = TableFormatter::with_config( TableConfig::unicode_box() );
 
@@ -183,7 +183,7 @@ fn markdown_auto_wrap_false_byte_identical_in4()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::markdown().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::markdown().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
   let fmt_baseline = TableFormatter::with_config( TableConfig::markdown() );
 
@@ -208,7 +208,7 @@ fn minimal_auto_wrap_false_byte_identical_in5()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::minimal().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::minimal().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
   let fmt_baseline = TableFormatter::with_config( TableConfig::minimal() );
 
@@ -233,7 +233,7 @@ fn bordered_auto_wrap_false_byte_identical_in6()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::bordered().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::bordered().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
   let fmt_baseline = TableFormatter::with_config( TableConfig::bordered() );
 
@@ -258,7 +258,7 @@ fn grid_auto_wrap_false_byte_identical_in7()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::grid().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::grid().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
   let fmt_baseline = TableFormatter::with_config( TableConfig::grid() );
 
@@ -284,7 +284,7 @@ fn csv_auto_wrap_false_byte_identical_in8()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::csv().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::csv().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
   let fmt_baseline = TableFormatter::with_config( TableConfig::csv() );
 
@@ -310,7 +310,7 @@ fn tsv_auto_wrap_false_byte_identical_in9()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::tsv().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::tsv().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
   let fmt_baseline = TableFormatter::with_config( TableConfig::tsv() );
 
@@ -335,7 +335,7 @@ fn compact_auto_wrap_false_byte_identical_in10()
     .build_view();
 
   let fmt_disabled = TableFormatter::with_config(
-    TableConfig::compact().auto_wrap( false ).terminal_width( Some( 40 ) )
+    TableConfig::compact().with_auto_wrap( false ).with_terminal_width( Some( 40 ) )
   );
   let fmt_baseline = TableFormatter::with_config( TableConfig::compact() );
 
@@ -371,8 +371,8 @@ fn twelve_char_threshold_column_treated_as_fixed_ac9()
   // terminal_width(25) forces wrapping on the Flex column (B) but should leave Fixed (A) intact
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 25 ) )
-      .auto_wrap( true )
+      .with_terminal_width( Some( 25 ) )
+      .with_auto_wrap( true )
   );
   let output = formatter.format( &view ).expect( "must not fail" );
 
@@ -409,8 +409,8 @@ fn thirteen_char_threshold_column_treated_as_flex_ac11()
   // If A were Fixed: "abcdefghijklm" would appear verbatim.
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 10 ) )
-      .auto_wrap( true )
+      .with_terminal_width( Some( 10 ) )
+      .with_auto_wrap( true )
   );
   let output = formatter.format( &view ).expect( "must not fail for 13-char threshold test" );
 
@@ -447,8 +447,8 @@ fn overhead_exceeds_terminal_flex_clamped_to_floor_ac10()
   // Overhead (30) > terminal (25) triggers the floor-clamping behavior for Flex.
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 25 ) )
-      .column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Flex ] )
+      .with_terminal_width( Some( 25 ) )
+      .with_column_flex( vec![ ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Flex ] )
   );
   let output = formatter.format( &view )
     .expect( "must not panic when overhead exceeds terminal width" );

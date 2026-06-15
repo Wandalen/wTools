@@ -197,8 +197,8 @@ mod theme_tests
 
     let config = theme.apply_to_table(
       TableConfig::bordered()
-        .inner_padding( 2 )
-        .min_column_width( 10 )
+        .with_inner_padding( 2 )
+        .with_min_column_width( 10 )
     );
 
     // inner_padding=2 with outer_padding=true and bordered() base:
@@ -250,7 +250,7 @@ mod theme_tests
   #[ test ]
   fn test_multiple_themes_on_same_config()
   {
-    let base_config = TableConfig::bordered().inner_padding( 2 );
+    let base_config = TableConfig::bordered().with_inner_padding( 2 );
 
     let dark_config = ColorTheme::dark().apply_to_table( base_config.clone() );
     let light_config = ColorTheme::light().apply_to_table( base_config.clone() );
@@ -283,8 +283,8 @@ mod theme_tests
     let theme = ColorTheme::nord();
     let config = theme.apply_to_table(
       TableConfig::bordered()
-        .inner_padding( 3 )
-        .min_column_width( 20 )
+        .with_inner_padding( 3 )
+        .with_min_column_width( 20 )
     );
 
     // inner_padding=3 preserved: output contains "|   " or "\x1b[0m   " (when border_color is set,

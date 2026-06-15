@@ -18,7 +18,7 @@ pub struct ExpandedConfig
   /// Enable ANSI color for keys
   pub colorize_keys : bool,
   /// ANSI color code for keys; pre-loaded with `"\x1b[90m"` (gray) by default.
-  /// Override via `.key_color()` builder or set to `String::new()` to disable.
+  /// Override via `.with_key_color()` builder or set to `String::new()` to disable.
   pub key_color : String,
   /// Where to place padding for alignment
   pub padding_side : PaddingSide,
@@ -75,7 +75,7 @@ impl ExpandedConfig
 
   /// Set record separator format string
   #[ must_use ]
-  pub fn record_separator( mut self, separator : String ) -> Self
+  pub fn with_record_separator( mut self, separator : String ) -> Self
   {
     self.record_separator = separator;
     self
@@ -83,7 +83,7 @@ impl ExpandedConfig
 
   /// Set key-value separator
   #[ must_use ]
-  pub fn key_value_separator( mut self, separator : String ) -> Self
+  pub fn with_key_value_separator( mut self, separator : String ) -> Self
   {
     self.key_value_separator = separator;
     self
@@ -91,7 +91,7 @@ impl ExpandedConfig
 
   /// Set whether to show record numbers
   #[ must_use ]
-  pub fn show_record_numbers( mut self, show : bool ) -> Self
+  pub fn with_show_record_numbers( mut self, show : bool ) -> Self
   {
     self.show_record_numbers = show;
     self
@@ -99,7 +99,7 @@ impl ExpandedConfig
 
   /// Enable or disable colored keys
   #[ must_use ]
-  pub fn colorize_keys( mut self, enable : bool ) -> Self
+  pub fn with_colorize_keys( mut self, enable : bool ) -> Self
   {
     self.colorize_keys = enable;
     self
@@ -107,7 +107,7 @@ impl ExpandedConfig
 
   /// Set custom ANSI color code for keys
   #[ must_use ]
-  pub fn key_color( mut self, color : String ) -> Self
+  pub fn with_key_color( mut self, color : String ) -> Self
   {
     self.key_color = color;
     self
@@ -115,7 +115,7 @@ impl ExpandedConfig
 
   /// Set padding side for alignment
   #[ must_use ]
-  pub fn padding_side( mut self, side : PaddingSide ) -> Self
+  pub fn with_padding_side( mut self, side : PaddingSide ) -> Self
   {
     self.padding_side = side;
     self
@@ -123,7 +123,7 @@ impl ExpandedConfig
 
   /// Set indent prefix prepended to each key-value line
   #[ must_use ]
-  pub fn indent_prefix( mut self, prefix : String ) -> Self
+  pub fn with_indent_prefix( mut self, prefix : String ) -> Self
   {
     self.indent_prefix = prefix;
     self

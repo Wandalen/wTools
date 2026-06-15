@@ -109,8 +109,8 @@ All config structs expose fluent builder APIs for constructing formatter options
 
 ```rust
 let config = TreeConfig::new()
-  .show_branches( false )
-  .max_depth( Some( 3 ) );
+  .with_show_branches( false )
+  .with_max_depth( Some( 3 ) );
 ```
 
 Config structs: `TreeConfig`, `TableConfig`, `ExpandedConfig`. Each formatter accepts its corresponding config at construction time.

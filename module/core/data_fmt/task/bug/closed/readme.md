@@ -25,3 +25,6 @@
 | `012_expanded_render_method.md` | BUG-012: ExpandedFormatter accessed raw cell data bypassing ANSI color render |
 | `013_multiline_detail_indent.md` | BUG-013: Multi-line detail indent prefix missing on continuation lines |
 | `014_cli_help_alignment_ansi_byte_width.md` | BUG-014: CLI help key width uses byte count instead of visual_len |
+| `015_heading_cjk_display_width.md` | BUG-015: Heading CJK display width uses char count instead of display columns |
+| `016_heading_newline_multiline.md` | BUG-016: Heading newline in title/fields breaks single-line invariant |
+| `017_padding_undercount_in_width.md` | BUG-017: compute_total_row_width padding undercount for bordered styles |

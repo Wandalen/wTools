@@ -100,7 +100,7 @@ fn explicit_80_column_terminal_width_constrains_output()
 {
   let tree = wide_table();
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 80 ) )
+    TableConfig::plain().with_terminal_width( Some( 80 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -118,7 +118,7 @@ fn explicit_40_column_terminal_width_aggressive_wrap()
 {
   let tree = wide_table();
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 40 ) )
+    TableConfig::plain().with_terminal_width( Some( 40 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -142,7 +142,7 @@ fn zero_terminal_width_clamped_no_panic()
 {
   let tree = wide_table();
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 0 ) )
+    TableConfig::plain().with_terminal_width( Some( 0 ) )
   );
   // Must not panic — resolve_terminal_width clamps 0 → 1
   let output = formatter.format( &tree ).unwrap_or_default();
@@ -155,11 +155,11 @@ fn zero_terminal_width_clamped_no_panic()
 fn narrow_table_unaffected_by_wide_terminal_width()
 {
   let output_constrained = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 80 ) )
+    TableConfig::plain().with_terminal_width( Some( 80 ) )
   ).format( &narrow_table() ).unwrap_or_default();
 
   let output_unconstrained = TableFormatter::with_config(
-    TableConfig::plain().auto_wrap( false )
+    TableConfig::plain().with_auto_wrap( false )
   ).format( &narrow_table() ).unwrap_or_default();
 
   assert_eq!(
@@ -175,7 +175,7 @@ fn auto_wrap_false_bypasses_terminal_detection()
 {
   let tree = wide_table();
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 80 ) ).auto_wrap( false )
+    TableConfig::plain().with_terminal_width( Some( 80 ) ).with_auto_wrap( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -193,7 +193,7 @@ fn csv_preset_bypasses_auto_fit_regardless_of_terminal_width()
 {
   let tree = wide_table();
   let formatter = TableFormatter::with_config(
-    TableConfig::csv().terminal_width( Some( 80 ) )
+    TableConfig::csv().with_terminal_width( Some( 80 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -225,7 +225,7 @@ fn sixty_column_effective_width_constrains_output_ft7()
   // Wide table (natural width ≈ 160) with 60-col effective width
   let tree = wide_table();
   let formatter = TableFormatter::with_config(
-    TableConfig::plain().terminal_width( Some( 60 ) )
+    TableConfig::plain().with_terminal_width( Some( 60 ) )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 

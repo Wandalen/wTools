@@ -1,13 +1,13 @@
-//! Tests for `TableCaption` titled-rule rendering (`feature/007_table_caption`)
+//! Tests for `Heading` titled-rule rendering (`feature/007_table_caption`)
 //!
 //! ## What This Tests
 //!
-//! Verifies that `TableCaption` prepends a titled rule to table output following
-//! the format `─── Title · Field1 · Field2 ──────...` filling the terminal width.
+//! Verifies that `Heading` prepends a titled rule to table output following
+//! the format `─── Title · Field1 · Field2 ──────...` filling the rendered table width.
 //! See `docs/feature/007_table_caption.md` for the full specification.
 
 #![ cfg( feature = "enabled" ) ]
-use data_fmt::{ RowBuilder, TableFormatter, TableConfig, TableCaption, TableView, Format };
+use data_fmt::{ RowBuilder, TableFormatter, TableConfig, Heading, TableView, Format };
 
 // --- Test helper ---
 
@@ -20,16 +20,18 @@ fn two_col_view() -> TableView
 
 // --- FC-1: title-only caption renders titled rule before table ---
 //
-// Given: TableConfig::plain() with .caption(TableCaption::new("Results"))
-// When: a two-column, one-row table is formatted
-// Then: first line starts with "─── Results " and ends with ─ chars; second line is header
+// Given: TableConfig::plain() with .with_heading(Heading::new("Hi"))
+// When: a two-column, one-row table is formatted (table_width = 10)
+// Then: first line starts with "─── Hi " and ends with ─ chars; second line is header
+// Note: title must fit within table_width for trailing rule to appear (3+1+2+1=7 < 10)
 
 /// FC-1 — `feature/007`: title-only caption renders titled rule before the table.
 // test_kind: standard
 #[ test ]
 fn title_only_caption_renders_titled_rule_fc1()
 {
-  let config = TableConfig::plain().caption( TableCaption::new( "Results" ) );
+  // "Hi" = 2 chars; used = 3+1+2+1 = 7; table_width = 10; trail = 3
+  let config = TableConfig::plain().with_heading( Heading::new( "Hi" ) );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view() )
     .unwrap_or_default();
@@ -39,8 +41,8 @@ fn title_only_caption_renders_titled_rule_fc1()
   let second_line  = lines.next().unwrap_or( "" );
 
   assert!(
-    caption_line.starts_with( "─── Results " ),
-    "caption line must start with '─── Results '; got: '{caption_line}'",
+    caption_line.starts_with( "─── Hi " ),
+    "caption line must start with '─── Hi '; got: '{caption_line}'",
   );
   assert!(
     caption_line.ends_with( '─' ),
@@ -55,7 +57,7 @@ fn title_only_caption_renders_titled_rule_fc1()
 
 // --- FC-2: caption fields appear joined by field separator ---
 //
-// Given: TableCaption::new("Needs Review").field("28 PRs").field("15 repos")
+// Given: Heading::new("Needs Review").with_field("28 PRs").with_field("15 repos")
 // When: rendered via TableConfig::plain()
 // Then: first output line contains "Needs Review · 28 PRs · 15 repos"
 
@@ -64,10 +66,10 @@ fn title_only_caption_renders_titled_rule_fc1()
 #[ test ]
 fn caption_fields_joined_by_separator_fc2()
 {
-  let caption = TableCaption::new( "Needs Review" )
-    .field( "28 PRs" )
-    .field( "15 repos" );
-  let config = TableConfig::plain().caption( caption );
+  let caption = Heading::new( "Needs Review" )
+    .with_field( "28 PRs" )
+    .with_field( "15 repos" );
+  let config = TableConfig::plain().with_heading( caption );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view() )
     .unwrap_or_default();
@@ -79,50 +81,50 @@ fn caption_fields_joined_by_separator_fc2()
   );
 }
 
-// --- FC-3: caption line fills to terminal width with rule chars ---
+// --- FC-3: caption line fills to rendered table width with rule chars ---
 //
-// Given: TableConfig::plain().terminal_width(Some(60)).caption(TableCaption::new("T").field("F"))
-// When: table formatted
-// Then: first line (caption) has exactly 60 display columns (.chars().count() == 60)
+// Given: TableConfig::plain() with .with_heading(Heading::new("AB"))
+// When: two_col_view() formatted (table_width = 10; columns [5,3], sep=2)
+// Then: first line (caption) has exactly 10 display columns (.chars().count() == 10)
+// used = 3(lead) + 1(space) + 2("AB") + 1(space) = 7; trail = 10 - 7 = 3
 
-/// FC-3 — `feature/007`: caption line fills exactly to the resolved terminal width.
+/// FC-3 — `feature/007`: caption line fills exactly to the rendered table width.
 // test_kind: standard
 #[ test ]
-fn caption_fills_to_terminal_width_fc3()
+fn caption_fills_to_table_width_fc3()
 {
-  let caption = TableCaption::new( "T" ).field( "F" );
-  let config = TableConfig::plain()
-    .terminal_width( Some( 60 ) )
-    .caption( caption );
+  let caption = Heading::new( "AB" );
+  let config = TableConfig::plain().with_heading( caption );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view() )
     .unwrap_or_default();
 
   let caption_line = output.lines().next().unwrap_or( "" );
   let char_count = caption_line.chars().count();
+  // table_width for two_col_view + plain = 5+3+2 = 10
   assert_eq!(
-    char_count, 60,
-    "caption line must be exactly 60 chars (use .chars().count() — '─' is 3 UTF-8 bytes); \
+    char_count, 10,
+    "caption line must be exactly 10 chars (rendered table width); \
      got {char_count} chars: '{caption_line}'",
   );
 }
 
-// --- FT-4: caption content exactly fills terminal width — trailing rule clamped to zero ---
+// --- FT-4: caption content exactly fills table width — trailing rule clamped to zero ---
 //
-// Given: TableConfig::plain().terminal_width(Some(20)).caption(TableCaption::new("Caption Exactly"))
-// title = "Caption Exactly" (15 chars); lead=3, space=1, content=15, space=1 → used=20=tw → trail=0
+// Given: TableConfig::plain() with .with_heading(Heading::new("Abcde"))
+// two_col_view() table_width = 10; title = "Abcde" (5 chars)
+// used = 3(lead) + 1(space) + 5("Abcde") + 1(space) = 10 = table_width → trail = 0
 // When: table formatted
-// Then: caption line ends with space (not '─'); char count == 20; no trailing rule emitted
+// Then: caption line ends with space (not '─'); char count == 10; no trailing rule emitted
 
-/// FT-4 — `feature/007`: when caption content exactly equals terminal width, no trailing rule is emitted.
+/// FT-4 — `feature/007`: when caption content exactly equals table width, no trailing rule is emitted.
 // test_kind: standard
 #[ test ]
-fn caption_content_equals_terminal_width_no_trailing_rule_ft4()
+fn caption_content_equals_table_width_no_trailing_rule_ft4()
 {
-  // "Caption Exactly" = 15 chars; used = 3 + 1 + 15 + 1 = 20 = terminal_width
+  // "Abcde" = 5 chars; used = 3 + 1 + 5 + 1 = 10 = table_width
   let config = TableConfig::plain()
-    .terminal_width( Some( 20 ) )
-    .caption( TableCaption::new( "Caption Exactly" ) );
+    .with_heading( Heading::new( "Abcde" ) );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view() )
     .unwrap_or_default();
@@ -130,32 +132,32 @@ fn caption_content_equals_terminal_width_no_trailing_rule_ft4()
   let caption_line = output.lines().next().unwrap_or( "" );
 
   assert_eq!(
-    caption_line.chars().count(), 20,
-    "caption line must be exactly 20 chars when content fills terminal; got {}: '{caption_line}'",
+    caption_line.chars().count(), 10,
+    "caption line must be exactly 10 chars when content fills table width; got {}: '{caption_line}'",
     caption_line.chars().count(),
   );
   assert!(
     !caption_line.ends_with( '─' ),
-    "no trailing rule when content exactly fills terminal width; got: '{caption_line}'",
+    "no trailing rule when content exactly fills table width; got: '{caption_line}'",
   );
 }
 
-// --- FT-7: title string longer than terminal width — content not truncated, no trailing rule ---
+// --- FT-7: title string longer than table width — content not truncated, no trailing rule ---
 //
-// Given: TableConfig::plain().terminal_width(Some(10)).caption(TableCaption::new("A very long title"))
-// title = "A very long title" (17 chars); lead=3, space=1, title=17, space=1 → used=22 > tw=10 → trail=0
+// Given: TableConfig::plain() with .with_heading(Heading::new("A very long title"))
+// two_col_view() table_width = 10; title = "A very long title" (17 chars)
+// used = 3+1+17+1 = 22 > table_width = 10 → trail = 0
 // When: table formatted
 // Then: caption starts with "─── ", does NOT end with '─', and title appears verbatim (no truncation)
 
-/// FT-7 — `feature/007`: title longer than terminal width — content emitted verbatim, no trailing rule.
+/// FT-7 — `feature/007`: title longer than table width — content emitted verbatim, no trailing rule.
 // test_kind: standard
 #[ test ]
-fn caption_title_exceeds_terminal_width_no_trailing_rule_ft7()
+fn caption_title_exceeds_table_width_no_trailing_rule_ft7()
 {
-  let long_title = "A very long title"; // 17 chars; with lead=4 total used=22 > terminal_width=10
+  let long_title = "A very long title"; // 17 chars; used = 3+1+17+1 = 22 > table_width = 10
   let config = TableConfig::plain()
-    .terminal_width( Some( 10 ) )
-    .caption( TableCaption::new( long_title ) );
+    .with_heading( Heading::new( long_title ) );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view() )
     .unwrap_or_default();
@@ -167,10 +169,10 @@ fn caption_title_exceeds_terminal_width_no_trailing_rule_ft7()
     caption_line.starts_with( "─── " ),
     "caption must begin with lead prefix '─── '; got: '{caption_line}'",
   );
-  // No trailing rule when content exceeds terminal width
+  // No trailing rule when content exceeds table width
   assert!(
     !caption_line.ends_with( '─' ),
-    "no trailing rule when title exceeds terminal width; got: '{caption_line}'",
+    "no trailing rule when title exceeds table width; got: '{caption_line}'",
   );
   // Content not truncated — full title appears verbatim
   assert!(
@@ -181,10 +183,11 @@ fn caption_title_exceeds_terminal_width_no_trailing_rule_ft7()
 
 // --- FT-8: empty title — lead rule emitted, no separator, trailing rule fills rest ---
 //
-// Given: TableConfig::plain().terminal_width(Some(20)).caption(TableCaption::new(""))
-// title = "" (0 chars), no fields; content_str() = ""; used = 3+1+0+1=5; trail = 15
+// Given: TableConfig::plain() with .with_heading(Heading::new(""))
+// two_col_view() table_width = 10; title = "" (0 chars), no fields; content_str() = ""
+// used = 3+1+0+1 = 5; trail = 10-5 = 5
 // When: table formatted
-// Then: caption starts with "─── ", no '·' separator, char count == 20, no panic
+// Then: caption starts with "─── ", no '·' separator, char count == 10, no panic
 
 /// FT-8 — `feature/007`: empty title produces lead rule and trailing fill with no field separator.
 // test_kind: standard
@@ -192,8 +195,7 @@ fn caption_title_exceeds_terminal_width_no_trailing_rule_ft7()
 fn caption_empty_title_lead_only_no_separator_ft8()
 {
   let config = TableConfig::plain()
-    .terminal_width( Some( 20 ) )
-    .caption( TableCaption::new( "" ) );
+    .with_heading( Heading::new( "" ) );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view() )
     .unwrap_or_default();
@@ -210,30 +212,30 @@ fn caption_empty_title_lead_only_no_separator_ft8()
     !caption_line.contains( '·' ),
     "no '·' separator must appear for empty-title caption; got: '{caption_line}'",
   );
-  // Total width = terminal_width (lead + 2 spaces + trail)
+  // Total width = table_width (lead + 2 spaces + trail)
   assert_eq!(
-    caption_line.chars().count(), 20,
-    "empty-title caption must fill to exactly 20 chars; got {}: '{caption_line}'",
+    caption_line.chars().count(), 10,
+    "empty-title caption must fill to exactly table_width (10) chars; got {}: '{caption_line}'",
     caption_line.chars().count(),
   );
 }
 
-// --- FC-4: trailing rule clamped to zero when caption content exceeds terminal width ---
+// --- FC-4: trailing rule clamped to zero when caption content exceeds table width ---
 //
-// Given: TableConfig::plain().terminal_width(Some(10)).caption(TableCaption::new("LongTitleText"))
+// Given: TableConfig::plain() with .with_heading(Heading::new("LongTitleText"))
+// two_col_view() table_width = 10; title = "LongTitleText" (13 chars)
+// used = 3+1+13+1 = 18 > table_width = 10 → trail = 0
 // When: table formatted
 // Then: caption line starts with "─── " but does NOT end with '─' (no trailing rule emitted)
 
-/// FC-4 — `feature/007`: trailing rule clamped to zero when caption content fills or exceeds terminal width.
+/// FC-4 — `feature/007`: trailing rule clamped to zero when caption content fills or exceeds table width.
 // test_kind: standard
 #[ test ]
 fn caption_trail_clamped_to_zero_when_content_too_wide_fc4()
 {
-  // title is 13 chars; lead is 4 chars ("─── "); content alone (4+13) already exceeds terminal_width=10
-  // trail_width = max(0, 10 - 4 - 13 - 1) = max(0, -8) = 0
+  // title is 13 chars; used = 3+1+13+1 = 18 > table_width = 10; trail = 0
   let config = TableConfig::plain()
-    .terminal_width( Some( 10 ) )
-    .caption( TableCaption::new( "LongTitleText" ) );
+    .with_heading( Heading::new( "LongTitleText" ) );
   let output = TableFormatter::with_config( config )
     .format( &two_col_view() )
     .unwrap_or_default();
@@ -243,7 +245,7 @@ fn caption_trail_clamped_to_zero_when_content_too_wide_fc4()
   // When trail_width is clamped to 0, no rule char appears at the end of the line
   assert!(
     !caption_line.ends_with( '─' ),
-    "when content fills terminal width, caption must not end with rule char; got: '{caption_line}'",
+    "when content fills table width, caption must not end with rule char; got: '{caption_line}'",
   );
   // Lead prefix is always emitted regardless of width
   assert!(
@@ -254,7 +256,7 @@ fn caption_trail_clamped_to_zero_when_content_too_wide_fc4()
 
 // --- FC-5: no-caption config produces identical output to current behavior ---
 //
-// Given: TableConfig::plain() without .caption(), same config without .caption()
+// Given: TableConfig::plain() without .with_heading(), same config without .with_heading()
 // When: both render the same table
 // Then: outputs are byte-identical
 
@@ -269,7 +271,7 @@ fn no_caption_output_unchanged_fc5()
     .format( &view )
     .unwrap_or_default();
 
-  // Build an identical config via a fresh constructor — no .caption() call on either
+  // Build an identical config via a fresh constructor — no .with_heading() call on either
   let output_baseline = TableFormatter::with_config( TableConfig::plain() )
     .format( &view )
     .unwrap_or_default();
@@ -287,7 +289,7 @@ fn no_caption_output_unchanged_fc5()
 
 // --- FC-6: caption renders before top border for grid and unicode_box styles ---
 //
-// Given: TableConfig::grid() with .caption(TableCaption::new("Grid Table"))
+// Given: TableConfig::grid() with .with_heading(Heading::new("Grid Table"))
 // When: table formatted
 // Then: first line is the caption line (starts with "─── Grid Table"); second line is top border
 
@@ -298,7 +300,7 @@ fn caption_before_top_border_grid_fc6()
 {
   // --- grid style ---
   let config_grid = TableConfig::grid()
-    .caption( TableCaption::new( "Grid Table" ) );
+    .with_heading( Heading::new( "Grid Table" ) );
   let output_grid = TableFormatter::with_config( config_grid )
     .format( &two_col_view() )
     .unwrap_or_default();
@@ -318,7 +320,7 @@ fn caption_before_top_border_grid_fc6()
 
   // --- unicode_box style ---
   let config_uni = TableConfig::unicode_box()
-    .caption( TableCaption::new( "Grid Table" ) );
+    .with_heading( Heading::new( "Grid Table" ) );
   let output_uni = TableFormatter::with_config( config_uni )
     .format( &two_col_view() )
     .unwrap_or_default();
@@ -334,5 +336,415 @@ fn caption_before_top_border_grid_fc6()
   assert!(
     second_uni.starts_with( '┌' ),
     "unicode_box: second line must be the top border '┌───┐'; got: '{second_uni}'",
+  );
+}
+
+// ============================================================================
+// Invariant tests (tests/docs/invariant/005_caption.md)
+// ============================================================================
+
+/// IN-2 — `invariant/005`: heading line never exceeds rendered table width (3 scenarios).
+///
+/// (a) short title fitting within table width → char count == `table_width`
+/// (b) title exceeding table width → trailing rule absent, content verbatim
+/// (c) title exactly filling table width → no trailing rule, char count == `table_width`
+// test_kind: standard
+#[ test ]
+fn heading_line_never_exceeds_table_width_in2()
+{
+  let view = two_col_view();
+  // two_col_view() with plain(): columns [5,3], sep 2 → table_width = 10
+
+  // (a) Short title: "AB" — used = 3(lead) + 1(sp) + 2("AB") + 1(sp) = 7; trail = 3
+  let output_a = TableFormatter::with_config(
+    TableConfig::plain().with_heading( Heading::new( "AB" ) )
+  )
+  .format( &view )
+  .unwrap_or_default();
+
+  let line_a = output_a.lines().next().unwrap_or( "" );
+  assert_eq!(
+    line_a.chars().count(), 10,
+    "IN-2(a): short title heading must equal table_width (10); got {}: '{line_a}'",
+    line_a.chars().count(),
+  );
+
+  // (b) Title exceeds table width: "A very long title" (17 chars)
+  // used = 3+1+17+1 = 22 > 10 → trail = 0
+  let output_b = TableFormatter::with_config(
+    TableConfig::plain().with_heading( Heading::new( "A very long title" ) )
+  )
+  .format( &view )
+  .unwrap_or_default();
+
+  let line_b = output_b.lines().next().unwrap_or( "" );
+  assert!(
+    line_b.starts_with( "─── " ),
+    "IN-2(b): heading must start with lead prefix; got: '{line_b}'",
+  );
+  assert!(
+    !line_b.ends_with( '─' ),
+    "IN-2(b): trailing rule must be absent when content exceeds table width; got: '{line_b}'",
+  );
+  assert!(
+    line_b.contains( "A very long title" ),
+    "IN-2(b): content must not be truncated; got: '{line_b}'",
+  );
+
+  // (c) Title exactly fills table width: "Abcde" → used = 3+1+5+1 = 10 = table_width
+  let output_c = TableFormatter::with_config(
+    TableConfig::plain().with_heading( Heading::new( "Abcde" ) )
+  )
+  .format( &view )
+  .unwrap_or_default();
+
+  let line_c = output_c.lines().next().unwrap_or( "" );
+  assert_eq!(
+    line_c.chars().count(), 10,
+    "IN-2(c): exact-fit heading must equal table_width (10); got {}: '{line_c}'",
+    line_c.chars().count(),
+  );
+  assert!(
+    !line_c.ends_with( '─' ),
+    "IN-2(c): no trailing rule when content exactly fills table width; got: '{line_c}'",
+  );
+}
+
+// ============================================================================
+// Example binary tests (tests/docs/feature/007_table_caption.md — FT-9)
+// ============================================================================
+
+/// FT-9 — `feature/007`: heading example binaries compile and produce visible output.
+///
+/// Builds and runs `heading_basic` and `heading_styles` examples; asserts exit 0,
+/// non-empty stdout with at least one `─── ` lead prefix; `heading_styles` must
+/// produce at least 3 heading lines.
+// test_kind: standard
+#[ test ]
+fn heading_example_binaries_compile_and_produce_output_ft9()
+{
+  let manifest_dir = env!( "CARGO_MANIFEST_DIR" );
+
+  for ( name, min_headings ) in [ ( "heading_basic", 1 ), ( "heading_styles", 3 ) ]
+  {
+    let output = std::process::Command::new( "cargo" )
+      .args( [ "run", "--example", name, "--features", "enabled" ] )
+      .current_dir( manifest_dir )
+      .output()
+      .unwrap_or_else( | e | panic!( "FT-9: failed to spawn cargo run --example {name}: {e}" ) );
+
+    assert!(
+      output.status.success(),
+      "FT-9: `cargo run --example {name}` must exit 0; status={:?}\nstderr:\n{}",
+      output.status,
+      String::from_utf8_lossy( &output.stderr ),
+    );
+
+    let stdout = String::from_utf8_lossy( &output.stdout );
+    assert!(
+      !stdout.is_empty(),
+      "FT-9: {name} must produce non-empty stdout",
+    );
+
+    let lead = "─── ";
+    let heading_count = stdout.lines().filter( | l | l.contains( lead ) ).count();
+    assert!(
+      heading_count >= min_headings,
+      "FT-9: {name} must contain at least {min_headings} heading line(s) with '{lead}'; found {heading_count}\nstdout:\n{stdout}",
+    );
+  }
+}
+
+// ============================================================================
+// Corner-case manual tests
+// ============================================================================
+
+/// Helper: measure terminal display width of a string (ANSI-free path).
+/// CJK chars = 2 columns; ASCII = 1 column; '─' (U+2500) = 1 column.
+fn display_width( s : &str ) -> usize
+{
+  use unicode_width::UnicodeWidthChar;
+  s.chars().map( | c | c.width().unwrap_or( 0 ) ).sum()
+}
+
+/// Corner case: CJK characters in heading title.
+///
+/// CJK chars are 2 display columns wide. The heading line display width
+/// must match the table body display width. This verifies that heading
+/// width arithmetic uses display columns, not char count.
+// test_kind: bug_reproducer(BUG-016)
+#[ test ]
+fn heading_cjk_title_display_width_matches_table_body()
+{
+  let view = two_col_view();
+  // plain: columns [5,3], sep=2 → table_width = 10 display columns
+
+  let config = TableConfig::plain()
+    .with_heading( Heading::new( "中" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let lines : Vec< &str > = output.lines().collect();
+  assert!(
+    lines.len() >= 2,
+    "must have at least heading + header row; got {} lines",
+    lines.len(),
+  );
+
+  let heading_dw = display_width( lines[ 0 ] );
+  let header_dw  = display_width( lines[ 1 ] );
+
+  // Heading display width must equal table body display width (both = 10)
+  assert_eq!(
+    heading_dw, header_dw,
+    "heading display width ({heading_dw}) must match data row display width ({header_dw})\n\
+     heading: {:?}\n header:  {:?}\nfull output:\n{output}",
+    lines[ 0 ], lines[ 1 ],
+  );
+}
+
+/// Corner case: newline in heading title must NOT produce multi-line heading.
+///
+/// The invariant IN-3 says heading always occupies exactly one output line.
+/// If the title contains '\n', the heading must sanitize it (replace with space
+/// or strip) so the output has exactly one heading line before the table body.
+// test_kind: bug_reproducer(BUG-016)
+#[ test ]
+fn heading_newline_in_title_produces_single_line()
+{
+  let view = two_col_view();
+  let config = TableConfig::plain()
+    .with_heading( Heading::new( "Line1\nLine2" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let lines : Vec< &str > = output.lines().collect();
+  // First line must be heading, second must be data header "Name ..."
+  assert!(
+    lines[ 0 ].starts_with( "─── " ),
+    "first line must be heading; got: {:?}",
+    lines[ 0 ],
+  );
+  assert!(
+    lines[ 1 ].contains( "Name" ),
+    "second line must be header row; got: {:?}\nfull:\n{output}",
+    lines[ 1 ],
+  );
+  // The title content should appear on the heading line (sanitized)
+  assert!(
+    lines[ 0 ].contains( "Line1" ) && lines[ 0 ].contains( "Line2" ),
+    "heading line must contain both parts of the title; got: {:?}",
+    lines[ 0 ],
+  );
+}
+
+/// Corner case: newline in heading field must NOT produce multi-line heading.
+// test_kind: bug_reproducer(BUG-016)
+#[ test ]
+fn heading_newline_in_field_produces_single_line()
+{
+  let view = two_col_view();
+  let config = TableConfig::plain()
+    .with_heading( Heading::new( "Title" ).with_field( "F1\nF2" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let lines : Vec< &str > = output.lines().collect();
+  assert!(
+    lines[ 0 ].starts_with( "─── " ),
+    "first line must be heading; got: {:?}",
+    lines[ 0 ],
+  );
+  assert!(
+    lines[ 1 ].contains( "Name" ),
+    "second line must be header row; got: {:?}\nfull:\n{output}",
+    lines[ 1 ],
+  );
+}
+
+/// Corner case: single-column table with heading — heading wider than table body.
+///
+/// When the table is very narrow (e.g., single short column), the heading content
+/// may exceed `table_width`. Per spec: trail clamped to 0, content not truncated.
+/// No panic. The heading line is simply wider than the table body.
+#[ test ]
+fn heading_on_single_column_narrow_table()
+{
+  let view = RowBuilder::new( vec![ "H".into() ] )
+    .add_row( vec![ "x".into() ] )
+    .build_view();
+
+  // table_width for plain single-column: max(1,1) = 1
+  let config = TableConfig::plain()
+    .with_heading( Heading::new( "Title" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let lines : Vec< &str > = output.lines().collect();
+  // Heading line should start with lead prefix
+  assert!(
+    lines[ 0 ].starts_with( "─── " ),
+    "heading on narrow table must still render lead prefix; got: {:?}",
+    lines[ 0 ],
+  );
+  // Title must appear verbatim (not truncated)
+  assert!(
+    lines[ 0 ].contains( "Title" ),
+    "title must not be truncated; got: {:?}",
+    lines[ 0 ],
+  );
+  // No trailing rule (content exceeds table width)
+  assert!(
+    !lines[ 0 ].ends_with( '─' ),
+    "no trailing rule on narrow table; got: {:?}",
+    lines[ 0 ],
+  );
+}
+
+/// Corner case: heading with empty field produces valid output.
+///
+/// `Heading::new("T").with_field("")` should render without crash.
+/// The empty field appends " · " but no field text.
+#[ test ]
+fn heading_with_empty_field_no_crash()
+{
+  let view = two_col_view();
+  let config = TableConfig::plain()
+    .with_heading( Heading::new( "T" ).with_field( "" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let caption_line = output.lines().next().unwrap_or( "" );
+  assert!(
+    caption_line.starts_with( "─── " ),
+    "empty field must not crash; got: {caption_line:?}",
+  );
+  // Field separator must be present (even with empty field content)
+  assert!(
+    caption_line.contains( '·' ),
+    "field separator must appear even for empty field; got: {caption_line:?}",
+  );
+}
+
+/// Corner case: heading with many fields exceeding table width.
+///
+/// When content exceeds table width, trail = 0, heading is wider than table body.
+#[ test ]
+fn heading_many_fields_exceeding_table_width()
+{
+  let view = two_col_view(); // table_width = 10
+  let config = TableConfig::plain()
+    .with_heading(
+      Heading::new( "T" )
+        .with_field( "field_one" )
+        .with_field( "field_two" )
+        .with_field( "field_three" )
+    );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let caption_line = output.lines().next().unwrap_or( "" );
+  // All fields must appear (no truncation)
+  assert!(
+    caption_line.contains( "field_one" ),
+    "field_one must appear; got: {caption_line:?}",
+  );
+  assert!(
+    caption_line.contains( "field_three" ),
+    "field_three must appear; got: {caption_line:?}",
+  );
+  // No trailing rule when content exceeds table width
+  assert!(
+    !caption_line.ends_with( '─' ),
+    "no trailing rule when fields exceed table width; got: {caption_line:?}",
+  );
+}
+
+/// Corner case: heading on bordered table — heading width matches bordered body width.
+// test_kind: bug_reproducer(BUG-017)
+#[ test ]
+fn heading_on_bordered_table_display_width_matches()
+{
+  let view = two_col_view();
+  let config = TableConfig::bordered()
+    .with_heading( Heading::new( "AB" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let lines : Vec< &str > = output.lines().filter( | l | !l.is_empty() ).collect();
+  assert!(
+    lines.len() >= 3,
+    "bordered with heading must have at least 3 lines; got {}",
+    lines.len(),
+  );
+
+  let heading_dw = display_width( lines[ 0 ] );
+  // Find a data/border line to compare width
+  let body_dw = display_width( lines[ 1 ] );
+
+  assert_eq!(
+    heading_dw, body_dw,
+    "heading display width ({heading_dw}) must match bordered body display width ({body_dw})\n\
+     heading: {:?}\n body:    {:?}\nfull:\n{output}",
+    lines[ 0 ], lines[ 1 ],
+  );
+}
+
+/// Corner case: heading on csv table — heading is emitted (design choice).
+///
+/// CSV tables are not display-formatted, so heading width matching is not enforced.
+/// This test just verifies no panic and that heading appears.
+#[ test ]
+fn heading_on_csv_table_no_crash()
+{
+  let view = two_col_view();
+  let config = TableConfig::csv()
+    .with_heading( Heading::new( "CSV Title" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let first_line = output.lines().next().unwrap_or( "" );
+  assert!(
+    first_line.starts_with( "─── CSV Title" ),
+    "heading must appear on csv table; got: {first_line:?}",
+  );
+}
+
+/// Corner case: heading + `min_column_width` changes `table_width`.
+///
+/// Floor enforcement increases column widths, which increases `table_width`.
+/// The heading trail must fill to the new (wider) `table_width`.
+#[ test ]
+fn heading_with_min_column_width_fills_to_wider_table()
+{
+  let view = RowBuilder::new( vec![ "H".into() ] )
+    .add_row( vec![ "x".into() ] )
+    .build_view();
+
+  // Without min: table_width = 1 (single col, content "H" or "x" → 1 char)
+  // With min=20: table_width = 20
+  let config = TableConfig::plain()
+    .with_min_column_width( 20 )
+    .with_heading( Heading::new( "T" ) );
+  let output = TableFormatter::with_config( config )
+    .format( &view )
+    .unwrap_or_default();
+
+  let caption_line = output.lines().next().unwrap_or( "" );
+  let caption_chars = caption_line.chars().count();
+
+  // table_width = 20; used = 3+1+1+1 = 6; trail = 14
+  // heading should be exactly 20 chars
+  assert_eq!(
+    caption_chars, 20,
+    "heading must fill to min_column_width-expanded table_width (20); got {caption_chars}: {caption_line:?}",
   );
 }

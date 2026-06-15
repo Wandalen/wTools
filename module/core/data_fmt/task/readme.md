@@ -10,6 +10,7 @@
 
 | File | Responsibility |
 |------|----------------|
+| `unverified/` | New task files awaiting MAAV Verification Gate |
 | `actors/` | Actors registry (executor records) |
 | `action_plan/` | Per-actor action plans |
 | `bug/` | Bug tracking files (BUG-NNN) for all reported and resolved defects |
@@ -29,3 +30,6 @@
 | 5 | 005 | 126 | 6 | 7 | 8 | 3 | ✅ (Completed) | any | [Read $COLUMNS env var as terminal-width fallback](completed/005_columns_env_fallback.md) | resolve_terminal_width must check $COLUMNS before falling back to terminal_size or 120 |
 | 6 | 006 | 72 | 4 | 9 | 9 | 2 | ✅ (Completed) | any | [Bundle terminal_size into format_table_visual feature](completed/006_terminal_size_feature_bundle.md) | add dep:terminal_size to format_table_visual Cargo feature so it is self-contained |
 | 7 | 007 | 168 | 7 | 6 | 8 | 4 | ✅ (Completed) | any | [Implement TableCaption titled rule above table](completed/007_table_caption.md) | add TableCaption type and TableConfig::caption() builder for titled rule before table output |
+| 8 | 008 | — | 8 | 6 | 9 | — | ✅ (Completed) | dev | [Fix caption width: fill to rendered table width](completed/008_fix_caption_width.md) | render_caption_if_present must fill to compute_total_row_width(primary_widths), not resolve_terminal_width() |
+| 9 | 009 | — | 7 | 5 | 8 | — | ✅ (Completed) | dev | [API consistency: with_ prefix sweep + rename Heading](completed/009_api_consistency_with_prefix.md) | add with_ prefix to all 39 config builder setters; rename TableCaption → Heading |
+| 10 | 010 | — | 5 | 8 | 9 | — | ✅ (Completed) | dev | [Add Heading feature examples](completed/010_heading_examples.md) | add heading_basic.rs and heading_styles.rs example binaries (E criterion) |

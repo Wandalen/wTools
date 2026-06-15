@@ -293,7 +293,7 @@ fn test_t015_n07_min_column_width_with_cjk_content()
     .build_view();
 
   let output = TableFormatter::with_config(
-    TableConfig::plain().min_column_width( 5 )
+    TableConfig::plain().with_min_column_width( 5 )
   ).format( &tree ).unwrap_or_default();
 
   let header_line = output.lines().find( | l | l.contains( 'H' ) )

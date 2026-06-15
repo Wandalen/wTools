@@ -86,8 +86,8 @@ fn test_truncate_long_cell_basic()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 20 ) )
-    .truncation_marker( "...".to_string() );
+    .with_max_column_width( Some( 20 ) )
+    .with_truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -110,8 +110,8 @@ fn test_no_truncation_when_fits()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 20 ) )
-    .truncation_marker( "...".to_string() );
+    .with_max_column_width( Some( 20 ) )
+    .with_truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -137,8 +137,8 @@ fn test_truncation_exact_fit()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 20 ) )
-    .truncation_marker( "...".to_string() );
+    .with_max_column_width( Some( 20 ) )
+    .with_truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -156,8 +156,8 @@ fn test_truncation_one_over_limit()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 20 ) )
-    .truncation_marker( "...".to_string() );
+    .with_max_column_width( Some( 20 ) )
+    .with_truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -182,8 +182,8 @@ fn test_truncation_preserves_ansi_codes()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 15 ) )
-    .truncation_marker( "...".to_string() );
+    .with_max_column_width( Some( 15 ) )
+    .with_truncation_marker( "...".to_string() );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -217,7 +217,7 @@ fn test_truncation_multiple_ansi_codes()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 15 ) );
+    .with_max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -244,7 +244,7 @@ fn test_truncation_empty_string()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 20 ) );
+    .with_max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -262,8 +262,8 @@ fn test_truncation_marker_longer_than_limit()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 5 ) )
-    .truncation_marker( "...TRUNCATED".to_string() );  // 12 chars, longer than limit
+    .with_max_column_width( Some( 5 ) )
+    .with_truncation_marker( "...TRUNCATED".to_string() );  // 12 chars, longer than limit
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -281,7 +281,7 @@ fn test_truncation_very_small_limit()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 1 ) );
+    .with_max_column_width( Some( 1 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -299,7 +299,7 @@ fn test_truncation_unicode_characters()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 15 ) );
+    .with_max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -323,7 +323,7 @@ fn test_truncation_with_bordered_style()
     .build_view();
 
   let config = TableConfig::bordered()
-    .max_column_width( Some( 20 ) );
+    .with_max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -345,7 +345,7 @@ fn test_truncation_with_markdown_style()
     .build_view();
 
   let config = TableConfig::markdown()
-    .max_column_width( Some( 20 ) );
+    .with_max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -363,7 +363,7 @@ fn test_truncation_with_grid_style()
     .build_view();
 
   let config = TableConfig::grid()
-    .max_column_width( Some( 20 ) );
+    .with_max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -385,7 +385,7 @@ fn test_truncation_with_csv_style()
     .build_view();
 
   let config = TableConfig::csv()
-    .max_column_width( Some( 20 ) );
+    .with_max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -411,7 +411,7 @@ fn test_truncation_multiple_columns()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 15 ) );
+    .with_max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -441,7 +441,7 @@ fn test_truncation_headers_and_data()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 15 ) );
+    .with_max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -470,8 +470,8 @@ fn test_truncation_custom_marker()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 20 ) )
-    .truncation_marker( " [more]".to_string() );
+    .with_max_column_width( Some( 20 ) )
+    .with_truncation_marker( " [more]".to_string() );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -489,8 +489,8 @@ fn test_truncation_empty_marker()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 20 ) )
-    .truncation_marker( String::new() );
+    .with_max_column_width( Some( 20 ) )
+    .with_truncation_marker( String::new() );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();

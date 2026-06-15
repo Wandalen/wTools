@@ -222,7 +222,7 @@ impl TableFormatter
     let primary_headers : &[ String ] = &headers[ ..fold_point ];
 
     // Caption titled rule — rendered before top border when present
-    self.render_caption_if_present( &mut output );
+    self.render_caption_if_present( &mut output, self.compute_total_row_width( primary_widths ) );
 
     // Top border (AsciiGrid / Unicode only)
     self.format_top_border_if_needed( &mut output, primary_widths );

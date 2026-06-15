@@ -27,7 +27,7 @@
 ### IN-1: auto_wrap=false produces byte-identical output to pre-wrap rendering
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::plain().auto_wrap(false).terminal_width(Some(40))`; a second uses
+  `TableConfig::plain().with_auto_wrap(false).with_terminal_width(Some(40))`; a second uses
   `TableConfig::plain()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
@@ -57,7 +57,7 @@
 ### IN-3: unicode_box preset with auto_wrap=false produces byte-identical output
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::unicode_box().auto_wrap(false).terminal_width(Some(40))`; a second
+  `TableConfig::unicode_box().with_auto_wrap(false).with_terminal_width(Some(40))`; a second
   uses `TableConfig::unicode_box()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
@@ -73,7 +73,7 @@
 ### IN-4: markdown preset with auto_wrap=false produces byte-identical output
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::markdown().auto_wrap(false).terminal_width(Some(40))`; a second
+  `TableConfig::markdown().with_auto_wrap(false).with_terminal_width(Some(40))`; a second
   uses `TableConfig::markdown()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
@@ -87,7 +87,7 @@
 ### IN-5: minimal preset with auto_wrap=false produces byte-identical output
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::minimal().auto_wrap(false).terminal_width(Some(40))`; a second uses
+  `TableConfig::minimal().with_auto_wrap(false).with_terminal_width(Some(40))`; a second uses
   `TableConfig::minimal()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
@@ -101,7 +101,7 @@
 ### IN-6: bordered preset with auto_wrap=false produces byte-identical output
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::bordered().auto_wrap(false).terminal_width(Some(40))`; a second uses
+  `TableConfig::bordered().with_auto_wrap(false).with_terminal_width(Some(40))`; a second uses
   `TableConfig::bordered()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
@@ -116,7 +116,7 @@
 ### IN-7: grid preset with auto_wrap=false produces byte-identical output
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::grid().auto_wrap(false).terminal_width(Some(40))`; a second uses
+  `TableConfig::grid().with_auto_wrap(false).with_terminal_width(Some(40))`; a second uses
   `TableConfig::grid()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
@@ -130,7 +130,7 @@
 ### IN-8: csv preset with auto_wrap=false produces byte-identical output
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::csv().auto_wrap(false).terminal_width(Some(40))`; a second uses
+  `TableConfig::csv().with_auto_wrap(false).with_terminal_width(Some(40))`; a second uses
   `TableConfig::csv()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
@@ -146,7 +146,7 @@
 ### IN-9: tsv preset with auto_wrap=false produces byte-identical output
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::tsv().auto_wrap(false).terminal_width(Some(40))`; a second uses
+  `TableConfig::tsv().with_auto_wrap(false).with_terminal_width(Some(40))`; a second uses
   `TableConfig::tsv()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the
@@ -162,7 +162,7 @@
 ### IN-10: compact preset with auto_wrap=false produces byte-identical output
 
 - **Given:** A table with cell content; one `TableFormatter` uses
-  `TableConfig::compact().auto_wrap(false).terminal_width(Some(40))`; a second uses
+  `TableConfig::compact().with_auto_wrap(false).with_terminal_width(Some(40))`; a second uses
   `TableConfig::compact()` with no `auto_wrap` or `terminal_width` override.
 - **When:** Both formatters render the same table data.
 - **Then:** The output of the `auto_wrap=false` formatter is byte-identical to the

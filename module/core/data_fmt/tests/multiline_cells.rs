@@ -498,7 +498,7 @@ fn test_multiline_with_truncation()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 20 ) );
+    .with_max_column_width( Some( 20 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -520,7 +520,7 @@ fn test_multiline_each_line_truncated_independently()
     .build_view();
 
   let config = TableConfig::plain()
-    .max_column_width( Some( 15 ) );
+    .with_max_column_width( Some( 15 ) );
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &data ).unwrap_or_default();
@@ -704,7 +704,7 @@ fn truncation_marker_on_last_sub_line_ac9()
     .add_row( vec![ "line1\nline2\nline3".into() ] )
     .build_view();
 
-  let config = TableConfig::plain().max_column_width( Some( 4 ) );
+  let config = TableConfig::plain().with_max_column_width( Some( 4 ) );
   let output = TableFormatter::with_config( config )
     .format( &view )
     .expect( "formatting must not fail" );

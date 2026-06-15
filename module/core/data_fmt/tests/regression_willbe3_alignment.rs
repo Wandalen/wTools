@@ -114,7 +114,7 @@ fn test_reproduce_willbe3_alignment_issue()
   let tree = build_willbe3_crate_tree();
 
   let config = TreeConfig::new()
-    .column_separator( "  ".to_string() );
+    .with_column_separator( "  ".to_string() );
   let formatter = TreeFormatter::with_config( config );
 
   let output = formatter.format_aligned( &tree );
@@ -221,7 +221,7 @@ fn test_manual_inspection_willbe3_format()
   let tree = build_willbe3_crate_tree();
 
   let config = TreeConfig::new()
-    .column_separator( "  ".to_string() );
+    .with_column_separator( "  ".to_string() );
   let formatter = TreeFormatter::with_config( config );
 
   let output = formatter.format_aligned( &tree );

@@ -236,8 +236,8 @@ fn test_expanded_formatter_with_colored_keys()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .colorize_keys( true )
-      .key_color( "\x1b[90m".into() )
+      .with_colorize_keys( true )
+      .with_key_color( "\x1b[90m".into() )
   );
 
   let output = formatter.format( &tree ).unwrap_or_default();
@@ -262,8 +262,8 @@ fn test_expanded_formatter_custom_color()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .colorize_keys( true )
-      .key_color( "\x1b[34m".to_string() )  // Blue
+      .with_colorize_keys( true )
+      .with_key_color( "\x1b[34m".to_string() )  // Blue
   );
 
   let output = formatter.format( &tree ).unwrap_or_default();
@@ -286,7 +286,7 @@ fn test_expanded_formatter_color_disabled_explicitly()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .colorize_keys( false )  // Explicitly disabled
+      .with_colorize_keys( false )  // Explicitly disabled
   );
 
   let output = formatter.format( &tree ).unwrap_or_default();
@@ -308,7 +308,7 @@ fn test_expanded_formatter_property_style_basic()
 
   // property_style() now has colors by default - disable for plain output testing
   let formatter = ExpandedFormatter::with_config(
-    ExpandedConfig::property_style().colorize_keys( false )
+    ExpandedConfig::property_style().with_colorize_keys( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -329,7 +329,7 @@ fn test_expanded_formatter_property_style_alignment()
 
   // Disable colors for plain output testing
   let formatter = ExpandedFormatter::with_config(
-    ExpandedConfig::property_style().colorize_keys( false )
+    ExpandedConfig::property_style().with_colorize_keys( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -350,7 +350,7 @@ fn test_expanded_formatter_property_style_multiple_records()
 
   // Disable colors for plain output testing
   let formatter = ExpandedFormatter::with_config(
-    ExpandedConfig::property_style().colorize_keys( false )
+    ExpandedConfig::property_style().with_colorize_keys( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -370,8 +370,8 @@ fn test_expanded_formatter_property_style_with_colors()
   let formatter = ExpandedFormatter::with_config
   (
     ExpandedConfig::property_style()
-      .colorize_keys( true )
-      .key_color( "\x1b[90m".into() )
+      .with_colorize_keys( true )
+      .with_key_color( "\x1b[90m".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -390,7 +390,7 @@ fn test_expanded_formatter_property_style_no_colors()
 
   // Disable colors explicitly if needed
   let formatter = ExpandedFormatter::with_config(
-    ExpandedConfig::property_style().colorize_keys( false )
+    ExpandedConfig::property_style().with_colorize_keys( false )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -410,8 +410,8 @@ fn test_expanded_formatter_padding_side_before()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .padding_side( PaddingSide::BeforeSeparator )
-      .key_value_separator( " | ".to_string() )
+      .with_padding_side( PaddingSide::BeforeSeparator )
+      .with_key_value_separator( " | ".to_string() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -431,8 +431,8 @@ fn test_expanded_formatter_padding_side_after()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .padding_side( PaddingSide::AfterSeparator )
-      .key_value_separator( ": ".to_string() )
+      .with_padding_side( PaddingSide::AfterSeparator )
+      .with_key_value_separator( ": ".to_string() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -453,7 +453,7 @@ fn test_expanded_formatter_no_record_separator()
     .build_view();
 
   let formatter = ExpandedFormatter::with_config(
-    ExpandedConfig::new().record_separator( String::new() )
+    ExpandedConfig::new().with_record_separator( String::new() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -472,7 +472,7 @@ fn test_expanded_formatter_custom_record_separator()
     .build_view();
 
   let formatter = ExpandedFormatter::with_config(
-    ExpandedConfig::new().record_separator( "=== Entry {} ===".to_string() )
+    ExpandedConfig::new().with_record_separator( "=== Entry {} ===".to_string() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -485,12 +485,12 @@ fn test_expanded_config_builder_methods()
   use data_fmt::{ ExpandedConfig, PaddingSide };
 
   let config = ExpandedConfig::new()
-    .record_separator( "---".to_string() )
-    .key_value_separator( " = ".to_string() )
-    .show_record_numbers( false )
-    .colorize_keys( true )
-    .key_color( "\x1b[36m".to_string() )
-    .padding_side( PaddingSide::AfterSeparator );
+    .with_record_separator( "---".to_string() )
+    .with_key_value_separator( " = ".to_string() )
+    .with_show_record_numbers( false )
+    .with_colorize_keys( true )
+    .with_key_color( "\x1b[36m".to_string() )
+    .with_padding_side( PaddingSide::AfterSeparator );
 
   assert_eq!( config.record_separator, "---" );
   assert_eq!( config.key_value_separator, " = " );
@@ -519,8 +519,8 @@ fn test_expanded_colorize_keys_empty_key_color_suppresses_ansi()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .colorize_keys( true )
-      .key_color( String::new() )   // empty string: guard must block ANSI
+      .with_colorize_keys( true )
+      .with_key_color( String::new() )   // empty string: guard must block ANSI
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -538,7 +538,7 @@ fn test_expanded_colorize_keys_empty_key_color_suppresses_ansi()
 // ExpandedConfig::property_style() sets colorize_keys=true and key_color=gray.
 // Using it without overriding must produce ANSI-colored keys automatically.
 //
-// All other tests that use property_style() override .colorize_keys(false),
+// All other tests that use property_style() override .with_colorize_keys(false),
 // leaving the default ON path untested. This test closes that gap.
 // =============================================================================
 
@@ -585,8 +585,8 @@ fn test_expanded_colorized_key_reset_before_newline()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .colorize_keys( true )
-      .key_color( "\x1b[90m".into() )
+      .with_colorize_keys( true )
+      .with_key_color( "\x1b[90m".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 
@@ -629,8 +629,8 @@ fn test_expanded_colorized_keys_all_records()
 
   let formatter = ExpandedFormatter::with_config(
     ExpandedConfig::new()
-      .colorize_keys( true )
-      .key_color( "\x1b[90m".into() )
+      .with_colorize_keys( true )
+      .with_key_color( "\x1b[90m".into() )
   );
   let output = formatter.format( &tree ).unwrap_or_default();
 

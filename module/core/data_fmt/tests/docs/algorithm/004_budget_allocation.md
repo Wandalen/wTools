@@ -38,7 +38,7 @@
 ### AC-2: single flex column exceeds terminal — budget capped
 
 - **Given:** A table with one flex column whose cell content exceeds the terminal
-  width; terminal set to 80 via `TableConfig::plain().terminal_width(Some(80))`.
+  width; terminal set to 80 via `TableConfig::plain().with_terminal_width(Some(80))`.
 - **When:** Rendered with `auto_wrap=true`.
 - **Then:** The flex column's budget is capped at `terminal_width - overhead`; the
   cell content wraps to multiple sub-lines within that budget; the total visual
@@ -60,7 +60,7 @@
 ### AC-4: all-Fixed columns sum exceeds terminal — graceful overflow
 
 - **Given:** Three columns forced to `ColumnFlex::Fixed` via
-  `TableConfig::plain().column_flex(vec![ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed])`;
+  `TableConfig::plain().with_column_flex(vec![ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed])`;
   each cell contains 44+ characters so total width far exceeds `terminal_width(Some(40))`.
 - **When:** Rendered.
 - **Then:** No panic occurs; output is non-empty and contains all column content;

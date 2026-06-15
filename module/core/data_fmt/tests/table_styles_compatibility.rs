@@ -120,9 +120,9 @@ fn test_custom_separator_spaces()
 {
   let tree = sample_data();
   let config = TableConfig::new()
-    .border_variant( BorderVariant::None )
-    .header_separator_variant( HeaderSeparatorVariant::Dash )
-    .column_separator( ColumnSeparator::Spaces( 4 ) ); // 4 spaces
+    .with_border_variant( BorderVariant::None )
+    .with_header_separator_variant( HeaderSeparatorVariant::Dash )
+    .with_column_separator( ColumnSeparator::Spaces( 4 ) ); // 4 spaces
 
   let formatter = TableFormatter::with_config( config );
   let output = formatter.format( &tree ).unwrap_or_default();

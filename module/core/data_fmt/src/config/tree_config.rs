@@ -50,7 +50,7 @@ impl TreeConfig
 
   /// Set whether to show branch symbols
   #[ must_use ]
-  pub fn show_branches( mut self, show : bool ) -> Self
+  pub fn with_show_branches( mut self, show : bool ) -> Self
   {
     self.show_branches = show;
     self
@@ -58,7 +58,7 @@ impl TreeConfig
 
   /// Set whether to show root node
   #[ must_use ]
-  pub fn show_root( mut self, show : bool ) -> Self
+  pub fn with_show_root( mut self, show : bool ) -> Self
   {
     self.show_root = show;
     self
@@ -66,7 +66,7 @@ impl TreeConfig
 
   /// Set indentation size in spaces
   #[ must_use ]
-  pub fn indent_size( mut self, size : usize ) -> Self
+  pub fn with_indent_size( mut self, size : usize ) -> Self
   {
     self.indent_size = size;
     self
@@ -74,7 +74,7 @@ impl TreeConfig
 
   /// Set maximum display depth
   #[ must_use ]
-  pub fn max_depth( mut self, depth : Option< usize > ) -> Self
+  pub fn with_max_depth( mut self, depth : Option< usize > ) -> Self
   {
     self.max_depth = depth;
     self
@@ -82,7 +82,7 @@ impl TreeConfig
 
   /// Set column separator for aligned format
   #[ must_use ]
-  pub fn column_separator( mut self, separator : String ) -> Self
+  pub fn with_column_separator( mut self, separator : String ) -> Self
   {
     self.column_separator = separator;
     self
@@ -90,7 +90,7 @@ impl TreeConfig
 
   /// Set minimum column width for aligned format
   #[ must_use ]
-  pub fn min_column_width( mut self, width : usize ) -> Self
+  pub fn with_min_column_width( mut self, width : usize ) -> Self
   {
     self.min_column_width = width;
     self
@@ -98,7 +98,7 @@ impl TreeConfig
 
   /// Set ANSI color code for branch symbols
   #[ must_use ]
-  pub fn branch_color( mut self, color : impl Into< String > ) -> Self
+  pub fn with_branch_color( mut self, color : impl Into< String > ) -> Self
   {
     self.branch_color = color.into();
     self

@@ -110,8 +110,8 @@ fn main()
   let theme = ColorTheme::nord();
   let _config = theme.apply_to_table(
     TableConfig::bordered()
-      .inner_padding( 2 )
-      .min_column_width( 15 )
+      .with_inner_padding( 2 )
+      .with_min_column_width( 15 )
   );
   // Config fields are private; the theme is stored internally for future rendering.
   // Use the config to format a table to see the effect.

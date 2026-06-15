@@ -90,7 +90,7 @@ fn test_aligned_tree_custom_separator()
   ));
 
   let config = TreeConfig::new()
-    .column_separator( " | ".to_string() );
+    .with_column_separator( " | ".to_string() );
   let formatter = TreeFormatter::with_config( config );
   let output = formatter.format_aligned( &root );
 
@@ -111,7 +111,7 @@ fn test_aligned_tree_min_column_width()
   ));
 
   let config = TreeConfig::new()
-    .min_column_width( 10 );
+    .with_min_column_width( 10 );
   let formatter = TreeFormatter::with_config( config );
   let output = formatter.format_aligned( &root );
 
@@ -147,7 +147,7 @@ fn max_depth_excludes_deeper_nodes_ac6()
   root.children.push( child );
 
   // max_depth=Some(0): direct children at depth 0 are shown; grandchildren at depth 1 are not
-  let formatter = TreeFormatter::with_config( TreeConfig::new().max_depth( Some( 0 ) ) );
+  let formatter = TreeFormatter::with_config( TreeConfig::new().with_max_depth( Some( 0 ) ) );
   let output = formatter.format_aligned( &root );
 
   // Direct child must appear
@@ -179,7 +179,7 @@ fn show_root_false_hides_root_line_ac7()
     Some( ColumnData::new( vec![ "lib_b".to_string(), "v2.0".to_string() ] ) ) ) );
 
   // show_root=false is the default; root line must not appear
-  let formatter = TreeFormatter::with_config( TreeConfig::new().show_root( false ) );
+  let formatter = TreeFormatter::with_config( TreeConfig::new().with_show_root( false ) );
   let output = formatter.format_aligned( &root );
 
   // Root "project" must not appear as a standalone line
@@ -213,7 +213,7 @@ fn min_column_width_raises_short_columns_ac8()
   let out_natural = fmt_natural.format_aligned( &root );
 
   // With min_column_width=10: each column raised to ≥ 10 chars
-  let fmt_min = TreeFormatter::with_config( TreeConfig::new().min_column_width( 10 ) );
+  let fmt_min = TreeFormatter::with_config( TreeConfig::new().with_min_column_width( 10 ) );
   let out_min = fmt_min.format_aligned( &root );
 
   // The min_column_width output must be wider than the natural output
@@ -243,7 +243,7 @@ fn show_branches_false_omits_connectors_ac9()
   root.children.push( TreeNode::new( "child2".to_string(), Some( "beta".to_string() ) ) );
 
   // format() properly suppresses connector symbols when show_branches=false
-  let formatter = TreeFormatter::with_config( TreeConfig::new().show_branches( false ) );
+  let formatter = TreeFormatter::with_config( TreeConfig::new().with_show_branches( false ) );
   let output = formatter.format( &root, Clone::clone );
 
   // No connector characters in output
@@ -271,7 +271,7 @@ fn custom_column_separator_between_columns_ac10()
     Some( ColumnData::new( vec![ "name2".to_string(), "val2".to_string() ] ) ) ) );
 
   let formatter = TreeFormatter::with_config(
-    TreeConfig::new().column_separator( " | ".to_string() )
+    TreeConfig::new().with_column_separator( " | ".to_string() )
   );
   let output = formatter.format_aligned( &root );
 
@@ -299,7 +299,7 @@ fn max_depth_zero_produces_empty_output_ac11()
 
   // format() uses `depth >= max_depth` check; with max_depth=Some(0) and show_root=false,
   // children at depth 0 are excluded → no output
-  let formatter = TreeFormatter::with_config( TreeConfig::new().show_root( false ).max_depth( Some( 0 ) ) );
+  let formatter = TreeFormatter::with_config( TreeConfig::new().with_show_root( false ).with_max_depth( Some( 0 ) ) );
   let output = formatter.format( &root, u64::to_string );
 
   assert!(
@@ -328,7 +328,7 @@ fn show_root_false_with_max_depth_limits_output_ac12()
 
   // show_root=false: root hidden; max_depth=Some(0): depth-1 nodes (grandchildren) excluded
   let formatter = TreeFormatter::with_config(
-    TreeConfig::new().show_root( false ).max_depth( Some( 0 ) )
+    TreeConfig::new().with_show_root( false ).with_max_depth( Some( 0 ) )
   );
   let output = formatter.format_aligned( &root );
 

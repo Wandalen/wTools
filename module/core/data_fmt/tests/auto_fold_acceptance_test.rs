@@ -29,8 +29,8 @@ const DEFAULT_INDENT : &str = "    "; // 4 spaces — default fold_indent
 fn fold_config() -> TableConfig
 {
   TableConfig::plain()
-    .terminal_width( Some( 40 ) )
-    .column_flex( vec![
+    .with_terminal_width( Some( 40 ) )
+    .with_column_flex( vec![
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
     ] )
@@ -59,9 +59,9 @@ fn bare_fold_all_overflow_values_on_single_line_ac6()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 25 ) )
-      .fold_style( FoldStyle::Bare )
-      .column_flex( vec![
+      .with_terminal_width( Some( 25 ) )
+      .with_fold_style( FoldStyle::Bare )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
@@ -162,8 +162,8 @@ fn single_overflow_column_one_continuation_line_ac8()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 30 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 30 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
   );
@@ -263,11 +263,11 @@ fn stacked_style_one_line_per_overflow_column_ac9()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 10 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 10 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
-      .fold_style( FoldStyle::Stacked )
+      .with_fold_style( FoldStyle::Stacked )
   );
   let output = formatter.format( &view ).expect( "formatting must not fail" );
 
@@ -320,8 +320,8 @@ fn all_columns_overflow_first_stays_primary_ac10()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 5 ) )
-      .column_flex( vec![
+      .with_terminal_width( Some( 5 ) )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )
   );
@@ -369,9 +369,9 @@ fn very_narrow_terminal_folds_at_column_one_ac11()
 
   let formatter = TableFormatter::with_config(
     TableConfig::plain()
-      .terminal_width( Some( 3 ) )
-      .fold_style( FoldStyle::Stacked )
-      .column_flex( vec![
+      .with_terminal_width( Some( 3 ) )
+      .with_fold_style( FoldStyle::Stacked )
+      .with_column_flex( vec![
         ColumnFlex::Fixed, ColumnFlex::Fixed, ColumnFlex::Fixed,
         ColumnFlex::Fixed, ColumnFlex::Fixed,
       ] )

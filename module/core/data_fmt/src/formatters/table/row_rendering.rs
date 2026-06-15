@@ -184,17 +184,23 @@ impl TableFormatter
 
   /// Render the caption titled rule into `output`, or return early if no caption is set.
   ///
-  /// Format: `─── content ──────...` filling `resolve_terminal_width()` columns.
-  /// Uses `.chars().count()` (not `.len()`) because `·` and `─` are multi-byte in UTF-8.
-  pub( super ) fn render_caption_if_present( &self, output : &mut String )
+  /// Format: `─── content ──────...` filling `table_width` display columns.
+  /// Uses `unicode_visual_len` for content width (not `.chars().count()`) so that
+  /// CJK / wide characters are measured correctly at 2 display columns each.
+  pub( super ) fn render_caption_if_present( &self, output : &mut String, table_width : usize )
   {
     let Some( caption ) = self.config.caption_ref() else { return };
     let content = caption.content_str();
-    let tw = self.resolve_terminal_width();
+    let tw = table_width;
     let lead_width = crate::config::CAPTION_LEAD_WIDTH;
     let rule_char  = crate::config::CAPTION_RULE_CHAR;
-    // used = lead_width + 1 (space) + content chars + 1 (trailing space)
-    let used = lead_width + 1 + content.chars().count() + 1;
+    // Fix(BUG-015): use unicode_visual_len (display columns) instead of .chars().count().
+    // Root cause: CJK characters are 1 char but 2 display columns; .chars().count()
+    //   undercounted, making the trail too long and heading line wider than table body.
+    // Pitfall: always use unicode_visual_len for any width arithmetic that must match
+    //   what the terminal actually renders.
+    let content_dw = crate::ansi_str::unicode_visual_len( &content );
+    let used = lead_width + 1 + content_dw + 1;
     let trail = tw.saturating_sub( used );
     let lead  : String = std::iter::repeat_n( rule_char, lead_width ).collect();
     let trail_str : String = std::iter::repeat_n( rule_char, trail ).collect();

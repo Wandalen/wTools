@@ -1,7 +1,7 @@
 //! `TableConfig` and `PaddingSide` formatter parameter types
 
 use super::{ BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex, FoldStyle };
-use super::TableCaption;
+use super::Heading;
 
 /// Formatter parameters for table output
 ///
@@ -89,7 +89,7 @@ pub struct TableConfig
   /// ANSI escape code applied to every border/separator character (None = no coloring)
   border_color : Option< String >,
   /// Optional titled rule rendered above the table (None = no caption)
-  caption : Option< TableCaption >,
+  caption : Option< Heading >,
 }
 
 impl Default for TableConfig
@@ -137,7 +137,7 @@ impl TableConfig
 
   /// Set column widths (empty = auto-size)
   #[ must_use ]
-  pub fn column_widths( mut self, widths : Vec< usize > ) -> Self
+  pub fn with_column_widths( mut self, widths : Vec< usize > ) -> Self
   {
     self.column_widths = widths;
     self
@@ -145,7 +145,7 @@ impl TableConfig
 
   /// Set column alignment (true = right, false = left)
   #[ must_use ]
-  pub fn align_right( mut self, align : Vec< bool > ) -> Self
+  pub fn with_align_right( mut self, align : Vec< bool > ) -> Self
   {
     self.align_right = align;
     self
@@ -165,7 +165,7 @@ impl TableConfig
   pub fn minimal() -> Self
   {
     Self::default()
-      .header_separator_variant( HeaderSeparatorVariant::None )
+      .with_header_separator_variant(HeaderSeparatorVariant::None )
   }
 
   /// Bordered variant: traditional pipe-separated table
@@ -173,10 +173,10 @@ impl TableConfig
   pub fn bordered() -> Self
   {
     Self::default()
-      .border_variant( BorderVariant::Ascii )
-      .header_separator_variant( HeaderSeparatorVariant::AsciiGrid )
-      .column_separator( ColumnSeparator::Character( '|' ) )
-      .inner_padding( 1 )
+      .with_border_variant(BorderVariant::Ascii )
+      .with_header_separator_variant(HeaderSeparatorVariant::AsciiGrid )
+      .with_column_separator(ColumnSeparator::Character( '|' ) )
+      .with_inner_padding(1 )
   }
 
   /// Markdown variant: GitHub-flavored Markdown table
@@ -184,10 +184,10 @@ impl TableConfig
   pub fn markdown() -> Self
   {
     Self::default()
-      .border_variant( BorderVariant::Markdown )
-      .header_separator_variant( HeaderSeparatorVariant::Markdown )
-      .column_separator( ColumnSeparator::Character( '|' ) )
-      .inner_padding( 1 )
+      .with_border_variant(BorderVariant::Markdown )
+      .with_header_separator_variant(HeaderSeparatorVariant::Markdown )
+      .with_column_separator(ColumnSeparator::Character( '|' ) )
+      .with_inner_padding(1 )
   }
 
   /// Grid variant: full ASCII box with intersections
@@ -195,10 +195,10 @@ impl TableConfig
   pub fn grid() -> Self
   {
     Self::default()
-      .border_variant( BorderVariant::AsciiGrid )
-      .header_separator_variant( HeaderSeparatorVariant::AsciiGrid )
-      .column_separator( ColumnSeparator::Character( '|' ) )
-      .inner_padding( 1 )
+      .with_border_variant(BorderVariant::AsciiGrid )
+      .with_header_separator_variant(HeaderSeparatorVariant::AsciiGrid )
+      .with_column_separator(ColumnSeparator::Character( '|' ) )
+      .with_inner_padding(1 )
   }
 
   /// Unicode box variant: Unicode box-drawing characters
@@ -206,10 +206,10 @@ impl TableConfig
   pub fn unicode_box() -> Self
   {
     Self::default()
-      .border_variant( BorderVariant::Unicode )
-      .header_separator_variant( HeaderSeparatorVariant::Unicode )
-      .column_separator( ColumnSeparator::Character( '│' ) )
-      .inner_padding( 1 )
+      .with_border_variant(BorderVariant::Unicode )
+      .with_header_separator_variant(HeaderSeparatorVariant::Unicode )
+      .with_column_separator(ColumnSeparator::Character( '│' ) )
+      .with_inner_padding(1 )
   }
 
   /// CSV variant: comma-separated values
@@ -217,11 +217,11 @@ impl TableConfig
   pub fn csv() -> Self
   {
     Self::default()
-      .header_separator_variant( HeaderSeparatorVariant::None )
-      .column_separator( ColumnSeparator::Character( ',' ) )
-      .outer_padding( false )
-      .auto_wrap( false )
-      .auto_fold( false )
+      .with_header_separator_variant(HeaderSeparatorVariant::None )
+      .with_column_separator(ColumnSeparator::Character( ',' ) )
+      .with_outer_padding(false )
+      .with_auto_wrap(false )
+      .with_auto_fold(false )
   }
 
   /// TSV variant: tab-separated values
@@ -229,11 +229,11 @@ impl TableConfig
   pub fn tsv() -> Self
   {
     Self::default()
-      .header_separator_variant( HeaderSeparatorVariant::None )
-      .column_separator( ColumnSeparator::Character( '\t' ) )
-      .outer_padding( false )
-      .auto_wrap( false )
-      .auto_fold( false )
+      .with_header_separator_variant(HeaderSeparatorVariant::None )
+      .with_column_separator(ColumnSeparator::Character( '\t' ) )
+      .with_outer_padding(false )
+      .with_auto_wrap(false )
+      .with_auto_fold(false )
   }
 
   /// Compact variant: single-space separator, minimal padding
@@ -241,16 +241,16 @@ impl TableConfig
   pub fn compact() -> Self
   {
     Self::default()
-      .header_separator_variant( HeaderSeparatorVariant::None )
-      .column_separator( ColumnSeparator::Spaces( 1 ) )
-      .outer_padding( false )
+      .with_header_separator_variant(HeaderSeparatorVariant::None )
+      .with_column_separator(ColumnSeparator::Spaces( 1 ) )
+      .with_outer_padding(false )
   }
 
   // Builder methods for new fields
 
   /// Set border rendering variant
   #[ must_use ]
-  pub fn border_variant( mut self, variant : BorderVariant ) -> Self
+  pub fn with_border_variant( mut self, variant : BorderVariant ) -> Self
   {
     self.border_variant = variant;
     self
@@ -258,7 +258,7 @@ impl TableConfig
 
   /// Set header separator line variant
   #[ must_use ]
-  pub fn header_separator_variant( mut self, variant : HeaderSeparatorVariant ) -> Self
+  pub fn with_header_separator_variant( mut self, variant : HeaderSeparatorVariant ) -> Self
   {
     self.header_separator_variant = variant;
     self
@@ -266,7 +266,7 @@ impl TableConfig
 
   /// Set column separator parameter
   #[ must_use ]
-  pub fn column_separator( mut self, sep : ColumnSeparator ) -> Self
+  pub fn with_column_separator( mut self, sep : ColumnSeparator ) -> Self
   {
     self.column_separator = sep;
     self
@@ -274,7 +274,7 @@ impl TableConfig
 
   /// Enable/disable padding at outer table edges
   #[ must_use ]
-  pub fn outer_padding( mut self, enabled : bool ) -> Self
+  pub fn with_outer_padding( mut self, enabled : bool ) -> Self
   {
     self.outer_padding = enabled;
     self
@@ -282,7 +282,7 @@ impl TableConfig
 
   /// Set number of padding spaces within cells
   #[ must_use ]
-  pub fn inner_padding( mut self, spaces : usize ) -> Self
+  pub fn with_inner_padding( mut self, spaces : usize ) -> Self
   {
     self.inner_padding = spaces;
     self
@@ -290,7 +290,7 @@ impl TableConfig
 
   /// Enable/disable header row coloring
   #[ must_use ]
-  pub fn colorize_header( mut self, enabled : bool ) -> Self
+  pub fn with_colorize_header( mut self, enabled : bool ) -> Self
   {
     self.colorize_header = enabled;
     self
@@ -298,7 +298,7 @@ impl TableConfig
 
   /// Set ANSI color code for header row
   #[ must_use ]
-  pub fn header_color( mut self, color : String ) -> Self
+  pub fn with_header_color( mut self, color : String ) -> Self
   {
     self.header_color = color;
     self
@@ -306,7 +306,7 @@ impl TableConfig
 
   /// Enable/disable alternating row colors
   #[ must_use ]
-  pub fn alternating_rows( mut self, enabled : bool ) -> Self
+  pub fn with_alternating_rows( mut self, enabled : bool ) -> Self
   {
     self.alternating_rows = enabled;
     self
@@ -314,7 +314,7 @@ impl TableConfig
 
   /// Set colors for alternating rows
   #[ must_use ]
-  pub fn row_colors( mut self, color1 : String, color2 : String ) -> Self
+  pub fn with_row_colors( mut self, color1 : String, color2 : String ) -> Self
   {
     self.row_color1 = color1;
     self.row_color2 = color2;
@@ -325,7 +325,7 @@ impl TableConfig
   ///
   /// Defaults to `"\x1b[0m"`. Set to `""` to disable ANSI reset (for plain-text output).
   #[ must_use ]
-  pub fn color_reset( mut self, reset : impl Into< String > ) -> Self
+  pub fn with_color_reset( mut self, reset : impl Into< String > ) -> Self
   {
     self.color_reset = reset.into();
     self
@@ -333,7 +333,7 @@ impl TableConfig
 
   /// Set minimum column width
   #[ must_use ]
-  pub fn min_column_width( mut self, width : usize ) -> Self
+  pub fn with_min_column_width( mut self, width : usize ) -> Self
   {
     self.min_column_width = width;
     self
@@ -341,7 +341,7 @@ impl TableConfig
 
   /// Set maximum column width (None for unlimited)
   #[ must_use ]
-  pub fn max_column_width( mut self, width : Option< usize > ) -> Self
+  pub fn with_max_column_width( mut self, width : Option< usize > ) -> Self
   {
     self.max_column_width = width;
     self
@@ -349,7 +349,7 @@ impl TableConfig
 
   /// Set truncation marker string
   #[ must_use ]
-  pub fn truncation_marker( mut self, marker : String ) -> Self
+  pub fn with_truncation_marker( mut self, marker : String ) -> Self
   {
     self.truncation_marker = marker;
     self
@@ -357,7 +357,7 @@ impl TableConfig
 
   /// Set indent prefix for sub-row detail lines
   #[ must_use ]
-  pub fn sub_row_indent( mut self, indent : String ) -> Self
+  pub fn with_sub_row_indent( mut self, indent : String ) -> Self
   {
     self.sub_row_indent = indent;
     self
@@ -365,7 +365,7 @@ impl TableConfig
 
   /// Set target terminal width for auto-wrapping (None = auto-detect)
   #[ must_use ]
-  pub fn terminal_width( mut self, width : Option< usize > ) -> Self
+  pub fn with_terminal_width( mut self, width : Option< usize > ) -> Self
   {
     self.terminal_width = width;
     self
@@ -373,7 +373,7 @@ impl TableConfig
 
   /// Enable or disable cell auto-wrapping at budget boundary
   #[ must_use ]
-  pub fn auto_wrap( mut self, enabled : bool ) -> Self
+  pub fn with_auto_wrap( mut self, enabled : bool ) -> Self
   {
     self.auto_wrap = enabled;
     self
@@ -381,7 +381,7 @@ impl TableConfig
 
   /// Set per-column flex classification (empty = auto-classify by heuristic)
   #[ must_use ]
-  pub fn column_flex( mut self, flex : Vec< ColumnFlex > ) -> Self
+  pub fn with_column_flex( mut self, flex : Vec< ColumnFlex > ) -> Self
   {
     self.column_flex = flex;
     self
@@ -389,7 +389,7 @@ impl TableConfig
 
   /// Enable or disable column folding: overflow columns move to continuation lines
   #[ must_use ]
-  pub fn auto_fold( mut self, enabled : bool ) -> Self
+  pub fn with_auto_fold( mut self, enabled : bool ) -> Self
   {
     self.auto_fold = enabled;
     self
@@ -397,7 +397,7 @@ impl TableConfig
 
   /// Set continuation line format for folded overflow columns
   #[ must_use ]
-  pub fn fold_style( mut self, style : FoldStyle ) -> Self
+  pub fn with_fold_style( mut self, style : FoldStyle ) -> Self
   {
     self.fold_style = style;
     self
@@ -405,7 +405,7 @@ impl TableConfig
 
   /// Set indent prefix for folded continuation lines
   #[ must_use ]
-  pub fn fold_indent( mut self, indent : String ) -> Self
+  pub fn with_fold_indent( mut self, indent : String ) -> Self
   {
     self.fold_indent = indent;
     self
@@ -413,17 +413,17 @@ impl TableConfig
 
   /// Set ANSI escape code applied to every border/separator character
   #[ must_use ]
-  pub fn border_color( mut self, color : String ) -> Self
+  pub fn with_border_color( mut self, color : String ) -> Self
   {
     self.border_color = Some( color );
     self
   }
 
-  /// Attach a titled rule rendered above the table
+  /// Attach a titled heading rule rendered above the table
   #[ must_use ]
-  pub fn caption( mut self, c : TableCaption ) -> Self
+  pub fn with_heading( mut self, h : Heading ) -> Self
   {
-    self.caption = Some( c );
+    self.caption = Some( h );
     self
   }
 }
@@ -579,8 +579,8 @@ impl TableConfig
     self.border_color.as_deref()
   }
 
-  /// Caption reference (accessor)
-  pub( crate ) fn caption_ref( &self ) -> Option< &TableCaption >
+  /// Heading reference (accessor)
+  pub( crate ) fn caption_ref( &self ) -> Option< &Heading >
   {
     self.caption.as_ref()
   }
