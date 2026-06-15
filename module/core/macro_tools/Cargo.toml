@@ -1,6 +1,6 @@
 [package]
 name = "macro_tools"
-version = "0.87.0"
+version = "0.88.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
