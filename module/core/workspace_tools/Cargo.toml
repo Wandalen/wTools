@@ -1,6 +1,6 @@
 [package]
 name = "workspace_tools"
-version = "0.14.0"
+version = "0.15.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
