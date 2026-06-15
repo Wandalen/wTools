@@ -11,7 +11,7 @@ keywords = [ "cli", "command-line", "output", "formatting", "display" ]
 categories = [ "command-line-utilities", "development-tools" ]
 
 [dependencies]
-strs_tools = { version = "~0.46.0", features = [ "ansi", "string_split", "std" ], optional = true }
+strs_tools = { version = "~0.47.1", features = [ "ansi", "string_split", "std" ], optional = true }
 
 [dev-dependencies]
 
