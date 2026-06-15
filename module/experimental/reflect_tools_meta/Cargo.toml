@@ -1,6 +1,6 @@
 [package]
 name = "reflect_tools_meta"
-version = "0.8.0"
+version = "0.9.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
