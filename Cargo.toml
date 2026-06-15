@@ -457,7 +457,7 @@ path = "module/experimental/unitore"
 default-features = false
 
 [workspace.dependencies.deterministic_rand]
-version = "~0.9.0"
+version = "~0.10.1"
 path = "module/experimental/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
