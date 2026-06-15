@@ -154,7 +154,7 @@ path = "module/core/data_fmt"
 default-features = false
 
 [workspace.dependencies.include_md]
-version = "~0.1.0"
+version = "~0.2.1"
 path = "module/experimental/include_md"
 default-features = false
 
