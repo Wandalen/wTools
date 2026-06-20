@@ -349,7 +349,7 @@ path = "module/core/strs_tools"
 default-features = false
 
 [workspace.dependencies.cli_fmt]
-version = "~0.8.0"
+version = "~0.9.1"
 path = "module/core/cli_fmt"
 default-features = false
 
