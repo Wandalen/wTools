@@ -23,6 +23,15 @@
 //! | T12 | opt_name_width=10, 12-char opt name | custom style | option name not truncated |
 //! | T13 | CliHelpStyle::default() (tty_detect=true), non-TTY process | default style | no ANSI codes in output — TTY probe returns false under nextest |
 //! | T14 | Cargo.toml content | string check | `"data_fmt"` absent — AC-4 regression guard |
+//! | T-A01 | custom usage_lines, empty usage_lines | tty_detect=false | custom lines replace default header; empty preserves default |
+//! | T-A02 | non-empty arguments, empty arguments | tty_detect=false | Arguments: section renders/omits |
+//! | T-A03 | option_groups with one group | tty_detect=false | named group header and entries appear |
+//! | T-A04 | empty option_groups, non-empty options | tty_detect=false | legacy Options: section renders |
+//! | T-A05 | both options and option_groups non-empty | tty_detect=false | option_groups renders; options suppressed |
+//! | T-A06 | two groups with different name lengths | tty_detect=false | per-group independent column padding |
+//! | T-A07 | CliHelpData::default() | N/A | all fields empty; no panic |
+//! | T-A08 | compile_fail doctest | N/A | exhaustive CliHelpData literal rejected by #[non_exhaustive] |
+//! | T-A09 | example construction pattern | tty_detect=false | non-empty output from default + field assignment |
 
 use cli_fmt::help::*;
 
@@ -30,42 +39,41 @@ use cli_fmt::help::*;
 
 fn two_group_data() -> CliHelpData
 {
-  CliHelpData
-  {
-    binary  : "myapp".into(),
-    tagline : "example tool".into(),
-    groups  : vec!
-    [
-      CommandGroup
-      {
-        name    : "Group A".into(),
-        entries : vec!
-        [
-          CommandEntry { name : "cmd-one".into(),   desc : "first command".into()  },
-          CommandEntry { name : "cmd-two".into(),   desc : "second command".into() },
-        ],
-      },
-      CommandGroup
-      {
-        name    : "Group B".into(),
-        entries : vec!
-        [
-          CommandEntry { name : "cmd-three".into(), desc : "third command".into()  },
-          CommandEntry { name : "cmd-four".into(),  desc : "fourth command".into() },
-        ],
-      },
-    ],
-    options  : vec!
-    [
-      OptionEntry { name : "format::text|json".into(), desc : "Output format".into() },
-      OptionEntry { name : "dry::bool".into(),         desc : "Dry-run".into()        },
-    ],
-    examples : vec!
-    [
-      ExampleEntry { invocation : "myapp cmd-one".into(), desc : Some( "run one".into() ) },
-      ExampleEntry { invocation : "myapp cmd-two".into(), desc : None                     },
-    ],
-  }
+  let mut data = CliHelpData::default();
+  data.binary = "myapp".into();
+  data.tagline = "example tool".into();
+  data.groups = vec!
+  [
+    CommandGroup
+    {
+      name    : "Group A".into(),
+      entries : vec!
+      [
+        CommandEntry { name : "cmd-one".into(),   desc : "first command".into()  },
+        CommandEntry { name : "cmd-two".into(),   desc : "second command".into() },
+      ],
+    },
+    CommandGroup
+    {
+      name    : "Group B".into(),
+      entries : vec!
+      [
+        CommandEntry { name : "cmd-three".into(), desc : "third command".into()  },
+        CommandEntry { name : "cmd-four".into(),  desc : "fourth command".into() },
+      ],
+    },
+  ];
+  data.options = vec!
+  [
+    OptionEntry { name : "format::text|json".into(), desc : "Output format".into() },
+    OptionEntry { name : "dry::bool".into(),         desc : "Dry-run".into()        },
+  ];
+  data.examples = vec!
+  [
+    ExampleEntry { invocation : "myapp cmd-one".into(), desc : Some( "run one".into() ) },
+    ExampleEntry { invocation : "myapp cmd-two".into(), desc : None                     },
+  ];
+  data
 }
 
 fn no_tty_style() -> CliHelpStyle
@@ -143,18 +151,14 @@ fn test_explicit_tty_detect_false()
 fn test_name_not_truncated()
 {
   let style = CliHelpStyle { cmd_name_width : 10, tty_detect : false, ..CliHelpStyle::default() };
-  let data  = CliHelpData
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.groups = vec![ CommandGroup
   {
-    binary  : "app".into(),
-    tagline : "test".into(),
-    groups  : vec![ CommandGroup
-    {
-      name    : "G".into(),
-      entries : vec![ CommandEntry { name : "eleven-char".into(), desc : "desc".into() } ],
-    }],
-    options  : vec![],
-    examples : vec![],
-  };
+    name    : "G".into(),
+    entries : vec![ CommandEntry { name : "eleven-char".into(), desc : "desc".into() } ],
+  }];
   let out = CliHelpTemplate::new( style, data ).render();
   assert!(
     out.contains( "eleven-char" ),
@@ -202,18 +206,14 @@ fn test_no_examples_section()
 #[ test ]
 fn test_single_group_binary_name()
 {
-  let data = CliHelpData
+  let mut data = CliHelpData::default();
+  data.binary = "myapp".into();
+  data.tagline = "a single-group tool".into();
+  data.groups = vec![ CommandGroup
   {
-    binary  : "myapp".into(),
-    tagline : "a single-group tool".into(),
-    groups  : vec![ CommandGroup
-    {
-      name    : "Cmds".into(),
-      entries : vec![ CommandEntry { name : "run".into(), desc : "run it".into() } ],
-    }],
-    options  : vec![],
-    examples : vec![],
-  };
+    name    : "Cmds".into(),
+    entries : vec![ CommandEntry { name : "run".into(), desc : "run it".into() } ],
+  }];
   let out = CliHelpTemplate::new( no_tty_style(), data ).render();
   assert!( out.contains( "Usage: myapp" ), "Usage: header with binary must appear, got:\n{out}" );
   assert!( out.contains( "Commands:" ),    "Commands: header must appear, got:\n{out}"          );
@@ -320,14 +320,10 @@ fn test_style_color_defaults()
 #[ test ]
 fn test_empty_groups()
 {
-  let data = CliHelpData
-  {
-    binary  : "app".into(),
-    tagline : "test tool".into(),
-    groups  : vec![],
-    options  : vec![ OptionEntry { name : "verbose::bool".into(), desc : "Enable verbose".into() } ],
-    examples : vec![],
-  };
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test tool".into();
+  data.options = vec![ OptionEntry { name : "verbose::bool".into(), desc : "Enable verbose".into() } ];
   let out = CliHelpTemplate::new( no_tty_style(), data ).render();
   assert!( !out.is_empty(),        "render with empty groups must return non-empty string"  );
   assert!( out.contains( "app" ),       "binary name must appear in output, got:\n{out}"   );
@@ -344,14 +340,10 @@ fn test_empty_groups()
 fn test_opt_name_not_truncated()
 {
   let style = CliHelpStyle { opt_name_width : 10, tty_detect : false, ..CliHelpStyle::default() };
-  let data  = CliHelpData
-  {
-    binary   : "app".into(),
-    tagline  : "test".into(),
-    groups   : vec![],
-    options  : vec![ OptionEntry { name : "format::json".into(), desc : "format specifier".into() } ],
-    examples : vec![],
-  };
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.options = vec![ OptionEntry { name : "format::json".into(), desc : "format specifier".into() } ];
   let out = CliHelpTemplate::new( style, data ).render();
   assert!(
     out.contains( "format::json" ),
@@ -390,4 +382,455 @@ fn test_no_data_fmt_dependency()
     !cargo.contains( "data_fmt" ),
     "cli_fmt must not depend on data_fmt — uses strs_tools primitives only"
   );
+}
+
+// ── T-A01 ─ usage_lines replaces default header ──────────────────────────────
+
+/// T-A01 (FT-12, FT-13): When `usage_lines` is non-empty, the custom lines
+/// replace the hardcoded `"Usage: {binary} <command>"` header. When empty
+/// (default), the original header emits unchanged.
+#[ test ]
+fn test_usage_lines()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "clr".into();
+  data.tagline = "runner".into();
+  data.usage_lines = vec![ "clr <command>".into() ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "  clr <command>" ),
+    "custom usage_lines must appear indented, got:\n{out}",
+  );
+  assert!(
+    !out.contains( "Usage: clr" ),
+    "default Usage: header must NOT appear when usage_lines is set, got:\n{out}",
+  );
+
+  let mut data = CliHelpData::default();
+  data.binary = "clr".into();
+  data.tagline = "runner".into();
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "Usage: clr" ),
+    "default Usage: header must appear when usage_lines is empty, got:\n{out}",
+  );
+}
+
+// ── T-A02 ─ arguments section renders when non-empty ─────────────────────────
+
+/// T-A02 (FT-14, FT-15): When `arguments` is non-empty, the `"Arguments:"`
+/// section renders. When empty (default), no `"Arguments:"` header appears.
+#[ test ]
+fn test_arguments_section()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.arguments = vec![ OptionEntry { name : "<MSG>".into(), desc : "Message to send".into() } ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "Arguments:" ),
+    "Arguments: header must appear when arguments is non-empty, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  <MSG>  Message to send" ),
+    "argument entry must render with content-driven padding, got:\n{out}",
+  );
+
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    !out.contains( "Arguments:" ),
+    "Arguments: header must NOT appear when arguments is empty, got:\n{out}",
+  );
+}
+
+// ── T-A03 ─ option_groups renders named sections ─────────────────────────────
+
+/// T-A03 (FT-16, AP-7): Named option groups render with `"{name}:"` header
+/// and entries with content-driven padding.
+#[ test ]
+fn test_option_groups_render()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.option_groups = vec!
+  [
+    OptionGroup
+    {
+      name    : "RUNNER OPTIONS".into(),
+      entries : vec![ OptionEntry { name : "--flag".into(), desc : "A flag".into() } ],
+    },
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "RUNNER OPTIONS:" ),
+    "option group header must appear, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  --flag  A flag" ),
+    "option group entry must render with padding, got:\n{out}",
+  );
+}
+
+// ── T-A04 ─ empty option_groups preserves legacy Options section ─────────────
+
+/// T-A04 (FT-17): When `option_groups` is empty and `options` is non-empty,
+/// the legacy `"Options:"` section renders (backward compat).
+#[ test ]
+fn test_option_groups_empty_backward_compat()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.options = vec![ OptionEntry { name : "--opt".into(), desc : "desc".into() } ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "Options:" ),
+    "legacy Options: section must appear when option_groups is empty, got:\n{out}",
+  );
+  assert!(
+    out.contains( "--opt" ),
+    "legacy option entry must appear, got:\n{out}",
+  );
+}
+
+// ── T-A05 ─ option_groups non-empty suppresses legacy options ────────────────
+
+/// T-A05 (FT-18): When `option_groups` is non-empty, the legacy `options`
+/// field is suppressed — its entries do not appear and `"Options:"` is absent.
+#[ test ]
+fn test_option_groups_suppresses_options()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.options = vec![ OptionEntry { name : "--old".into(), desc : "old opt".into() } ];
+  data.option_groups = vec!
+  [
+    OptionGroup
+    {
+      name    : "NEW".into(),
+      entries : vec![ OptionEntry { name : "--new".into(), desc : "new opt".into() } ],
+    },
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "NEW:" ),
+    "option group header must appear, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  --new  new opt" ),
+    "option group entry must appear, got:\n{out}",
+  );
+  assert!(
+    !out.contains( "--old" ),
+    "legacy option entry must NOT appear when option_groups is non-empty, got:\n{out}",
+  );
+  assert!(
+    !out.contains( "Options:" ),
+    "Options: header must NOT appear when option_groups is non-empty, got:\n{out}",
+  );
+}
+
+// ── T-A06 ─ per-group independent column padding ─────────────────────────────
+
+/// T-A06 (FT-19): Each option group computes its own column width from its
+/// own entries — group A's padding is NOT inflated by group B's longer names.
+#[ test ]
+fn test_option_groups_independent_padding()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.option_groups = vec!
+  [
+    OptionGroup
+    {
+      name    : "GROUP A".into(),
+      entries : vec!
+      [
+        OptionEntry { name : "--aa".into(), desc : "flag a".into() },
+        OptionEntry { name : "--bb".into(), desc : "flag b".into() },
+      ],
+    },
+    OptionGroup
+    {
+      name    : "GROUP B".into(),
+      entries : vec!
+      [
+        OptionEntry { name : "--longer-name".into(), desc : "a long flag".into() },
+      ],
+    },
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "  --aa  flag a" ),
+    "group A entry must use group A's own max_len (4), not group B's (13), got:\n{out}",
+  );
+  assert!(
+    out.contains( "  --bb  flag b" ),
+    "group A second entry must use same group-local padding, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  --longer-name  a long flag" ),
+    "group B entry must use group B's own max_len (13), got:\n{out}",
+  );
+}
+
+// ── T-A07 ─ CliHelpData::default() constructs with empty fields ──────────────
+
+/// T-A07 (FT-20, AP-8): `CliHelpData::default()` constructs without panic.
+/// All Vec fields are empty; binary and tagline are empty strings.
+#[ test ]
+fn test_cli_help_data_default()
+{
+  let data = CliHelpData::default();
+  assert!( data.binary.is_empty(),        "binary must be empty"        );
+  assert!( data.tagline.is_empty(),       "tagline must be empty"       );
+  assert!( data.groups.is_empty(),        "groups must be empty"        );
+  assert!( data.options.is_empty(),       "options must be empty"       );
+  assert!( data.examples.is_empty(),      "examples must be empty"      );
+  assert!( data.usage_lines.is_empty(),   "usage_lines must be empty"   );
+  assert!( data.arguments.is_empty(),     "arguments must be empty"     );
+  assert!( data.option_groups.is_empty(), "option_groups must be empty" );
+}
+
+// ── T-B01 ─ multiple usage_lines all render indented ─────────────────────────
+
+/// T-B01: When `usage_lines` contains 3 entries, each appears on its own indented
+/// line. The default `"Usage: {binary} <command>"` header is absent entirely.
+#[ test ]
+fn test_multiple_usage_lines()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "tool".into();
+  data.usage_lines = vec!
+  [
+    "app <command>".into(),
+    "app --help".into(),
+    "app <command> [options]".into(),
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "  app <command>\n" ),
+    "first custom usage line must render indented, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  app --help\n" ),
+    "second custom usage line must render indented, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  app <command> [options]\n" ),
+    "third custom usage line must render indented, got:\n{out}",
+  );
+  assert!(
+    !out.contains( "Usage: app" ),
+    "default Usage: header must not appear when usage_lines is non-empty, got:\n{out}",
+  );
+}
+
+// ── T-B02 ─ arguments multi-entry column padding uses longest name ─────────────
+
+/// T-B02: When `arguments` contains entries with different name lengths, all entries
+/// are padded to the longest name's length — not each entry's own length.
+#[ test ]
+fn test_arguments_multi_entry_padding()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.arguments = vec!
+  [
+    OptionEntry { name : "<A>".into(),         desc : "short arg".into()  },
+    OptionEntry { name : "<LONG-ARGUMENT>".into(), desc : "long arg".into() },
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  // "<A>" is 3 chars; "<LONG-ARGUMENT>" is 15 chars; max_len = 15
+  // "<A>" padded to 15 → "<A>            " then "  short arg"
+  assert!(
+    out.contains( "  <A>              short arg" ),
+    "short argument name must be padded to match longest name (15 chars), got:\n{out}",
+  );
+  assert!(
+    out.contains( "  <LONG-ARGUMENT>  long arg" ),
+    "longest argument name must appear with no extra padding, got:\n{out}",
+  );
+}
+
+// ── T-B03 ─ CommandGroup with empty entries vec renders only its header ────────
+
+/// T-B03: A `CommandGroup` with an empty `entries` vec must render its group
+/// header without panicking. No command entries appear beneath it.
+#[ test ]
+fn test_command_group_empty_entries()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.groups = vec!
+  [
+    CommandGroup { name : "EMPTY GROUP".into(), entries : vec![] },
+    CommandGroup
+    {
+      name    : "FULL GROUP".into(),
+      entries : vec![ CommandEntry { name : "cmd".into(), desc : "a command".into() } ],
+    },
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!( out.contains( "EMPTY GROUP" ), "empty-entries group header must appear, got:\n{out}" );
+  assert!( out.contains( "FULL GROUP" ),  "non-empty group header must appear, got:\n{out}"     );
+  assert!( out.contains( "cmd" ),         "command from non-empty group must appear, got:\n{out}" );
+}
+
+// ── T-B04 ─ render with entirely empty CliHelpData is infallible ──────────────
+
+/// T-B04: `CliHelpTemplate::render()` must not panic when given a fully default
+/// (empty) `CliHelpData`. The output must still contain the `"Usage:"` and
+/// `"Commands:"` structural headers.
+#[ test ]
+fn test_render_empty_data_infallible()
+{
+  let data = CliHelpData::default();
+  let out  = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!( !out.is_empty(),          "render of empty data must produce non-empty string"       );
+  assert!( out.contains( "Usage:" ), "Usage: header must appear even with empty data, got:\n{out}" );
+  assert!( out.contains( "Commands:" ), "Commands: header must appear even with empty data, got:\n{out}" );
+}
+
+// ── T-B05 ─ ExampleEntry desc=Some("") renders empty annotation marker ────────
+
+/// T-B05: When `ExampleEntry.desc` is `Some("")` (empty string), the rendered
+/// line appends `  # ` (the annotation marker with trailing space but no text).
+/// This documents that the annotation is rendered whenever `Some` is present,
+/// regardless of whether the inner string is non-empty.
+#[ test ]
+fn test_example_empty_desc_some_renders_marker()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.examples = vec!
+  [
+    ExampleEntry { invocation : "app cmd".into(), desc : Some( "".into() ) },
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  let line = out.lines()
+    .find( |l| l.contains( "app cmd" ) )
+    .unwrap_or_default();
+  assert!(
+    line.contains( "# " ),
+    "ExampleEntry with desc=Some(\"\") must render '# ' marker, got:\n{line:?}",
+  );
+}
+
+// ── T-B06 ─ OptionGroup with empty entries is silently skipped ────────────────
+
+/// T-B06: An `OptionGroup` whose `entries` vec is empty is silently skipped —
+/// its section header (`"{name}:"`) is NOT emitted. No panic occurs.
+///
+/// This documents the contract: groups without entries produce no visible output.
+#[ test ]
+fn test_option_group_empty_entries_skipped()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.option_groups = vec!
+  [
+    OptionGroup { name : "EMPTY SECTION".into(), entries : vec![] },
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    !out.contains( "EMPTY SECTION:" ),
+    "OptionGroup with empty entries must not emit its header, got:\n{out}",
+  );
+}
+
+// ── T-B07 ─ empty-entry OptionGroup suppresses legacy options (footgun) ────────
+
+/// T-B07: When `option_groups` is non-empty (even if all groups have empty
+/// `entries`), the legacy `options` field is suppressed. Neither `"Options:"`
+/// nor the option entries appear in the output.
+///
+/// This is the documented suppression rule: `option_groups` vec non-empty →
+/// suppress `options`. Users who accidentally provide an empty-entry group
+/// will lose their `options` silently. Add entries or remove the empty group.
+#[ test ]
+fn test_empty_option_group_suppresses_legacy_options()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.options = vec![ OptionEntry { name : "--verbose".into(), desc : "verbosity".into() } ];
+  data.option_groups = vec![ OptionGroup { name : "EMPTY GROUP".into(), entries : vec![] } ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  // option_groups is non-empty (vec has 1 group) → options suppressed
+  assert!(
+    !out.contains( "Options:" ),
+    "Options: must be suppressed when option_groups is non-empty, got:\n{out}",
+  );
+  assert!(
+    !out.contains( "--verbose" ),
+    "--verbose must not appear when option_groups suppresses legacy options, got:\n{out}",
+  );
+  // The empty-entry group itself must also be silent
+  assert!(
+    !out.contains( "EMPTY GROUP:" ),
+    "empty-entry OptionGroup header must not appear, got:\n{out}",
+  );
+}
+
+// ── T-B08 ─ arguments section appears before command groups in output ──────────
+
+/// T-B08: When both `arguments` and `groups` are non-empty, the `"Arguments:"`
+/// section appears BEFORE the first command group entry in the output.
+///
+/// Verified by comparing string positions of "Arguments:" and the group header.
+#[ test ]
+fn test_arguments_before_groups_in_output()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.arguments = vec![ OptionEntry { name : "<FILE>".into(), desc : "input file".into() } ];
+  data.groups = vec![ CommandGroup
+  {
+    name    : "FILE OPS".into(),
+    entries : vec![ CommandEntry { name : "read".into(), desc : "read a file".into() } ],
+  }];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  let pos_args = out.find( "Arguments:" ).expect( "Arguments: must appear in output" );
+  let pos_grp  = out.find( "FILE OPS" ).expect( "Group header must appear in output" );
+  assert!(
+    pos_args < pos_grp,
+    "Arguments: section must appear before group entries, but got Arguments at {pos_args}, group at {pos_grp}",
+  );
+}
+
+// ── T-A09 ─ examples/basic_usage.rs smoke test ───────────────────────────────
+
+/// T-A09: `examples/basic_usage.rs` compiles with `CliHelpData::default()`
+/// and field assignment under `#[non_exhaustive]`. The example's compilation
+/// is validated by `cargo test --examples --all-features`.
+///
+/// This smoke test verifies the same construction pattern produces non-empty
+/// output.
+#[ test ]
+fn test_examples_compile()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "mytool".into();
+  data.tagline = "A sample CLI tool.".into();
+  data.groups = vec![ CommandGroup
+  {
+    name    : "Ops".into(),
+    entries : vec![ CommandEntry { name : "run".into(), desc : "Run it".into() } ],
+  }];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!( !out.is_empty(), "example construction pattern must produce non-empty output" );
 }

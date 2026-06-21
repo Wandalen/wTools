@@ -16,7 +16,7 @@
 ### IN-2: No CLI-specific types are defined in strs_tools
 
 - **Given:** the `strs_tools` source tree
-- **When:** source is searched for CLI-policy symbols from both modules: output-module (`StreamFilter`, `OutputConfig`, `ProcessedOutput`, `process_output`) and help-module (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, `CommandGroup`, `CommandEntry`, `OptionEntry`, `ExampleEntry`)
+- **When:** source is searched for CLI-policy symbols from both modules: output-module (`StreamFilter`, `OutputConfig`, `ProcessedOutput`, `process_output`) and help-module (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, `OptionGroup`, `CommandGroup`, `CommandEntry`, `OptionEntry`, `ExampleEntry`)
 - **Then:** no such symbols are defined in `strs_tools` — they exist exclusively in `cli_fmt`
 
 ### Sources

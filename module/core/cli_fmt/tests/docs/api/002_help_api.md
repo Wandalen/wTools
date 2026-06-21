@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the API contract documented in `docs/api/002_help_api.md`.
 - **Responsibility**: Test spec for render infallibility, `CliHelpStyle::default()` field values, column padding semantics, conditional section omission, and `ExampleEntry.desc` annotation rendering.
-- **In Scope**: Render infallibility (AP-1), `CliHelpStyle::default()` layout field values (AP-2), column padding as minimum width (AP-3), section omission when vecs empty (AP-4), `ExampleEntry.desc` Some/None rendering (AP-5), `CliHelpStyle::default()` color field values and `tty_detect` (AP-6).
+- **In Scope**: Render infallibility (AP-1), `CliHelpStyle::default()` layout field values (AP-2), column padding as minimum width (AP-3), section omission when vecs empty (AP-4), `ExampleEntry.desc` Some/None rendering (AP-5), `CliHelpStyle::default()` color field values and `tty_detect` (AP-6), `OptionGroup` struct construction (AP-7), `CliHelpData::default()` constructs with empty Vecs (AP-8).
 - **Out of Scope**: Behavioral rationale and style customization — see `tests/docs/feature/002_cli_help_template.md` for feature-level behavioral specs.
 
 ### AP-1: CliHelpTemplate::render() is infallible — accepts any valid input without panic
@@ -43,6 +43,18 @@
 - **When:** each color field and `tty_detect` are read directly
 - **Then:** `color_tagline == "\x1b[1m"`; `color_group == "\x1b[33m\x1b[1m"`; `color_option == "\x1b[1;36m"`; `color_example == "\x1b[2m"`; `color_reset == "\x1b[0m"`; `tty_detect == true`
 
+### AP-7: OptionGroup can be constructed with name and entries
+
+- **Given:** `OptionGroup { name: "MY GROUP".into(), entries: vec![OptionEntry { name: "--flag".into(), desc: "A flag".into() }] }`
+- **When:** the struct is constructed and placed in a `CliHelpData::default()` with `option_groups` set to `vec![group]` via field assignment
+- **Then:** `CliHelpTemplate::new(style, data).render()` returns a String containing `"MY GROUP:"`; no panic
+
+### AP-8: CliHelpData::default() constructs with all Vec fields empty
+
+- **Given:** `CliHelpData::default()`
+- **When:** each field is inspected
+- **Then:** `usage_lines.is_empty()`; `arguments.is_empty()`; `option_groups.is_empty()`; `groups.is_empty()`; `options.is_empty()`; `examples.is_empty()`; `binary` is an empty string; `tagline` is an empty string; no panic
+
 ### Sources
 
 | File | Relationship |
@@ -53,7 +65,8 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../tests/help.rs` | AP-1: `test_single_group_binary_name`; AP-2: `test_style_default_fields`; AP-3: `test_name_not_truncated`; AP-4: `test_no_options_section`, `test_no_examples_section`; AP-5: `test_example_desc_rendered`; AP-6: `test_style_color_defaults` |
+| `../../../tests/help.rs` | AP-1: `test_single_group_binary_name`; AP-2: `test_style_default_fields`; AP-3: `test_name_not_truncated`; AP-4: `test_no_options_section`, `test_no_examples_section`; AP-5: `test_example_desc_rendered`; AP-6: `test_style_color_defaults`; AP-7: `test_option_groups_render` (T-A03); AP-8: `test_cli_help_data_default` (T-A07) |
+| `../../../src/help.rs` | AC-10 (compile_fail doctest — T-A08): exhaustive external `CliHelpData` literal rejected by `#[non_exhaustive]` |
 
 ### APIs
 

@@ -48,43 +48,41 @@ fn help_template()
 {
   use cli_fmt::help::*;
 
-  let data = CliHelpData
-  {
-    binary : "mytool".into(),
-    tagline : "A sample CLI tool for demonstration purposes.".into(),
-    groups : vec!
-    [
-      CommandGroup
-      {
-        name : "File operations".into(),
-        entries : vec!
-        [
-          CommandEntry { name : "read".into(),   desc : "Read a file and print contents".into() },
-          CommandEntry { name : "write".into(),  desc : "Write text to a file".into() },
-          CommandEntry { name : "delete".into(), desc : "Remove a file from disk".into() },
-        ],
-      },
-      CommandGroup
-      {
-        name : "Info".into(),
-        entries : vec!
-        [
-          CommandEntry { name : "version".into(), desc : "Print version information".into() },
-          CommandEntry { name : "status".into(),  desc : "Show current project status".into() },
-        ],
-      },
-    ],
-    options : vec!
-    [
-      OptionEntry { name : "--verbose".into(), desc : "Enable verbose output".into() },
-      OptionEntry { name : "--format".into(),  desc : "Output format (text|json)".into() },
-    ],
-    examples : vec!
-    [
-      ExampleEntry { invocation : "mytool read config.toml".into(), desc : Some( "read a config file".into() ) },
-      ExampleEntry { invocation : "mytool write --format json out.json".into(), desc : None },
-    ],
-  };
+  let mut data = CliHelpData::default();
+  data.binary = "mytool".into();
+  data.tagline = "A sample CLI tool for demonstration purposes.".into();
+  data.groups = vec!
+  [
+    CommandGroup
+    {
+      name : "File operations".into(),
+      entries : vec!
+      [
+        CommandEntry { name : "read".into(),   desc : "Read a file and print contents".into() },
+        CommandEntry { name : "write".into(),  desc : "Write text to a file".into() },
+        CommandEntry { name : "delete".into(), desc : "Remove a file from disk".into() },
+      ],
+    },
+    CommandGroup
+    {
+      name : "Info".into(),
+      entries : vec!
+      [
+        CommandEntry { name : "version".into(), desc : "Print version information".into() },
+        CommandEntry { name : "status".into(),  desc : "Show current project status".into() },
+      ],
+    },
+  ];
+  data.options = vec!
+  [
+    OptionEntry { name : "--verbose".into(), desc : "Enable verbose output".into() },
+    OptionEntry { name : "--format".into(),  desc : "Output format (text|json)".into() },
+  ];
+  data.examples = vec!
+  [
+    ExampleEntry { invocation : "mytool read config.toml".into(), desc : Some( "read a config file".into() ) },
+    ExampleEntry { invocation : "mytool write --format json out.json".into(), desc : None },
+  ];
 
   // Force colors off so the example prints clean text in any terminal
   let style = CliHelpStyle

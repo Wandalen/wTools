@@ -4,7 +4,7 @@
 
 - **Purpose**: Document the public interface for the CLI help template renderer in `cli_fmt`.
 - **Responsibility**: Reference for all public types, their fields, and the rendering entry point.
-- **In Scope**: `CliHelpStyle`, `CliHelpData`, `CommandGroup`, `CommandEntry`, `OptionEntry`, `ExampleEntry`, and `CliHelpTemplate::render()`.
+- **In Scope**: `CliHelpStyle`, `CliHelpData`, `OptionGroup`, `CommandGroup`, `CommandEntry`, `OptionEntry`, `ExampleEntry`, `CliHelpData::default()`, and `CliHelpTemplate::render()`.
 - **Out of Scope**: Behavioral rationale and design decisions — see `feature/002_cli_help_template.md`.
 
 ### Abstract
@@ -38,15 +38,25 @@ an error or panic.
 
 `CliHelpStyle::default()` reproduces the layout and ANSI codes of the hardcoded `claude_profile::print_usage()`.
 
-**`CliHelpData`** — structured content for all rendered sections. All fields are public.
+**`CliHelpData`** — structured content for all rendered sections. All fields are public. Carries `#[non_exhaustive]` — external callers cannot use struct expressions (including struct update syntax); must use `CliHelpData::default()` followed by field assignment. Derives `Default`, `Debug`, `Clone`.
 
 | Field | Type | Purpose |
 |-------|------|---------|
 | `binary` | `String` | Binary name used in the usage line |
 | `tagline` | `String` | One-line description shown below the usage line |
 | `groups` | `Vec<CommandGroup>` | Ordered list of command groups |
-| `options` | `Vec<OptionEntry>` | Global options; section omitted when empty |
+| `options` | `Vec<OptionEntry>` | Global options; section omitted when empty, and suppressed when `option_groups` is non-empty |
 | `examples` | `Vec<ExampleEntry>` | Usage examples; section omitted when empty |
+| `usage_lines` | `Vec<String>` | Custom usage lines; when non-empty replaces default `"Usage: {binary} <command>"` emission; default: `vec![]` |
+| `arguments` | `Vec<OptionEntry>` | Positional argument entries rendered in an `Arguments:` section (between `Commands:` label and command group entries); section omitted when empty; default: `vec![]` |
+| `option_groups` | `Vec<OptionGroup>` | Named option sections rendered after Commands; when non-empty the `options` field is suppressed; default: `vec![]` |
+
+**`OptionGroup`** — a named group of option entries with independent column padding. Derives `Debug`, `Clone`.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `name` | `String` | Section header displayed as `{name}:` |
+| `entries` | `Vec<OptionEntry>` | Option entries; column padding computed from this group's `max(name.len())` only — other groups do not affect it |
 
 **`CommandGroup`** — a named group of commands.
 
@@ -78,16 +88,20 @@ an error or panic.
 
 ### Operations
 
+**`CliHelpData::default() -> CliHelpData`** — constructs a `CliHelpData` with `binary` and `tagline` as empty strings and all `Vec` fields as `vec![]`. Construct instances via field assignment: `let mut d = CliHelpData::default(); d.binary = "myapp".into();`. Struct expressions (including struct update syntax) are blocked from outside the crate by `#[non_exhaustive]`.
+
 **`CliHelpTemplate::new(style, data) -> CliHelpTemplate`** — constructs a template from style and data. Both parameters are moved in.
 
-**`CliHelpTemplate::render(&self) -> String`** — renders the complete help text:
+**`CliHelpTemplate::render(&self) -> String`** — renders the complete help text in this order:
 1. ANSI codes are active only when `style.tty_detect = true` and stdout IS a TTY; otherwise all color fields are treated as empty strings.
-2. Emits header section: `{color_tagline}Usage:{color_reset} {binary} <command>`, a blank line, the tagline text (no color), a blank line, then `{color_tagline}Commands:{color_reset}`.
-3. Emits each command group with its entries, names padded to `cmd_name_width`.
-4. If `options` is non-empty: emits `Options:` section with names padded to `opt_name_width`.
-5. If `examples` is non-empty: emits `Examples:` section; each `ExampleEntry.desc = Some(text)` appends `  # {text}` to the invocation line; `None` emits the invocation bare.
+2. Emits header: when `data.usage_lines` is non-empty, emits each line as `"  {line}"`; otherwise emits `"{bold}Usage:{rst} {binary} <command>"`. In both cases follows with: blank line, tagline text, blank line, `"{bold}Commands:{rst}"`.
+3. If `data.arguments` is non-empty: emits `"{bold}Arguments:{rst}"` section; entries padded to `max(name.len())` across all argument entries.
+4. Emits each command group from `data.groups` with entries padded to `cmd_name_width`.
+5. For each `OptionGroup` in `data.option_groups`: emits `"{name}:"` header then entries padded to that group's own `max(name.len())` independently.
+6. If `data.option_groups` is empty and `data.options` is non-empty: emits `"{bold}Options:{rst}"` section with names padded to `opt_name_width` (backward compat).
+7. If `data.examples` is non-empty: emits `"{bold}Examples:{rst}"` section; each `ExampleEntry.desc = Some(text)` appends `  # {text}`; `None` emits the invocation bare.
 
-Column padding uses `{name:<width}` where `width = field_name_width + col_gap`. Padding is a minimum — names longer than the configured width are not truncated.
+Column padding uses `{name:<width}` formatting. For commands (step 4) and legacy options (step 6), `width = field_name_width + col_gap` where `field_name_width` is the style-configured `cmd_name_width` or `opt_name_width` (the gap is included in the format specifier width). For arguments (step 3) and option_groups (step 5), `width = max(name.len())` across entries in that section/group only, followed by a hardcoded 2-space literal separator — the gap is NOT included in the format specifier width. Padding is a minimum — names longer than the computed width are not truncated.
 
 ### Error Handling
 
@@ -96,6 +110,8 @@ Column padding uses `{name:<width}` where `width = field_name_width + col_gap`. 
 ### Compatibility Guarantees
 
 All public struct fields and the `new` / `render` signatures are stable across patch and minor versions. New fields may be added to `CliHelpStyle` or `CliHelpData` in minor versions with backward-compatible defaults. Semantic changes to existing fields require a major version bump.
+
+`CliHelpData` carries `#[non_exhaustive]` — exhaustive struct literals from outside the crate fail to compile. Callers must use `CliHelpData::default()` followed by field assignment; struct update syntax (`..CliHelpData::default()`) also fails to compile outside the crate (E0639). Validated by the T-A08 compile_fail doctest in `src/help.rs`.
 
 ### Features
 
@@ -119,4 +135,4 @@ All public struct fields and the `new` / `render` signatures are stable across p
 
 | File | Relationship |
 |------|-------------|
-| `tests/help.rs` | T01–T14: column alignment, TTY detection, section omission, desc annotation, color defaults, edge cases, data_fmt absence |
+| `tests/help.rs` | T01–T14, T-A01–T-A09: column alignment, TTY detection, section omission, desc annotation, color defaults, edge cases, data_fmt absence, usage_lines override, arguments section, option_groups named sections, backward compat, per-group padding, CliHelpData::default() |

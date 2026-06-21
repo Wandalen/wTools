@@ -110,20 +110,65 @@ pub struct ExampleEntry
   pub desc       : Option<String>,
 }
 
-/// Structured content for all sections of the help output.
+/// A named group of option entries rendered as its own section.
 #[ derive( Debug, Clone ) ]
+pub struct OptionGroup
+{
+  /// Display name for this option group (e.g., `"RUNNER OPTIONS"`).
+  pub name    : String,
+  /// Ordered list of option entries within this group.
+  pub entries : Vec<OptionEntry>,
+}
+
+/// Structured content for all sections of the help output.
+///
+/// `#[non_exhaustive]` blocks all struct expressions (including struct update
+/// syntax) from outside the defining crate. Use `Default` + field assignment:
+///
+/// ```
+/// use cli_fmt::help::*;
+/// let mut data = CliHelpData::default();
+/// data.binary  = "myapp".into();
+/// data.tagline = "A useful tool".into();
+/// ```
+///
+/// Struct expressions — including struct update syntax — fail to compile from
+/// external crates (E0639). The doctest below verifies this:
+///
+/// ```compile_fail
+/// use cli_fmt::help::*;
+/// let _data = CliHelpData
+/// {
+///   binary        : String::new(),
+///   tagline       : String::new(),
+///   groups        : vec![],
+///   options       : vec![],
+///   examples      : vec![],
+///   usage_lines   : vec![],
+///   arguments     : vec![],
+///   option_groups : vec![],
+/// };
+/// ```
+#[ non_exhaustive ]
+#[ derive( Default, Debug, Clone ) ]
 pub struct CliHelpData
 {
   /// Binary name used in the usage line (e.g., `"clp"`).
-  pub binary   : String,
+  pub binary        : String,
   /// One-line description shown below the usage line.
-  pub tagline  : String,
+  pub tagline       : String,
   /// Ordered list of command groups.
-  pub groups   : Vec<CommandGroup>,
+  pub groups        : Vec<CommandGroup>,
   /// Global options; the Options section is omitted when this is empty.
-  pub options  : Vec<OptionEntry>,
+  pub options       : Vec<OptionEntry>,
   /// Usage examples; the Examples section is omitted when this is empty.
-  pub examples : Vec<ExampleEntry>,
+  pub examples      : Vec<ExampleEntry>,
+  /// Custom usage lines; when non-empty, replaces the default `"Usage: {binary} <command>"` header.
+  pub usage_lines   : Vec<String>,
+  /// Argument entries rendered between the Commands label and command group entries.
+  pub arguments     : Vec<OptionEntry>,
+  /// Named option groups; when non-empty, the legacy `options` field is suppressed.
+  pub option_groups : Vec<OptionGroup>,
 }
 
 // ─── Template ────────────────────────────────────────────────────────────────
@@ -168,19 +213,45 @@ impl CliHelpTemplate
     let rst       = c( s.color_reset   );
     let mut out   = String::new();
     self.emit_header( &mut out, bold, rst );
+    self.emit_arguments( &mut out, bold, opt, rst );
     self.emit_groups( &mut out, grp, opt, rst );
-    if !self.data.options.is_empty()  { self.emit_options(  &mut out, bold, opt, rst ); }
-    if !self.data.examples.is_empty() { self.emit_examples( &mut out, bold, ex,  rst ); }
+    self.emit_option_groups( &mut out, bold, opt, rst );
+    if self.data.option_groups.is_empty() && !self.data.options.is_empty()
+    {
+      self.emit_options( &mut out, bold, opt, rst );
+    }
+    if !self.data.examples.is_empty() { self.emit_examples( &mut out, bold, ex, rst ); }
     out
   }
 
   fn emit_header( &self, out : &mut String, bold : &str, rst : &str )
   {
-    let _ = writeln!( out, "{bold}Usage:{rst} {} <command>", self.data.binary );
+    if !self.data.usage_lines.is_empty()
+    {
+      for line in &self.data.usage_lines
+      {
+        let _ = writeln!( out, "  {line}" );
+      }
+    }
+    else
+    {
+      let _ = writeln!( out, "{bold}Usage:{rst} {} <command>", self.data.binary );
+    }
     let _ = writeln!( out );
     let _ = writeln!( out, "{}", self.data.tagline );
     let _ = writeln!( out );
     let _ = writeln!( out, "{bold}Commands:{rst}" );
+  }
+
+  fn emit_arguments( &self, out : &mut String, bold : &str, opt_color : &str, rst : &str )
+  {
+    if self.data.arguments.is_empty() { return; }
+    let max_len = self.data.arguments.iter().map( |e| e.name.len() ).max().unwrap_or( 0 );
+    let _ = writeln!( out, "\n{bold}Arguments:{rst}" );
+    for e in &self.data.arguments
+    {
+      let _ = writeln!( out, "  {opt_color}{:<width$}{rst}  {}", e.name, e.desc, width = max_len );
+    }
   }
 
   fn emit_groups( &self, out : &mut String, grp_color : &str, opt_color : &str, rst : &str )
@@ -197,6 +268,26 @@ impl CliHelpTemplate
         let padded = format!( "{:<width$}", entry.name, width = s.cmd_name_width );
         let _ = writeln!( out, "{ci}{opt_color}{padded}{rst}{gp}{}", entry.desc );
       }
+    }
+  }
+
+  fn emit_option_group( &self, out : &mut String, bold : &str, opt_color : &str, rst : &str,
+                        name : &str, entries : &[ OptionEntry ] )
+  {
+    if entries.is_empty() { return; }
+    let max_len = entries.iter().map( |e| e.name.len() ).max().unwrap_or( 0 );
+    let _ = writeln!( out, "\n{bold}{name}:{rst}" );
+    for e in entries
+    {
+      let _ = writeln!( out, "  {opt_color}{:<width$}{rst}  {}", e.name, e.desc, width = max_len );
+    }
+  }
+
+  fn emit_option_groups( &self, out : &mut String, bold : &str, opt_color : &str, rst : &str )
+  {
+    for group in &self.data.option_groups
+    {
+      self.emit_option_group( out, bold, opt_color, rst, &group.name, &group.entries );
     }
   }
 
@@ -289,5 +380,6 @@ pub mod prelude
     ExampleEntry,
     CliHelpData,
     CliHelpTemplate,
+    OptionGroup,
   };
 }

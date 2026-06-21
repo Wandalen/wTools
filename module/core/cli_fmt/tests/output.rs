@@ -61,6 +61,8 @@
 //! | boundary | width=1 truncates | ✓ |
 //! | unicode | unicode_aware=true code path | ✓ |
 //! | merge | stderr trailing newline no double-newline | ✓ |
+//! | merge | both streams trailing newline no double-newline | ✓ |
+//! | merge | stdout trailing newline with separator | ✓ |
 //! | config | OutputConfig::new() matches default | ✓ |
 //! | OutputConfig | has_processing for tail | ✓ |
 //! | OutputConfig | has_processing for width | ✓ |
@@ -598,6 +600,37 @@ fn merge_streams_stderr_trailing_newline()
   assert!(
     !result.contains( "\n\n" ),
     "result must not contain double-newline sequence, got:\n{result:?}"
+  );
+}
+
+// ============================================================================
+// merge_streams edge cases (continued)
+// ============================================================================
+
+// When both streams end with '\n', no double-newline separator should appear.
+// The separator logic only fires when stderr does NOT end with '\n'.
+#[ test ]
+fn merge_streams_both_trailing_newlines_no_double_newline()
+{
+  let result = merge_streams( "out\n", "err\n", &StreamFilter::Both );
+  assert_eq!(
+    result, "err\nout\n",
+    "both streams with trailing newlines must not produce double-newline, got:\n{result:?}"
+  );
+  assert!(
+    !result.contains( "\n\n" ),
+    "result must not contain double-newline sequence, got:\n{result:?}"
+  );
+}
+
+// When stdout ends with '\n' but stderr does not, exactly one separator is added.
+#[ test ]
+fn merge_streams_stdout_trailing_newline_separator()
+{
+  let result = merge_streams( "out\n", "err", &StreamFilter::Both );
+  assert_eq!(
+    result, "err\nout\n",
+    "stderr without trailing newline must get exactly one newline separator, got:\n{result:?}"
   );
 }
 

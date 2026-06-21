@@ -3,8 +3,8 @@
 ### Scope
 
 - **Purpose**: Provide a typed, configurable template that renders structured CLI help output from two disjoint parameter sets — style and data — producing ANSI-colored, column-aligned text suitable for terminal display.
-- **Responsibility**: Document the style/data separation rationale, dependency architecture, and why CLI help rendering belongs in cli_fmt rather than data_fmt.
-- **In Scope**: Style configuration (13 layout and color parameters); structured content model (binary name, tagline, command groups, options, examples); TTY-conditional ANSI output; dependency architecture (parallel with data_fmt, no cross-dependency); feature flag.
+- **Responsibility**: Document the style/data separation rationale, multi-section content model (usage_lines, arguments, option_groups), backward compatibility semantics, `#[non_exhaustive]` enforcement, dependency architecture, and why CLI help rendering belongs in cli_fmt rather than data_fmt.
+- **In Scope**: Style configuration (13 layout and color parameters); structured content model (binary name, tagline, command groups, options, examples, usage_lines, arguments, option_groups); `OptionGroup` (named section with independent per-group column padding); TTY-conditional ANSI output; backward-compatible `options` field (renders when `option_groups` is empty); `#[non_exhaustive]` on `CliHelpData`; `CliHelpData::default()`; dependency architecture (parallel with data_fmt, no cross-dependency); feature flag.
 - **Out of Scope**: Type field details and rendering procedure — see `api/002_help_api.md`; data_fmt table-based help path; per-command help (unilang pipeline concern).
 
 ### Design
@@ -21,7 +21,17 @@
 
 **Conditional sections:** Options and Examples sections are omitted entirely when their content lists are empty, producing cleaner output for simple tools.
 
-**Feature flag:** The `cli_help_template` feature flag enables this module. Included in the default feature set when the crate is enabled.
+**Usage line override:** When `usage_lines` is non-empty, each entry is emitted on its own indented line, replacing the default `"Usage: {binary} <command>"` emission. When `usage_lines` is empty the original single-line form is preserved — callers that do not set this field see no change.
+
+**Arguments section:** When `arguments` is non-empty, an `Arguments:` section is emitted after the header block (between the `Commands:` label and command group entries), using content-driven column padding. Empty vec omits the section entirely.
+
+**Option groups:** `option_groups` holds named sections rendered independently between Commands and the legacy `options` list. Each group computes column padding from its own entries only — longer entries in one group do not widen narrower groups.
+
+**Backward compatibility:** When `option_groups` is empty and `options` is non-empty, the legacy `Options:` section renders unchanged. When `option_groups` is non-empty, the `options` field is suppressed — callers using named groups replace the flat list entirely. Callers that set only `options` and leave `option_groups` empty are fully unaffected.
+
+**Non-exhaustive struct:** `CliHelpData` carries `#[non_exhaustive]`. Callers outside the crate cannot use struct expressions (exhaustive or struct update syntax); they must use `CliHelpData::default()` followed by field assignment. This is a compile-time enforcement of API extensibility.
+
+**Feature flag:** The `cli_help_template` feature flag enables this module (declared as `["std"]` dependency). Included in the default feature set when the crate is enabled.
 
 For complete type definitions, field defaults, and the rendering procedure, see [`api/002_help_api.md`](../api/002_help_api.md).
 
@@ -33,6 +43,10 @@ For complete type definitions, field defaults, and the rendering procedure, see 
 - **AC-4**: `cli_fmt` has no dependency on `data_fmt`; grep for `data_fmt` in `cli_fmt/Cargo.toml` returns empty.
 - **AC-5**: After `claude_profile` replaces `print_usage()` with `CliHelpTemplate::render()`, all help output integration tests (IT-1..IT-12 from task 128) pass without modification.
 - **AC-6**: `cli_fmt` compiles with `RUSTFLAGS="-D warnings" cargo check` and zero warnings.
+- **AC-7**: `usage_lines: vec!["clr <command>".into()]` → render output contains `"  clr <command>"`; empty `usage_lines` → output contains `"Usage: "` followed by the binary name (default behavior preserved).
+- **AC-8**: `arguments: vec![OptionEntry { name: "<MSG>".into(), desc: "Message to send".into() }]` → output contains `"  <MSG>  Message to send"`; empty `arguments` → `"Arguments:"` does not appear in output.
+- **AC-9**: `option_groups: vec![OptionGroup { name: "RUNNER OPTIONS".into(), entries: vec![...] }]` → output contains `"RUNNER OPTIONS:"`; two groups with differing name lengths → each group pads names to its own `max(name.len())` independently of the other.
+- **AC-10**: An exhaustive external struct literal on `CliHelpData` listing all fields fails to compile (`#[non_exhaustive]` enforced); struct update syntax also fails to compile from outside the crate (E0639); callers construct instances via `CliHelpData::default()` followed by field assignment.
 
 ### APIs
 
@@ -56,4 +70,4 @@ For complete type definitions, field defaults, and the rendering procedure, see 
 
 | File | Relationship |
 |------|-------------|
-| `tests/help.rs` | T01–T14: column alignment, TTY detection, section omission, desc annotation, color defaults, edge cases, data_fmt absence |
+| `tests/help.rs` | T01–T14, T-A01–T-A09: column alignment, TTY detection, section omission, desc annotation, color defaults, edge cases, data_fmt absence, usage_lines, arguments, option_groups, backward compat, per-group padding, CliHelpData::default() |
