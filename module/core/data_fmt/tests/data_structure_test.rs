@@ -118,17 +118,12 @@ fn data_structure_001_ds_04_variant_fills_all_attributes()
 
   assert_eq!( schema_attrs.len(), 46, "precondition: schema has 46 attrs" );
 
-  // Count attribute rows in a variant doc (pipe-separated table rows with numeric # or backtick attr)
+  // Count attribute rows in variant doc (markdown list items: `- **attr**: value`)
   let variant_attr_count = VARIANT_DOC.lines()
     .filter( | line |
     {
       let trimmed = line.trim();
-      if !trimmed.starts_with( '|' ) { return false; }
-      let cols : Vec< &str > = trimmed.split( '|' ).collect();
-      if cols.len() < 4 { return false; }
-      let first = cols[ 1 ].trim();
-      // Variant docs use | # | attr | value | format
-      first.parse::< u32 >().is_ok()
+      trimmed.starts_with( "- **" ) && trimmed.contains( "**:" )
     })
     .count();
 
