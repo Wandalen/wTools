@@ -33,3 +33,4 @@
 | 8 | 008 | — | 8 | 6 | 9 | — | ✅ (Completed) | dev | [Fix caption width: fill to rendered table width](completed/008_fix_caption_width.md) | render_caption_if_present must fill to compute_total_row_width(primary_widths), not resolve_terminal_width() |
 | 9 | 009 | — | 7 | 5 | 8 | — | ✅ (Completed) | dev | [API consistency: with_ prefix sweep + rename Heading](completed/009_api_consistency_with_prefix.md) | add with_ prefix to all 39 config builder setters; rename TableCaption → Heading |
 | 10 | 010 | — | 5 | 8 | 9 | — | ✅ (Completed) | dev | [Add Heading feature examples](completed/010_heading_examples.md) | add heading_basic.rs and heading_styles.rs example binaries (E criterion) |
+| 11 | 011 | — | 6 | 9 | 9 | — | Open | any | [format_aligned display width mismatch](unverified/011_format_aligned_display_width_mismatch.md) | format_aligned uses char-count visual_len for pass 1 but display-width pad_to_width for pass 2 — emoji/CJK columns misalign |

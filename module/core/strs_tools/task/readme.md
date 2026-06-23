@@ -19,6 +19,7 @@ This document serves as the **single source of truth** for all project work.
 | 8 | [002](completed/002_zero_copy_optimization.md) | 0 | 10 | 5 | 5 | 0 | ✅ (Completed) | Zero Copy Optimization | Implement zero-copy string operations with copy-on-write semantics for 2-5x memory reduction |
 | 9 | [003](completed/003_compile_time_pattern_optimization.md) | 0 | 10 | 5 | 5 | 0 | ✅ (Completed) | Compile Time Pattern Optimization | Implement compile-time pattern optimization with procedural macros for zero runtime overhead |
 | 10 | [008](completed/008_parser_integration.md) | 0 | 10 | 5 | 5 | 0 | ✅ (Completed) | Parser Integration | Implement parser integration optimization for 30-60% improvement in parsing pipelines |
+| 11 | [011](011_add_visual_width_display_columns.md) | — | 6 | 9 | 9 | — | Open | Add visual_width display columns | Add `visual_width()` fn using `UnicodeWidthChar::width()` — `visual_len` returns char count, not display columns; mismatches `pad_to_width` which uses display width |
 
 ## Issues Index
 
