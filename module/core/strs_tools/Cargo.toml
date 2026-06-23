@@ -1,6 +1,6 @@
 [package]
 name = "strs_tools"
-version = "0.47.1"
+version = "0.48.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
