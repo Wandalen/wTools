@@ -10,7 +10,7 @@
 - **Closes:** null
 - **Blocked Reason:** null
 - **Dir:** .
-- **Validated By:** author-inline
+- **Validated By:** author-inline (pre-MAAV historic — see ## Verification Record)
 - **Validation Date:** 2026-05-17
 
 ## Goal
@@ -116,7 +116,7 @@ Desired answer for every question is YES.
 - [x] C14 — Is the `cli_help_template` feature registered in `[features]` and included in `full`?
 
 **Out of Scope confirmation**
-- [ ] C15 — Are `data_fmt`, `claude_profile`, and `unilang` source files unchanged? *(not statically verifiable without reading those crates)*
+- [ ] C15 — Are `data_fmt`, `claude_profile`, and `unilang` source files unchanged? *(permanently non-verifiable from cli_fmt scope — requires reading external crates; accepted by convention: all three were excluded by the Out of Scope section and no code path in this task touches them)*
 
 ### Measurements
 
@@ -154,7 +154,19 @@ Formal validation run 2026-05-17 via `w3 .test level::3` (local nextest + worksp
 
 All Checklist items (C1–C14, I2, AF1–AF4 statically; M1, M2, I1, AF4 by test run), Measurements, and Invariants fully verified. C15 remains non-verifiable (requires reading external crates). No `data_fmt` dependency introduced.
 
+## Related Documentation
+
+- `docs/feature/002_cli_help_template.md` — help template behavioral requirements (AC-1..AC-6)
+- `docs/api/002_help_api.md` — help API contract (CliHelpStyle 13 fields, defaults, tty_detect semantics)
+- `docs/invariant/001_architectural_boundary.md` — no data_fmt dependency invariant
+- `src/help.rs` — implementation target (CliHelpStyle, CliHelpData, CliHelpTemplate)
+- `tests/help.rs` — test target (T01–T09 including T09 bug reproducer)
+
 ## History
 
 - **[2026-05-17]** `CREATED` — Task filed. Goal: implement CliHelpTemplate typed CLI help renderer in cli_fmt.
 - **[2026-05-17]** `COMPLETED` — All 9 tests pass (T01–T09 including T09 bug reproducer). Validated via w3 .test level::3.
+
+## Verification Record
+
+Pre-MAAV inline validation — 2026-05-17. This task predates the MAAV (Multi-Agent Adversarial Validation) standard (GP #11). Validation was performed inline by the authoring entity without independent adversarial subagents — constitutes Self-Verification Forgery by current GP #11 standards. Accepted as a historic baseline: all Checklist items C1–C14 and AF1–AF4 statically verified; M1, M2, I1, AF4 verified by test run. C15 is permanently non-verifiable from cli_fmt scope (external crates) — accepted by convention.

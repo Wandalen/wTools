@@ -10,7 +10,7 @@
 - **Closes:** null
 - **Blocked Reason:** null
 - **Dir:** .
-- **Validated By:** author-inline
+- **Validated By:** author-inline (pre-MAAV historic — see ## Verification Record)
 - **Validation Date:** 2026-05-17
 
 ## Goal
@@ -119,7 +119,19 @@ Added `width_exact_boundary` (FT-11) and `process_output_head_lines_omitted` (FT
 
 Validation run 2026-05-17: 33 output tests pass (M1), both new test functions exist (M2=2), boundary assertions present (AF1=7), lines_omitted asserted in new test (AF2). Full test suite green (I1). Source file `src/output.rs` unchanged.
 
+## Related Documentation
+
+- `docs/feature/001_output_processing.md` — output processing behavioral requirements; `is_default()` and head/width interaction
+- `tests/docs/feature/001_output_processing.md` — output feature test spec; FT-11 and FT-12 were the ⏳ gaps motivating this task
+- `src/output.rs` — output processing implementation (`apply_width_filtering`, head/tail logic)
+- `tests/output.rs` — target test file; `width_exact_boundary` and `process_output_head_lines_omitted` added here
+- `task/bug/closed/005_width_truncation_boundary.md` — BUG-005 root cause analysis for FT-11 exact-boundary case
+
 ## History
 
 - **[2026-05-17]** `CREATED` — Task filed. Goal: fill output test coverage gaps for FT-11 and FT-12.
 - **[2026-05-17]** `COMPLETED` — width_exact_boundary and process_output_head_lines_omitted added; 33 output tests pass.
+
+## Verification Record
+
+Pre-MAAV inline validation — 2026-05-17. This task predates the MAAV (Multi-Agent Adversarial Validation) standard (GP #11). Validation was performed inline by the authoring entity without independent adversarial subagents — constitutes Self-Verification Forgery by current GP #11 standards. Accepted as a historic baseline: all Checklist items C1–C11, Measurements (M1=33, M2=2), Invariant I1, and Anti-faking checks AF1–AF2 verified at completion time.

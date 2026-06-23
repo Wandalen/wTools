@@ -29,6 +29,7 @@ Validates CLI output processing and help template rendering. Tests are organized
 |------|----------------|
 | `readme.md` | Document test organization and navigation |
 | `output.rs` | Validate CLI output processing behavior |
+| `output_passthrough.rs` | Validate FT-41 passthrough path under `output_passthrough` feature (no `string_split`) |
 | `help.rs` | Validate CliHelpTemplate rendering, CliHelpStyle defaults, OptionGroup, and CliHelpData::default() |
 | `docs/` | Test specification documents for doc entity instances |
 
@@ -42,17 +43,18 @@ Validates CLI output processing and help template rendering. Tests are organized
 
 ## Test Coverage
 
-`output.rs` (46 tests):
-- **OutputConfig Tests**: Default configuration, has_processing detection, builder pattern, is_default discriminant tests (stream_filter, width_suffix, unicode_aware, tail, width)
+`output.rs` (59 tests):
+- **OutputConfig Tests**: Default configuration, has_processing detection, builder pattern, is_default discriminant tests (stream_filter, width_suffix, unicode_aware, tail, width), new() constructor alias
 - **Stream Selection Tests**: stdout-only, stderr-only, both streams, both-with-empty-stdout, both-with-empty-stderr, stderr-before-stdout ordering
 - **Head Tests**: Truncate to N lines, exceeds total, exact count, empty input
 - **Tail Tests**: Last N lines, exceeds total, exact count, empty input
 - **Combined Head+Tail Tests**: No-overlap filtering, overlapping windows (all retained), exact-fit boundary
-- **Width Tests**: No truncation needed, truncation with arrow suffix, custom suffix, zero width handling, ANSI preservation with and without truncation, exact boundary (`len == max_width`)
+- **Width Tests**: No truncation needed, truncation with arrow suffix, custom suffix, zero width handling, empty suffix (no truncation marker), ANSI preservation with and without truncation, exact boundary (`len == max_width`)
 - **Integration Tests**: Combined operations testing, combined both-streams+head+width, `lines_omitted` correctness via `process_output`
-- **Stream Merge Edge Cases**: both streams with trailing newlines (no double-newline); stdout-trailing-newline with separator
+- **Stream Merge Edge Cases**: stderr trailing newline (no double-newline separator), both streams trailing newlines (no double-newline), stdout-trailing-newline with separator, merge_streams Stdout-only direct call (AP-14), merge_streams Stderr-only direct call (AP-15)
+- **Combined Limit Tests** (FT-36..FT-44): stdout-filter+head, stderr-filter+head (FT-42 — symmetric counterpart), head+tail+width triple combination, empty stdout+non-empty stderr+head, width=0 disables truncation when head is active, unicode_aware=false char-not-byte counting (FT-43), line exactly 1 over max_width (FT-44)
 
-`help.rs` (30 tests):
+`help.rs` (34 tests):
 - **T01** Column alignment: cmd/opt names padded to configured widths, no ANSI in no-TTY mode
 - **T02** No ANSI codes: `tty_detect=false` suppresses all escape sequences
 - **T03** Explicit `tty_detect=false`: equivalent behavior to T01
@@ -83,11 +85,18 @@ Validates CLI output processing and help template rendering. Tests are organized
 - **T-B06** `OptionGroup` with empty `entries` vec is silently skipped — no group header emitted
 - **T-B07** `option_groups` with empty-entry group + non-empty `options`: options are suppressed (footgun)
 - **T-B08** `Arguments:` section appears before command group entries in output when both set
+- **T-B09** `examples` entries render in declaration order (first declared appears at lower offset)
+- **T-B10** tagline appears after `Usage:` line, separated by a blank line (`"\n\n"`)
+- **T-B11** `col_gap=4` produces 4 spaces between padded name column and description (FT-31)
+- **T-B12** `cmd_indent=2` produces 2-space leading indent instead of default 4 (FT-32)
 
 Compile_fail doc test (in `src/help.rs`):
 - **T-A08** Exhaustive external `CliHelpData` struct literal rejected by `#[non_exhaustive]`
 
-Total: 76 integration tests + 6 doc tests = 82 tests
+Total: 93 integration tests + 6 doc tests = 99 tests
+
+`output_passthrough.rs` (1 test — not in standard suite; run with `cargo nextest run --test output_passthrough --no-default-features --features output_passthrough`):
+- `feature_flag_line_filtering_passthrough` (FT-41) — verifies `apply_line_filtering` passthrough branch returns content unchanged with `lines_omitted == 0` when compiled without `string_split`
 
 ## Test Execution
 
@@ -109,6 +118,6 @@ cargo test --test output
 - CLI output processing tests: `output.rs`
 - CLI help template tests: `help.rs`
 - Test spec documents (doc entity → test case mapping): `docs/`
-- Test matrix and bug documentation: See `output.rs` file header (lines 5-79)
-- Bug reproducer documentation: See `output.rs` lines 5-35 (width truncation boundary detection)
-- Help test matrix: See `help.rs` file header (lines 8-34)
+- Test matrix: See `output.rs` file header (`## Test Matrix` section)
+- Bug reproducer documentation: BUG-005 see `width_exact_boundary` in `output.rs`; BUG-006 see `merge_streams_ordering` in `output.rs`; BUG-007 see `test_example_desc_rendered` in `help.rs`
+- Help test matrix: See `help.rs` file header (`## Test Matrix` section)

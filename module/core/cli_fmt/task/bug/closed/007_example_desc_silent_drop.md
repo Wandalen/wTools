@@ -24,7 +24,6 @@ Any `CliHelpTemplate` user who supplies `desc: Some(text)` on an `ExampleEntry` 
 that silently omits the annotation. The field is documented as "Optional annotation line appended
 after the invocation" — this contract was broken. Silent wrong result — no error raised, no
 warning emitted. Affects every invocation where any example has `desc: Some(_)`.
-Entity Scope: None.
 
 ## How Discovered
 
@@ -39,14 +38,12 @@ $ cargo test test_example_desc_rendered -- --nocapture
 ```bash
 mkdir -p /tmp/mre007 && cat > /tmp/mre007/test.rs << 'EOF'
 // Reproducer: ExampleEntry.desc=Some must appear in rendered output
+// Note: CliHelpData is #[non_exhaustive] since v0.9.2 — use ::default() + field assignment
 #[test]
 fn mre_007() {
     use cli_fmt::help::*;
-    let data = CliHelpData {
-        binary: "app".into(), tagline: "t".into(), groups: vec![],
-        options: vec![],
-        examples: vec![ ExampleEntry { invocation: "app run".into(), desc: Some("do it".into()) } ],
-    };
+    let mut data = CliHelpData::default();
+    data.examples = vec![ ExampleEntry { invocation: "app run".into(), desc: Some("do it".into()) } ];
     let style = CliHelpStyle { tty_detect: false, ..CliHelpStyle::default() };
     let out = CliHelpTemplate::new(style, data).render();
     // Before fix: out does not contain "# do it"

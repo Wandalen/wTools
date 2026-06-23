@@ -9,6 +9,6 @@
 
 ### Overview Table
 
-| ID | Name | Purpose | Status |
-|----|------|---------|--------|
-| 001 | [Architectural Boundary](001_architectural_boundary.md) | cli_fmt vs strs_tools separation boundary | ✅ |
+| # | File | Name | Status |
+|---|------|------|--------|
+| 1 | [001_architectural_boundary.md](001_architectural_boundary.md) | Architectural Boundary | ✅ |

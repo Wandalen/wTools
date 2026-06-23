@@ -9,7 +9,7 @@
 
 ### Overview Table
 
-| ID | Name | Purpose | Status |
-|----|------|---------|--------|
-| 001 | [Output Processing](001_output_processing.md) | CLI output filtering, truncation, and stream merging | ✅ |
-| 002 | [CLI Help Template](002_cli_help_template.md) | Typed, configurable template for CLI help text rendering | ✅ |
+| # | File | Name | Status |
+|---|------|------|--------|
+| 1 | [001_output_processing.md](001_output_processing.md) | Output Processing | ✅ |
+| 2 | [002_cli_help_template.md](002_cli_help_template.md) | CLI Help Template | ✅ |

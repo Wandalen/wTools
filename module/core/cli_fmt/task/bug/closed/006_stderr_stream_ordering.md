@@ -24,7 +24,6 @@ Any CLI tool using `process_output` or `merge_streams` with both streams non-emp
 stderr after stdout. Error messages appeared below normal output, making them easy to miss when
 output is long. Silent wrong result — no error raised. Affects every invocation where both
 `stdout` and `stderr` are non-empty strings.
-Entity Scope: None.
 
 ## How Discovered
 

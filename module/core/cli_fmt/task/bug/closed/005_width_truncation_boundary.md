@@ -23,7 +23,6 @@
 Any CLI tool using `process_output` with a `max_width` equal to an input line's visible length
 receives a truncated line with the truncation suffix, making the output shorter than the configured
 limit. Silent wrong result — no error is raised. Affects every invocation where `visual_len(line) == max_width`.
-Entity Scope: None.
 
 ## How Discovered
 

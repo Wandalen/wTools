@@ -3,9 +3,9 @@
 ### Scope
 
 - **Purpose**: Verify the behavioral requirements documented in `docs/feature/001_output_processing.md`.
-- **Responsibility**: Test spec for stream ordering, head/tail line filtering, width truncation, width=0 disable, truncation suffix, ANSI width exclusion, StreamFilter variants, and lines_omitted accuracy.
-- **In Scope**: FT-1..FT-40 — stream selection ordering, head/tail line filtering, width truncation, ANSI code handling, StreamFilter variants, metadata accuracy, boundary conditions (head/tail/width zero, exact, overlap), combined configuration scenarios, stream-filter+head interaction, head+tail+width triple combination, empty width suffix, empty-stdout head filtering, and width=0+head interaction.
-- **Out of Scope**: strs_tools internals; architectural boundary enforcement — see `tests/docs/invariant/001_architectural_boundary.md`.
+- **Responsibility**: Test spec for stream ordering, head/tail line filtering, width truncation, width=0 disable, truncation suffix, ANSI width exclusion, StreamFilter variants, lines_omitted accuracy, and feature-flag line filtering passthrough behavior.
+- **In Scope**: FT-1..FT-44 — stream selection ordering, head/tail line filtering, width truncation, ANSI code handling, StreamFilter variants, metadata accuracy, boundary conditions (head/tail/width zero, exact, overlap, one-over), combined configuration scenarios, stream-filter+head interaction (Stdout and Stderr variants), head+tail+width triple combination, empty width suffix, empty-stdout head filtering, width=0+head interaction, unicode_aware=false char-based counting, and feature-flag line filtering passthrough (string_split absent, FT-41); contract tests for strs_tools' public `head`/`tail` utility functions (FT-2, FT-22, FT-26..FT-30) verifying the behavioral guarantees cli_fmt delegates to.
+- **Out of Scope**: strs_tools internal implementation details; architectural boundary enforcement — see `tests/docs/invariant/001_architectural_boundary.md`.
 
 ### FT-1: Stderr precedes stdout in Both mode
 
@@ -18,6 +18,7 @@
 - **Given:** five-line text `"line1\nline2\nline3\nline4\nline5"`, head limit `2`
 - **When:** `head(text, 2)` (strs_tools utility called directly, not process_output)
 - **Then:** result == `"line1\nline2"` — only the first two lines retained
+- **Note:** Cross-crate contract: verifies strs_tools behavior from cli_fmt's perspective.
 
 ### FT-3: Line well below max_width is not truncated
 
@@ -83,7 +84,7 @@
 
 - **Given:** input `"café"` (4 visible chars, multi-byte UTF-8), `OutputConfig::default().with_unicode_aware(true).with_width(3)`
 - **When:** `process_output("café", "", &config)`
-- **Then:** `result.width_truncated == true` — visual width 4 exceeds limit 3; the `unicode_aware=true` code path in `apply_width_filtering` is exercised
+- **Then:** `result.width_truncated == true` — visual width 4 exceeds limit 3; `unicode_aware=true` enables grapheme-based width measurement
 
 ### FT-14: merge_streams does not insert extra newline when stderr ends with newline
 
@@ -138,6 +139,7 @@
 - **Given:** three-line input `"line1\nline2\nline3"`, head limit `10`
 - **When:** `head(text, 10)` (direct utility call)
 - **Then:** result == `"line1\nline2\nline3"` — all three lines retained; no truncation occurs when limit exceeds available lines
+- **Note:** Cross-crate contract: verifies strs_tools behavior from cli_fmt's perspective.
 
 ### FT-23: ANSI codes preserved when truncation fires
 
@@ -155,37 +157,42 @@
 
 - **Given:** `OutputConfig::default().with_width(5)`
 - **When:** `is_default()` called
-- **Then:** `config.is_default() == false` — width field deviates from default `0`
+- **Then:** `config.is_default() == false` — width field deviates from default `None` (no limit configured)
 
 ### FT-26: head limit equals total line count — all lines returned
 
 - **Given:** three-line input `"line1\nline2\nline3"`, head limit `3`
 - **When:** `head(text, 3)` (direct utility call)
 - **Then:** result == `"line1\nline2\nline3"` — all three lines retained; exact-match limit is not off-by-one
+- **Note:** Cross-crate contract: verifies strs_tools behavior from cli_fmt's perspective.
 
 ### FT-27: head on empty input — empty result
 
 - **Given:** empty input `""`, head limit `5`
 - **When:** `head("", 5)` (direct utility call)
 - **Then:** result == `""` — empty input returns empty output without error
+- **Note:** Cross-crate contract: verifies strs_tools behavior from cli_fmt's perspective.
 
 ### FT-28: tail limit exceeds total line count — all lines returned
 
 - **Given:** three-line input `"line1\nline2\nline3"`, tail limit `10`
 - **When:** `tail(text, 10)` (direct utility call)
 - **Then:** result == `"line1\nline2\nline3"` — all three lines retained when limit exceeds available lines
+- **Note:** Cross-crate contract: verifies strs_tools behavior from cli_fmt's perspective.
 
 ### FT-29: tail limit equals total line count — all lines returned
 
 - **Given:** three-line input `"line1\nline2\nline3"`, tail limit `3`
 - **When:** `tail(text, 3)` (direct utility call)
 - **Then:** result == `"line1\nline2\nline3"` — all three lines retained; exact-match limit is not off-by-one
+- **Note:** Cross-crate contract: verifies strs_tools behavior from cli_fmt's perspective.
 
 ### FT-30: tail on empty input — empty result
 
 - **Given:** empty input `""`, tail limit `5`
 - **When:** `tail("", 5)` (direct utility call)
 - **Then:** result == `""` — empty input returns empty output without error
+- **Note:** Cross-crate contract: verifies strs_tools behavior from cli_fmt's perspective.
 
 ### FT-31: head+tail sum equals total line count — all lines returned, lines_omitted is zero
 
@@ -203,7 +210,7 @@
 
 - **Given:** stdout `"out1\nout2 is long\nout3"`, stderr `"err1\nerr2 is also long"`, `OutputConfig::default().with_head(3).with_width(15)` (StreamFilter::Both)
 - **When:** `process_output(stdout, stderr, &config)`
-- **Then:** output starts with `"err1"` (stderr precedes stdout); line count == 3 (head limit applied after stream merge)
+- **Then:** output starts with `"err1"` (stderr precedes stdout); line count == 3 (head limit applied after stream merge); `result.width_truncated == true` — retained lines exceed 15 chars
 
 ### FT-34: Both streams end with newline — no double-newline separator in merged output
 
@@ -247,6 +254,30 @@
 - **When:** `process_output("longline1\nlongline2\nlongline3", "", &config)`
 - **Then:** `result.content` contains the first 2 lines intact (untruncated); `result.width_truncated == false` — width=0 disables truncation even when head filtering is active; `result.lines_omitted == 1`
 
+### FT-41: Line filtering passthrough when string_split feature is absent
+
+- **Given:** three-line input `"line1\nline2\nline3"`, `OutputConfig::default().with_head(2)` — compiled without the `string_split` feature (the `output_passthrough` feature enables `std` unconditionally, so the `std`-absent sub-scenario is structurally N/A)
+- **When:** `process_output("line1\nline2\nline3", "", &config)` executed with `--no-default-features --features output_passthrough`
+- **Then:** `result.content == "line1\nline2\nline3"` — all lines pass through unchanged; `result.lines_omitted == 0` — head limit has no effect; the filtering stage is compiled out and its passthrough branch returns zero lines omitted
+
+### FT-42: StreamFilter::Stderr combined with head limit — stdout discarded, head applied to stderr-only stream ⏳
+
+- **Given:** stdout `"x"` (1 line), stderr `"err1\nerr2\nerr3"` (3 lines), `OutputConfig::default().with_stream_filter(StreamFilter::Stderr).with_head(2)`
+- **When:** `process_output("x", "err1\nerr2\nerr3", &config)`
+- **Then:** `result.content` contains `"err1"` and `"err2"` but not `"err3"`; `"x"` is absent from content entirely; `result.lines_omitted == 1` — stdout discarded before head filtering; head(2) applies to the stderr-only merged stream; complements FT-36 (Stdout+head)
+
+### FT-43: unicode_aware=false uses char count, not byte count, for width measurement ⏳
+
+- **Given:** single-char input `"é"` (U+00E9, 1 char, 2 bytes), `OutputConfig::default().with_width(1)` (unicode_aware defaults to false)
+- **When:** `process_output("é", "", &config)`
+- **Then:** `result.width_truncated == false` — unicode_aware=false uses char-based counting; `"é"` is exactly 1 char, which equals the limit 1; a byte-counting implementation would miscount 2 bytes and truncate; the char-based path correctly identifies no truncation is needed
+
+### FT-44: Line exactly one char wider than max_width is truncated ⏳
+
+- **Given:** single-line input `"01234567890"` (11 visible chars), `OutputConfig::default().with_width(10)`
+- **When:** `process_output("01234567890", "", &config)`
+- **Then:** `result.width_truncated == true` — 11 chars exceeds limit 10 by exactly 1; the boundary check fires at `> max_width`; contrast with FT-11 where `visual_len == max_width` is NOT truncated
+
 ### Features
 
 | File | Relationship |
@@ -263,4 +294,5 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../tests/output.rs` | FT-1: `select_streams_both`, `merge_streams_ordering`; FT-2: `head_basic`; FT-3: `width_no_truncation_needed`; FT-4: `ansi_preserved_when_no_truncation`; FT-5: `combined_tail_and_width`; FT-6: `head_tail_combined_no_overlap`; FT-7: `width_truncation_with_arrow`; FT-8: `width_zero_disables`; FT-9: `select_streams_stdout_only`; FT-10: `select_streams_stderr_only`; FT-11: `width_exact_boundary`; FT-12: `process_output_head_lines_omitted`; FT-13: `unicode_aware_truncation`; FT-14: `merge_streams_stderr_trailing_newline`; FT-15: `head_zero_produces_empty`; FT-16: `tail_zero_produces_empty`; FT-17: `width_one_truncates`; FT-18: `is_default_stream_filter`, `is_default_width_suffix`, `is_default_unicode_aware`; FT-19: `head_tail_overlap_shows_all`; FT-20: `select_streams_empty_stdout`; FT-21: `select_streams_empty_stderr`; FT-22: `head_exceeds_total`; FT-23: `ansi_preserved_with_truncation`; FT-24: `is_default_tail`; FT-25: `is_default_width`; FT-26: `head_exact`; FT-27: `head_empty`; FT-28: `tail_exceeds_total`; FT-29: `tail_exact`; FT-30: `tail_empty`; FT-31: `head_tail_exact_fit`; FT-32: `width_custom_suffix`; FT-33: `combined_streams_head_width`; FT-34: `merge_streams_both_trailing_newlines_no_double_newline`; FT-35: `merge_streams_stdout_trailing_newline_separator`; FT-36: `stdout_filter_with_head`; FT-37: `head_tail_width_triple_combination`; FT-38: `width_empty_suffix_no_marker`; FT-39: `empty_stdout_stderr_with_head`; FT-40: `width_zero_with_head` |
+| `../../../tests/output.rs` | FT-1: `select_streams_both`, `merge_streams_ordering`; FT-2: `head_basic`; FT-3: `width_no_truncation_needed`; FT-4: `ansi_preserved_when_no_truncation`; FT-5: `combined_tail_and_width`; FT-6: `head_tail_combined_no_overlap`; FT-7: `width_truncation_with_arrow`; FT-8: `width_zero_disables`; FT-9: `select_streams_stdout_only`; FT-10: `select_streams_stderr_only`; FT-11: `width_exact_boundary`; FT-12: `process_output_head_lines_omitted`; FT-13: `unicode_aware_truncation`; FT-14: `merge_streams_stderr_trailing_newline`; FT-15: `head_zero_produces_empty`; FT-16: `tail_zero_produces_empty`; FT-17: `width_one_truncates`; FT-18: `is_default_stream_filter`, `is_default_width_suffix`, `is_default_unicode_aware`; FT-19: `head_tail_overlap_shows_all`; FT-20: `select_streams_empty_stdout`; FT-21: `select_streams_empty_stderr`; FT-22: `head_exceeds_total`; FT-23: `ansi_preserved_with_truncation`; FT-24: `is_default_tail`; FT-25: `is_default_width`; FT-26: `head_exact`; FT-27: `head_empty`; FT-28: `tail_exceeds_total`; FT-29: `tail_exact`; FT-30: `tail_empty`; FT-31: `head_tail_exact_fit`; FT-32: `width_custom_suffix`; FT-33: `combined_streams_head_width`; FT-34: `merge_streams_both_trailing_newlines_no_double_newline`; FT-35: `merge_streams_stdout_trailing_newline_separator`; FT-36: `stdout_filter_with_head`; FT-37: `head_tail_width_triple_combination`; FT-38: `width_empty_suffix_no_marker`; FT-39: `empty_stdout_stderr_with_head`; FT-40: `width_zero_with_head`; FT-42: `stderr_filter_with_head`; FT-43: `unicode_aware_false_char_not_byte`; FT-44: `width_one_over_boundary` |
+| `../../../tests/output_passthrough.rs` | FT-41: `feature_flag_line_filtering_passthrough` (run with `cargo nextest run --test output_passthrough --no-default-features --features output_passthrough`) |

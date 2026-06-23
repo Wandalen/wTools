@@ -1,4 +1,4 @@
-# TSK-005: Extend CliHelpTemplate — multi-section options, custom usage lines, arguments section
+# Extend CliHelpTemplate — multi-section options, custom usage lines, arguments section
 
 ## Execution State
 
@@ -13,7 +13,7 @@
 - **Validated By:** normalization-audit
 - **Validation Date:** 2026-06-23
 
-## MOST Goal
+## Goal
 
 - **Motivated:** `clr --help` requires four named option groups (RUNNER OPTIONS, CLAUDE CODE OPTIONS (forwarded), SUBCOMMANDS, SESSION FLAGS), eight USAGE forms, and an ARGUMENTS section. `CliHelpData` (0.9.1) has a single `options: Vec<OptionEntry>` field, a hardcoded `"Usage: {binary} <command>"` emission, and no ARGUMENTS slot. Claude_runner cannot migrate `help.rs` to `CliHelpTemplate` without these structural capabilities, keeping it on a hand-rolled 262-line printer that will drift from the template's ANSI/width logic on every future help change.
 - **Observable:** `CliHelpData` exposes `usage_lines: Vec<String>`, `arguments: Vec<OptionEntry>`, and `option_groups: Vec<OptionGroup>` fields; `render()` calls, in order: `emit_header` (usage lines + tagline + Commands label), `emit_arguments` (when non-empty), `emit_groups` (Commands section), `emit_option_groups` (each `OptionGroup` as a titled section with per-group padding), conditional `emit_options` (suppressed when `option_groups` is non-empty; preserved when `option_groups` is empty — backward compat for callers that set only `options`), `emit_examples`; callers that leave `option_groups` empty still get the existing `"Options:"` section (backward compat); 22 nextest tests pass (`cargo nextest run --all-features`), 1 compile_fail doctest passes (`cargo test --doc --all-features`); `CliHelpData::default()` constructs without field literals; `basic_usage.rs` example compiles using `CliHelpData::default()` + field assignment (`#[non_exhaustive]` also blocks struct update syntax from external crates — E0639); crate version bumped to 0.9.2.
@@ -37,6 +37,7 @@
 13. In `tests/help.rs`, first migrate ALL existing exhaustive `CliHelpData` struct literals (the `two_group_data()` helper and any inline literals in T01–T14) to `CliHelpData::default()` + field assignment; this migration must happen before IS-1 adds `#[non_exhaustive]` or all 14 existing tests fail to compile (note: struct update syntax is also blocked from external crates, so field assignment is the only valid pattern). Then add T-A01 through T-A07 and T-A09 (8 new unit tests).
 14. Bump `version = "0.9.1"` → `"0.9.2"` in `Cargo.toml`
 15. Update claude_runner TSK-232 task file per `## Downstream Dependency` instructions when this task reaches ✅ Complete
+    *(Deferred — 2026-06-23: normalization audit is scoped to the cli_fmt package boundary; the out-of-crate write to `agent_kit/task/claude_runner/` was not authorized during normalization. See Outcomes.)*
 
 ## Out of Scope
 
@@ -127,12 +128,12 @@ When TSK-005 reaches ✅ Complete, the resolving agent MUST perform the followin
 
 ## Outcomes
 
-All 15 In Scope items delivered. `CliHelpData` now exposes `usage_lines`, `arguments`, and `option_groups` fields with `#[non_exhaustive]` and `#[derive(Default)]`. `OptionGroup` struct added to `src/help.rs` and exported via prelude. `render()` sequence updated: `emit_header` (conditional usage_lines) → `emit_arguments` → `emit_groups` → `emit_option_groups` → conditional `emit_options` (suppressed when option_groups non-empty) → `emit_examples`. Existing tests migrated from exhaustive struct literals to `CliHelpData::default()` + field assignment. 8 new tests (T-A01–T-A07, T-A09) added; compile_fail doctest (T-A08) confirms `#[non_exhaustive]` enforcement. `examples/basic_usage.rs` updated. Version bumped 0.9.1 → 0.9.2. Level 3 PASS: 76/76 nextest, all doc tests pass, 0 clippy warnings. Downstream TSK-232 update (IS-15) pending — out-of-scope for normalization.
+IS-1..IS-14 delivered. IS-15 (downstream TSK-232 update) deferred: normalization audit scope is cli_fmt package boundary only; out-of-crate write to agent_kit not authorized at this time. `CliHelpData` now exposes `usage_lines`, `arguments`, and `option_groups` fields with `#[non_exhaustive]` and `#[derive(Default)]`. `OptionGroup` struct added to `src/help.rs` and exported via prelude. `render()` sequence updated: `emit_header` (conditional usage_lines) → `emit_arguments` → `emit_groups` → `emit_option_groups` → conditional `emit_options` (suppressed when option_groups non-empty) → `emit_examples`. Existing tests migrated from exhaustive struct literals to `CliHelpData::default()` + field assignment. 8 new tests (T-A01–T-A07, T-A09) added; compile_fail doctest (T-A08) confirms `#[non_exhaustive]` enforcement. `examples/basic_usage.rs` updated. Version bumped 0.9.1 → 0.9.2. Level 3 PASS: 76/76 nextest, all doc tests pass, 0 clippy warnings. Downstream TSK-232 update (IS-15) pending — out-of-scope for normalization.
 
 ## History
 
 - **[2026-06-21]** `CREATED` — Extend CliHelpData with multi-section option groups, custom usage lines, and arguments section; bump to 0.9.2.
-- **[2026-06-23]** `COMPLETED` — Normalization audit confirmed all deliverables present in source. Closure Procedure executed retroactively.
+- **[2026-06-23]** `COMPLETED` — Normalization audit confirmed IS-1..IS-14 present in source. Closure Procedure executed retroactively. IS-15 (downstream TSK-232 update) deferred — out-of-crate scope boundary; see Outcomes.
 
 ## Verification Record
 

@@ -33,6 +33,7 @@ ansi_unicode = [ "strs_tools/ansi_unicode" ]
 
 # Individual modules
 output = [ "enabled", "std", "string_split" ]
+output_passthrough = [ "enabled", "std" ]
 
 # Structured CLI help template (data model + colour-aware renderer)
 cli_help_template = [ "std" ]

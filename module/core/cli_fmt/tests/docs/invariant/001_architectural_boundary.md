@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the architectural boundary invariant from `docs/invariant/001_architectural_boundary.md` holds in the codebase.
 - **Responsibility**: Test spec for the one-directional dependency constraint — `cli_fmt` depends on `strs_tools`; `strs_tools` does not depend on `cli_fmt`.
-- **In Scope**: Dependency direction correctness (IN-1); absence of CLI-specific output-processing types from `strs_tools` (IN-2); absence of CLI-specific help-rendering types from `strs_tools` (IN-2).
+- **In Scope**: Dependency direction correctness (IN-1); absence of CLI-specific output-processing types from `strs_tools` (IN-2); absence of CLI-specific help-rendering types from `strs_tools` (IN-2); strs_tools as sole runtime dependency (IN-3).
 - **Out of Scope**: Runtime performance of either crate; internal implementation details of `strs_tools`.
 
 ### IN-1: cli_fmt depends on strs_tools; strs_tools does not depend on cli_fmt
@@ -18,6 +18,12 @@
 - **Given:** the `strs_tools` source tree
 - **When:** source is searched for CLI-policy symbols from both modules: output-module (`StreamFilter`, `OutputConfig`, `ProcessedOutput`, `process_output`) and help-module (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, `OptionGroup`, `CommandGroup`, `CommandEntry`, `OptionEntry`, `ExampleEntry`)
 - **Then:** no such symbols are defined in `strs_tools` — they exist exclusively in `cli_fmt`
+
+### IN-3: strs_tools is the sole runtime dependency of cli_fmt
+
+- **Given:** `cli_fmt/Cargo.toml`
+- **When:** the `[dependencies]` section is inspected
+- **Then:** `strs_tools` is the only entry; no other crate appears in `[dependencies]`; dev-dependencies section is empty — cli_fmt's runtime footprint is limited to a single library
 
 ### Invariants
 
@@ -37,5 +43,5 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../tests/output.rs` | Compilation + test success confirms CLI-specific output types (`StreamFilter`, `OutputConfig`, `ProcessedOutput`) remain in `cli_fmt`, not `strs_tools` |
+| `../../../tests/output.rs` | Compilation + test success confirms CLI-specific output types (`StreamFilter`, `OutputConfig`, `ProcessedOutput`) remain in `cli_fmt`, not `strs_tools`; IN-3: `test_strs_tools_sole_runtime_dependency` |
 | `../../../tests/help.rs` | Compilation + test success confirms CLI-specific help types (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, etc.) remain in `cli_fmt`, not `strs_tools` or `data_fmt` |

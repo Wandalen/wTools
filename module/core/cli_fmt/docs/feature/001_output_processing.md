@@ -21,7 +21,9 @@ should be visible without scrolling past normal output.
 **Line filtering** — applies head and tail limits to the combined output. Head retains
 the first N lines; tail retains the last N lines. When both limits are set, the union
 of both windows is preserved. The count of omitted lines is always tracked accurately,
-including the case where head and tail windows overlap.
+including the case where head and tail windows overlap. Line filtering requires the
+`string_split` and `std` features; when either is absent, the filtering stage passes
+content through unchanged with zero lines reported as omitted.
 
 **Width truncation** — truncates any line whose visible character count exceeds the
 configured maximum. ANSI escape sequences are excluded from visible width measurement.
@@ -36,17 +38,17 @@ a flag indicating whether any line was truncated by the width limit.
 |------|-------------|
 | [`../api/001_output_api.md`](../api/001_output_api.md) | Public contract for the output processing function and types |
 
+### Feature Tests
+
+| File | Relationship |
+|------|-------------|
+| [`../../tests/docs/feature/001_output_processing.md`](../../tests/docs/feature/001_output_processing.md) | Test specification verifying the behavioral cases defined here |
+
 ### Invariants
 
 | File | Relationship |
 |------|-------------|
 | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle governing which logic belongs here |
-
-### Test Specs
-
-| File | Relationship |
-|------|-------------|
-| [`../../tests/docs/feature/001_output_processing.md`](../../tests/docs/feature/001_output_processing.md) | Test specification verifying the behavioral cases defined here |
 
 ### Sources
 

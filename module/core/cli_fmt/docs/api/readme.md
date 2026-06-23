@@ -9,7 +9,7 @@
 
 ### Overview Table
 
-| ID | Name | Purpose | Status |
-|----|------|---------|--------|
-| 001 | [Output API](001_output_api.md) | Output processing contract — config, result, and processor function | ✅ |
-| 002 | [Help Template API](002_help_api.md) | CLI help template public types and render method contract | ✅ |
+| # | File | Name | Status |
+|---|------|------|--------|
+| 1 | [001_output_api.md](001_output_api.md) | Output API | ✅ |
+| 2 | [002_help_api.md](002_help_api.md) | Help Template API | ✅ |

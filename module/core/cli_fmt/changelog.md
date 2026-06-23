@@ -1,5 +1,36 @@
 # Changelog
 
+## [v0.9.2 | 2026-06-23] Docs: formatting consistency fixes
+
+**Docs:** Two formatting violations found by code_hyg_l1 round 4 and fixed.
+- `task/completed/006_aspirational_test_surface.md` — tight list: removed 2 blank lines separating list items in the In Scope section (PRB-001; `l2_imp § Markdown Formatting : Tight Lists`)
+- `docs/readme.md:3` — Scope heading: `## Scope` → `### Scope` (PRB-002; `l2_imp § Project Structure : Directory Readme Scope Section`)
+
+## [v0.9.2 | 2026-06-23] Test hygiene: fix assertion gaps and doc placement
+
+**Tests:** Resolved code_hyg_l1 audit findings in `tests/output.rs`; added AP-12 coverage and FT-41 passthrough feature (no API changes).
+- `combined_streams_head_width` — added `assert!(result.width_truncated)` (FT-33 spec claim was unverified)
+- `width_one_truncates` — added `assert!(!result.content.contains('→'))` (FT-17 suffix-absence claim was unverified)
+- `width_exact_boundary` (BUG-005 reproducer) — moved 5-section `///` doc from module level to the function; module-level `//!` BUG-005 section removed
+- `select_streams_both` — removed duplicate `// test_kind: bug_reproducer(BUG-006)` marker; `merge_streams_ordering` remains the canonical BUG-006 reproducer
+- `output_config_with_width_zero_has_processing` — new AP-12 test: `with_width(0)` stores `Some(0)` not `None`; `has_processing() == true`, `is_default() == false`, but `width_truncated == false` at runtime (zero short-circuits the truncation stage)
+- `output_passthrough` feature added (not in `default`/`full`) — new `tests/output_passthrough.rs` with `feature_flag_line_filtering_passthrough` (FT-41): verifies the `apply_line_filtering` passthrough branch when `string_split` is absent; run with `cargo nextest run --test output_passthrough --no-default-features --features output_passthrough`
+
+## [v0.9.2 | 2026-06-23] Extend CliHelpData with grouped options, usage lines, and arguments
+
+**Added:** `CliHelpData` extended with three new fields for richer help template rendering.
+- `usage_lines: Vec<String>` — custom usage lines; renders each indented; falls back to `Usage: {binary}` when empty
+- `arguments: Vec<OptionEntry>` — typed argument section with column-aligned padding; omitted when empty
+- `option_groups: Vec<OptionGroup>` — named option group sections with per-group column padding; suppresses legacy `options` field when non-empty
+
+**Changed:** `CliHelpData` marked `#[non_exhaustive]` — external struct literals rejected (E0639); callers use `CliHelpData::default()` + field assignment. `CliHelpData` now derives `Default` (all Vec fields empty, string fields `""`).
+
+**Added:** `OptionGroup { name: String, entries: Vec<OptionEntry> }` — named option grouping type.
+
+**Tests:** 27 new integration tests; 1 new compile-fail doc test (T-A08). Total (standard suite): 86 integration tests + 6 doc tests.
+- `help.rs` (+18): T-A01..T-A07 (custom usage_lines, arguments, option_groups, CliHelpData::default), T-A09 (example construction pattern), T-B01..T-B10 (multi-entry usage, argument padding, empty command groups, empty data render, edge cases, suppression contracts, ordering).
+- `output.rs` (+9): is_default_tail (FT-24), is_default_width (FT-25), stdout_filter_with_head (FT-36), head_tail_width_triple_combination (FT-37), width_empty_suffix_no_marker (FT-38), empty_stdout_stderr_with_head (FT-39), width_zero_with_head (FT-40), merge_streams_both_empty_infallible (AP-11), test_strs_tools_sole_runtime_dependency (IN-3).
+
 ## [v0.6.0 | 2026-06-06] Comprehensive test surface coverage
 
 **Tests:** 17 new integration tests across `output.rs` and `help.rs`; total 58 integration tests + 4 doc tests.

@@ -3,35 +3,6 @@
 //!
 //! Ported from `unilang::output` module tests.
 //!
-//! ## Critical Bug Fix: Width Truncation Boundary Detection (BUG-005)
-//!
-//! **Bug (pre-migration):** Text exactly matching `max_width` was incorrectly truncated.
-//!
-//! **Root Cause:** `ansi::truncate()` reserves space for the suffix *within* `max_width`.
-//! For example, with `max_width=5` and suffix="→":
-//! - Input: "hello" (5 visible chars)
-//! - Old behavior: Truncated to "hell→" (incorrectly assumed truncation needed)
-//! - Correct behavior: Should return "hello" unchanged (fits exactly)
-//!
-//! **Why Not Caught:** No regression test existed before migration. The code was ported
-//! from `strs_tools::output`, which delegated unconditionally to `truncate_lines()` without
-//! testing the exact-width boundary case. Visual inspection of typical usage (long lines)
-//! passed; the failure required input where `visible_len(line) == max_width`, a case not
-//! covered by any existing test at the time of extraction.
-//!
-//! **Fix Applied:** Check `visual_len(line) > max_width` before calling `truncate()`.
-//! Only invoke truncation when line genuinely exceeds the limit.
-//!
-//! **Prevention:** Always validate visible width before truncating ANSI-aware text.
-//! Never assume `truncate()` handles exact-width detection internally.
-//!
-//! **Pitfall:** `TruncateOptions` is designed for unconditional truncation (reserves suffix space).
-//! Consumers must perform boundary detection before calling truncate functions.
-//!
-//! **Bug Reproducer (BUG-005):**
-//! - `width_exact_boundary`: Line exactly at `max_width` (`len == max_width`) not truncated — precise reproducer
-//!   See `task/bug/closed/005_width_truncation_boundary.md`
-//!
 //! ## Test Matrix
 //!
 //! | Category | Test | Status |
@@ -78,6 +49,21 @@
 //! | integration | combined streams+head+width | ✓ |
 //! | is_default | tail discriminant | ✓ |
 //! | is_default | width discriminant | ✓ |
+//! | merge | stream ordering (stderr before stdout) | ✓ |
+//! | integration | tail combined with width | ✓ |
+//! | integration | StreamFilter::Stdout with head (FT-36) | ✓ |
+//! | integration | head+tail+width triple combination (FT-37) | ✓ |
+//! | width | empty suffix — no marker appended (FT-38) | ✓ |
+//! | integration | empty stdout with stderr and head (FT-39) | ✓ |
+//! | width | zero disables truncation with head active (FT-40) | ✓ |
+//! | merge | both empty inputs — infallible (AP-11) | ✓ |
+//! | invariant | sole runtime dep is strs_tools (IN-3) | ✓ |
+//! | OutputConfig | width=0 activates has_processing, not is_default (AP-12) | ✓ |
+//! | StreamFilter | merge_streams Stdout-only direct call (AP-14) | ✓ |
+//! | StreamFilter | merge_streams Stderr-only direct call (AP-15) | ✓ |
+//! | unicode | unicode_aware=false: char count not byte count (FT-43) | ✓ |
+//! | width | line exactly 1 over max_width is truncated (FT-44) | ✓ |
+//! | integration | StreamFilter::Stderr combined with head (FT-42) | ✓ |
 
 use cli_fmt::output::*;
 use strs_tools::string::lines::*;
@@ -116,11 +102,31 @@ fn output_config_with_width_has_processing()
   assert!( config.has_processing() );
 }
 
+// AP-12: with_width(0) stores Some(0) not None — processing flag is set even though
+// truncation is disabled at runtime. Distinguishes "explicitly set to zero" from "not set".
+#[ test ]
+fn output_config_with_width_zero_has_processing()
+{
+  let config = OutputConfig::default().with_width( 0 );
+  assert!(
+    config.has_processing(),
+    "AP-12: with_width(0) must set has_processing() == true — Some(0) is not None"
+  );
+  assert!(
+    !config.is_default(),
+    "AP-12: with_width(0) must set is_default() == false — width deviates from None default"
+  );
+  let result = process_output( "this is a very long line indeed", "", &config );
+  assert!(
+    !result.width_truncated,
+    "AP-12: width=0 short-circuits truncation at runtime — width_truncated must be false even with Some(0) stored"
+  );
+}
+
 // ============================================================================
 // StreamFilter / stream selection tests
 // ============================================================================
 
-// test_kind: bug_reproducer(BUG-006)
 #[ test ]
 fn select_streams_both()
 {
@@ -328,6 +334,31 @@ fn width_custom_suffix()
   assert!( result.content.contains( "..." ) );
 }
 
+/// ## Critical Bug Fix: Width Truncation Boundary Detection (BUG-005)
+///
+/// # Root Cause
+/// `apply_width_filtering` delegated unconditionally to `truncate_lines()`, which reserves
+/// suffix space *within* `max_width`. For input where `visual_len(line) == max_width`,
+/// truncation fired even though the line fits exactly — `"hello"` at `max_width=5`
+/// produced `"hell→"` instead of passing through unchanged.
+///
+/// # Why Not Caught
+/// No regression test existed before migration. The code was ported from `strs_tools::output`
+/// which delegated unconditionally to `truncate_lines()` without testing the exact-width
+/// boundary case. Visual inspection of typical usage (long lines) passed; failure required
+/// input where `visible_len(line) == max_width`, a case not covered before extraction.
+///
+/// # Fix Applied
+/// Boundary guard added in `strs_tools::truncate_lines` — invokes truncation only when
+/// `visual_len(line) > max_width`. Lines that fit exactly (`== max_width`) pass through.
+///
+/// # Prevention
+/// Always validate visible width before truncating ANSI-aware text. Never assume
+/// `truncate()` handles exact-width detection internally.
+///
+/// # Pitfall
+/// `TruncateOptions` is designed for unconditional truncation (reserves suffix space).
+/// Consumers must perform boundary detection before calling truncate functions.
 // BUG-005 task/bug/closed/005_width_truncation_boundary.md — exact-width line incorrectly truncated
 // test_kind: bug_reproducer(BUG-005)
 #[ test ]
@@ -340,6 +371,19 @@ fn width_exact_boundary()
   let result = process_output( "0123456789", "", &config );
   assert!( result.content.starts_with( "0123456789" ) );
   assert!( !result.width_truncated );
+}
+
+// FT-44: Line exactly one char wider than max_width is truncated (contrast FT-11: == max_width is not)
+#[ test ]
+fn width_one_over_boundary()
+{
+  // 11-char input at width=10: one char over the limit — truncation must fire.
+  let config = OutputConfig::default().with_width( 10 );
+  let result = process_output( "01234567890", "", &config );
+  assert!(
+    result.width_truncated,
+    "FT-44: 11 chars at width=10 exceeds limit by 1 — truncation fires at > max_width (contrast FT-11: == max_width does not)"
+  );
 }
 
 // ============================================================================
@@ -432,6 +476,10 @@ fn combined_streams_head_width()
   assert!( result.content.starts_with( "err1" ) );
   let lines : Vec< &str > = result.content.lines().collect();
   assert_eq!( lines.len(), 3 ); // head = 3
+  assert!(
+    result.width_truncated,
+    "FT-33: retained line 'err2 is also long' (18 chars) exceeds width=15 — width_truncated must be true"
+  );
 }
 
 /// ## Critical Bug Fix: Stderr Stream Ordering (BUG-006)
@@ -463,6 +511,22 @@ fn merge_streams_ordering()
   // Test that stderr appears before stdout
   let result = merge_streams( "stdout", "stderr", &StreamFilter::Both );
   assert_eq!( result, "stderr\nstdout" );
+}
+
+// AP-14: merge_streams with Stdout filter returns only stdout — stderr is discarded entirely
+#[ test ]
+fn merge_streams_stdout_only()
+{
+  let result = merge_streams( "hello", "world", &StreamFilter::Stdout );
+  assert_eq!( result, "hello", "AP-14: Stdout filter returns only stdout; stderr discarded" );
+}
+
+// AP-15: merge_streams with Stderr filter returns only stderr — stdout is discarded entirely
+#[ test ]
+fn merge_streams_stderr_only()
+{
+  let result = merge_streams( "hello", "world", &StreamFilter::Stderr );
+  assert_eq!( result, "world", "AP-15: Stderr filter returns only stderr; stdout discarded" );
 }
 
 #[ test ]
@@ -583,6 +647,10 @@ fn width_one_truncates()
     result.width_truncated,
     "width=1 must trigger truncation for 'hello' (5 visible chars), got:\n{:?}", result.content
   );
+  assert!(
+    !result.content.contains( '→' ),
+    "FT-17: at width=1 the '→' suffix (1 char) exceeds the 1-char budget and must be omitted, got:\n{:?}", result.content
+  );
 }
 
 // ============================================================================
@@ -603,6 +671,20 @@ fn unicode_aware_truncation()
   assert!(
     result.width_truncated,
     "unicode_aware=true must trigger truncation when visual width (4) > max_width (3), got:\n{:?}", result.content
+  );
+}
+
+// FT-43: unicode_aware=false uses char count (1), not byte count (2), for "é" at width=1
+#[ test ]
+fn unicode_aware_false_char_not_byte()
+{
+  // "é" is U+00E9: 1 char, 2 bytes. unicode_aware=false uses char count (1), not byte count (2).
+  // At width=1 the char count equals the limit — no truncation should fire.
+  let config = OutputConfig::default().with_width( 1 );
+  let result = process_output( "é", "", &config );
+  assert!(
+    !result.width_truncated,
+    "FT-43: unicode_aware=false counts chars (1), not bytes (2); width=1 matches char count — no truncation"
   );
 }
 
@@ -710,6 +792,24 @@ fn stdout_filter_with_head()
   );
 }
 
+// FT-42: StreamFilter::Stderr combined with head — stdout discarded, head applied to stderr-only stream
+#[ test ]
+fn stderr_filter_with_head()
+{
+  let config = OutputConfig::default()
+    .with_stream_filter( StreamFilter::Stderr )
+    .with_head( 2 );
+  let result = process_output( "x", "err1\nerr2\nerr3", &config );
+  assert!( !result.content.contains( "x" ),    "FT-42: stdout discarded by Stderr filter" );
+  assert!(  result.content.contains( "err1" ), "FT-42: err1 retained by head(2)" );
+  assert!(  result.content.contains( "err2" ), "FT-42: err2 retained by head(2)" );
+  assert!( !result.content.contains( "err3" ), "FT-42: err3 dropped by head(2)" );
+  assert_eq!(
+    result.lines_omitted, 1,
+    "FT-42: one line omitted by head(2) on 3-line stderr-only stream"
+  );
+}
+
 // FT-37: head+tail+width all three limits active simultaneously
 #[ test ]
 fn head_tail_width_triple_combination()
@@ -805,5 +905,55 @@ fn width_zero_with_head()
   assert_eq!(
     result.lines_omitted, 1,
     "head(2) on 3-line input must omit 1 line"
+  );
+}
+
+// ============================================================================
+// API contract tests (AP-11, IN-3)
+// ============================================================================
+
+// AP-11: merge_streams is infallible when both inputs are empty
+#[ test ]
+fn merge_streams_both_empty_infallible()
+{
+  let result = merge_streams( "", "", &StreamFilter::Both );
+  assert_eq!(
+    result, "",
+    "merge_streams with two empty inputs must return empty string, got:\n{:?}", result
+  );
+}
+
+// IN-3: strs_tools is the sole runtime dependency of cli_fmt
+#[ test ]
+fn test_strs_tools_sole_runtime_dependency()
+{
+  let cargo = include_str!( "../Cargo.toml" );
+  // strs_tools must be present
+  assert!(
+    cargo.contains( "strs_tools" ),
+    "cli_fmt Cargo.toml must declare strs_tools as a dependency"
+  );
+  // No other crate may appear in [dependencies]
+  // Extract the [dependencies] section and confirm only strs_tools is listed
+  let deps_section = cargo
+    .split( "[dependencies]" )
+    .nth( 1 )
+    .unwrap_or( "" )
+    .split( "\n[" )
+    .next()
+    .unwrap_or( "" );
+  let dep_lines : Vec< &str > = deps_section
+    .lines()
+    .filter( | l | !l.trim().is_empty() && !l.trim_start().starts_with( '#' ) )
+    .collect();
+  assert_eq!(
+    dep_lines.len(), 1,
+    "cli_fmt must have exactly one runtime dependency (strs_tools), found {} dep lines:\n{:?}",
+    dep_lines.len(),
+    dep_lines
+  );
+  assert!(
+    dep_lines[ 0 ].starts_with( "strs_tools" ),
+    "the sole runtime dependency must be strs_tools, got:\n{:?}", dep_lines[ 0 ]
   );
 }

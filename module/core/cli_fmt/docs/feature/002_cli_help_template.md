@@ -4,7 +4,7 @@
 
 - **Purpose**: Provide a typed, configurable template that renders structured CLI help output from two disjoint parameter sets — style and data — producing ANSI-colored, column-aligned text suitable for terminal display.
 - **Responsibility**: Document style/data separation, multi-section content model, backward compatibility semantics, non-exhaustive enforcement, dependency architecture, and crate boundary rationale.
-- **In Scope**: Style configuration (13 layout and color parameters); structured content model (binary, tagline, groups, options, examples, usage lines, arguments, option groups); named option groups with per-group column padding; TTY-conditional ANSI output; backward-compatible options field; non-exhaustive content structure; dependency architecture (parallel with data_fmt); feature flag.
+- **In Scope**: Rendering structured CLI help from typed style and data parameters, covering section layout, ANSI color, TTY detection, column alignment, and section omission rules.
 - **Out of Scope**: Type field details and rendering procedure — see `api/002_help_api.md`; data_fmt table-based help path; per-command help (unilang pipeline concern).
 
 ### Design
@@ -41,17 +41,17 @@ For complete type definitions, field defaults, and the rendering procedure, see 
 |------|-------------|
 | [`../api/002_help_api.md`](../api/002_help_api.md) | Public interface contract for this feature |
 
+### Feature Tests
+
+| File | Relationship |
+|------|-------------|
+| [`../../tests/docs/feature/002_cli_help_template.md`](../../tests/docs/feature/002_cli_help_template.md) | Test specification verifying the behavioral cases defined here |
+
 ### Invariants
 
 | File | Relationship |
 |------|-------------|
 | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle placing CLI rendering in cli_fmt, not strs_tools |
-
-### Test Specs
-
-| File | Relationship |
-|------|-------------|
-| [`../../tests/docs/feature/002_cli_help_template.md`](../../tests/docs/feature/002_cli_help_template.md) | Test specification verifying the behavioral cases defined here |
 
 ### Sources
 

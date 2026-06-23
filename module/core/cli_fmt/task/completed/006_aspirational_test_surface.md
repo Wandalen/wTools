@@ -10,6 +10,8 @@
 - **Closes:** null
 - **Blocked Reason:** null
 - **Dir:** .
+- **Validated By:** maav-round-4
+- **Validation Date:** 2026-06-23
 
 ## Goal
 
@@ -25,7 +27,6 @@ Close the gap between the aspirational test-surface targets in `tests/docs/featu
   - FT-38: Empty suffix (`with_suffix("")`) — truncated line ends exactly at max_width with no marker appended
   - FT-39: Empty stdout with non-empty stderr and active head limit — head applies to the stderr-only merged stream; lines beyond the head limit are omitted (distinct from `select_streams_empty_stdout` which has no head limit active)
   - FT-40: `width=0` combined with `head` — width passthrough applies even when head filtering is active
-
 - `tests/output.rs` — add 5 test functions for FT-36..FT-40
 
 **CLI help template — 2 new spec cases:**
@@ -33,7 +34,6 @@ Close the gap between the aspirational test-surface targets in `tests/docs/featu
 - `tests/docs/feature/002_cli_help_template.md` — append FT-29..FT-30:
   - FT-29: Multiple examples render in declaration order
   - FT-30: Tagline appears after the usage line, separated by a blank line
-
 - `tests/help.rs` — add 2 test functions for FT-29..FT-30
 
 ## Out of Scope
@@ -134,6 +134,10 @@ Desired answer for every question is YES.
 - `docs/feature/002_cli_help_template.md` — normative behavioral requirements for CLI help template
 - `docs/api/001_output_api.md` — output API contract (is_default, process_output, OutputConfig)
 - `docs/api/002_help_api.md` — help API contract (render, CliHelpData fields, ExampleEntry)
+
+## Outcomes
+
+7 new test functions implemented: 5 in `tests/output.rs` (`stdout_filter_with_head`, `head_tail_width_triple_combination`, `width_empty_suffix_no_marker`, `empty_stdout_stderr_with_head`, `width_zero_with_head`) covering FT-36..FT-40; 2 in `tests/help.rs` (`test_examples_declaration_order`, `test_tagline_blank_line_separator`) covering FT-29..FT-30. All 7 spec `### Tests` rows resolved. `tests/docs/feature/readme.md` In Scope targets (FT-1..FT-40; FT-1..FT-30) now fully met. Level 3 PASS: 83/83 nextest + 6 doc + 0 clippy.
 
 ## History
 

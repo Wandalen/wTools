@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the behavioral requirements documented in `docs/feature/002_cli_help_template.md`.
 - **Responsibility**: Test spec for column alignment, TTY detection, conditional section omission, ExampleEntry.desc annotation rendering, color field defaults, and edge-case inputs.
-- **In Scope**: FT-1..FT-30 — column padding, ANSI suppression, section omission, example annotation, minimum-width semantics, color defaults, TTY detection, dependency boundary, usage lines override, arguments section, option groups, backward compatibility, infallibility, edge-case inputs, example declaration order, and tagline-usage-line separation.
+- **In Scope**: FT-1..FT-32 — column padding, ANSI suppression, section omission, example annotation, minimum-width semantics, color defaults, TTY detection, dependency boundary, usage lines override, arguments section, option groups, backward compatibility, infallibility, edge-case inputs, example declaration order, tagline-usage-line separation, col_gap spacing, and cmd_indent leading indent.
 - **Out of Scope**: Style customization beyond default values; description line wrapping (out of scope for this feature).
 
 ### FT-1: Command and option names padded to configured column widths
@@ -187,6 +187,18 @@
 - **When:** `CliHelpTemplate::new(style, data).render()`
 - **Then:** output contains `"My helpful tool"`; a blank line (`"\n\n"`) appears between the usage line (containing `"Usage: myapp"`) and the tagline content — the blank line serves as the structural separator between header and tagline
 
+### FT-31: Custom col_gap produces correct spacing between name column and description ⏳
+
+- **Given:** `CliHelpStyle { col_gap: 4, cmd_name_width: 7, tty_detect: false, ..CliHelpStyle::default() }`, data with a command group containing `CommandEntry { name: "cmd-one".into(), desc: "do one thing".into() }`
+- **When:** `CliHelpTemplate::new(style, data).render()`
+- **Then:** output contains `"    cmd-one    do one thing"` — 4-space indent (default cmd_indent), `"cmd-one"` padded to 7 chars (exact match, no extra spaces), 4 spaces col_gap, then description; contrast with default col_gap=2 which would produce `"    cmd-one  do one thing"`
+
+### FT-32: Custom cmd_indent produces correct leading indent for command lines ⏳
+
+- **Given:** `CliHelpStyle { cmd_indent: 2, cmd_name_width: 3, tty_detect: false, ..CliHelpStyle::default() }`, data with a command group containing `CommandEntry { name: "run".into(), desc: "run the app".into() }`
+- **When:** `CliHelpTemplate::new(style, data).render()`
+- **Then:** output contains `"  run  run the app"` — 2-space indent (custom cmd_indent), `"run"` padded to 3 chars (exact match), 2-space col_gap (default), then description; contrast with default cmd_indent=4 which would produce `"    run  run the app"`
+
 ### Features
 
 | File | Relationship |
@@ -203,5 +215,5 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../tests/help.rs` | FT-1: `test_column_alignment`; FT-2: `test_no_ansi_codes`, `test_explicit_tty_detect_false`; FT-3: `test_no_options_section`, `test_no_examples_section`; FT-4: `test_example_desc_rendered`; FT-5: `test_name_not_truncated`; FT-6: `test_style_color_defaults`; FT-7: `test_empty_groups`; FT-8: `test_opt_name_not_truncated`; FT-9: `test_single_group_binary_name`; FT-10: `test_tty_detect_true_suppresses_ansi_in_non_tty`; FT-11: `test_no_data_fmt_dependency`; FT-12/FT-13: `test_usage_lines` (T-A01); FT-14/FT-15: `test_arguments_section` (T-A02); FT-16: `test_option_groups_render` (T-A03); FT-17: `test_option_groups_empty_backward_compat` (T-A04); FT-18: `test_option_groups_suppresses_options` (T-A05); FT-19: `test_option_groups_independent_padding` (T-A06); FT-20: `test_cli_help_data_default` (T-A07); T-A08: compile_fail doctest in `src/help.rs`; T-A09: `test_examples_compile` (construction pattern under `#[non_exhaustive]`); FT-21: `test_multiple_usage_lines` (T-B01); FT-22: `test_arguments_multi_entry_padding` (T-B02); FT-23: `test_command_group_empty_entries` (T-B03); FT-24: `test_render_empty_data_infallible` (T-B04); FT-25: `test_example_empty_desc_some_renders_marker` (T-B05); FT-26: `test_option_group_empty_entries_skipped` (T-B06); FT-27: `test_empty_option_group_suppresses_legacy_options` (T-B07); FT-28: `test_arguments_before_groups_in_output` (T-B08); FT-29: `test_examples_declaration_order` (T-B09); FT-30: `test_tagline_blank_line_separator` (T-B10) |
+| `../../../tests/help.rs` | FT-1: `test_column_alignment`; FT-2: `test_no_ansi_codes`, `test_explicit_tty_detect_false`; FT-3: `test_no_options_section`, `test_no_examples_section`; FT-4: `test_example_desc_rendered`; FT-5: `test_name_not_truncated`; FT-6: `test_style_color_defaults`; FT-7: `test_empty_groups`; FT-8: `test_opt_name_not_truncated`; FT-9: `test_single_group_binary_name`; FT-10: `test_tty_detect_true_suppresses_ansi_in_non_tty`; FT-11: `test_no_data_fmt_dependency`; FT-12/FT-13: `test_usage_lines` (T-A01); FT-14/FT-15: `test_arguments_section` (T-A02); FT-16: `test_option_groups_render` (T-A03); FT-17: `test_option_groups_empty_backward_compat` (T-A04); FT-18: `test_option_groups_suppresses_options` (T-A05); FT-19: `test_option_groups_independent_padding` (T-A06); FT-20: `test_cli_help_data_default` (T-A07); T-A08: compile_fail doctest in `src/help.rs`; T-A09: `test_examples_compile` (construction pattern under `#[non_exhaustive]`); FT-21: `test_multiple_usage_lines` (T-B01); FT-22: `test_arguments_multi_entry_padding` (T-B02); FT-23: `test_command_group_empty_entries` (T-B03); FT-24: `test_render_empty_data_infallible` (T-B04); FT-25: `test_example_empty_desc_some_renders_marker` (T-B05); FT-26: `test_option_group_empty_entries_skipped` (T-B06); FT-27: `test_empty_option_group_suppresses_legacy_options` (T-B07); FT-28: `test_arguments_before_groups_in_output` (T-B08); FT-29: `test_examples_declaration_order` (T-B09); FT-30: `test_tagline_blank_line_separator` (T-B10); FT-31: `test_col_gap_custom`; FT-32: `test_cmd_indent_custom` |
 | `../../../examples/basic_usage.rs` | T-A09: `cargo test --examples` compiles and runs the example using `CliHelpData::default()` + field assignment |

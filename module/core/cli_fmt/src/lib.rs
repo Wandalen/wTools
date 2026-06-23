@@ -37,7 +37,7 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 
 /// CLI output processing.
-#[ cfg( feature = "output" ) ]
+#[ cfg( any( feature = "output", feature = "output_passthrough" ) ) ]
 pub mod output;
 
 /// Structured CLI help template: data model + colour-aware renderer.
@@ -54,7 +54,7 @@ pub mod dependency
 /// Own namespace of the module.
 pub mod own
 {
-  #[ cfg( feature = "output" ) ]
+  #[ cfg( any( feature = "output", feature = "output_passthrough" ) ) ]
   pub use super::output::orphan::*;
   #[ cfg( feature = "cli_help_template" ) ]
   pub use super::help::orphan::*;
@@ -75,7 +75,7 @@ pub mod exposed
 /// Prelude to use essentials: `use cli_fmt::prelude::*`.
 pub mod prelude
 {
-  #[ cfg( feature = "output" ) ]
+  #[ cfg( any( feature = "output", feature = "output_passthrough" ) ) ]
   pub use super::output::orphan::*;
   #[ cfg( feature = "cli_help_template" ) ]
   pub use super::help::orphan::*;

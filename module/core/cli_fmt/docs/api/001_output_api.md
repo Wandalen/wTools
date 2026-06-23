@@ -28,10 +28,19 @@ stream filter. Does not apply line filtering or width truncation.
 **Output configuration** — a builder-pattern value for specifying processing options:
 - Head limit: retain only the first N lines of combined output.
 - Tail limit: retain only the last N lines of combined output.
-- Width limit: maximum visible character width per line; zero disables truncation.
+- Width limit: maximum visible character width per line; zero disables truncation at
+  runtime (stored as `Some(0)`, not `None`; `has_processing()` returns true for
+  `with_width(0)` even though no truncation occurs at runtime).
 - Truncation suffix: marker appended to lines that were width-truncated.
 - Stream filter: which streams to include and in what order.
 - Unicode-aware mode: opt-in grapheme-based width measurement.
+
+**Configuration state queries** — two predicate methods:
+- `is_default()`: returns true only when all fields hold their default values —
+  head/tail/width not set (`None`), stream filter `Both`, suffix `"→"`,
+  unicode-aware false.
+- `has_processing()`: returns true when head, tail, or width is explicitly set
+  (including `with_width(0)`); indicates at least one processing option was configured.
 
 **Stream filter** — a three-variant value selecting which streams to include:
 - Both streams: stderr placed before stdout (errors visible before normal output).
@@ -51,6 +60,12 @@ Both public functions are infallible. They perform no I/O and accept any string 
 
 The function signatures, configuration fields, and result structure are stable across patch and minor versions. New configuration options may be added in minor versions with backward-compatible defaults. Changes to existing option semantics require a major version bump.
 
+### API Tests
+
+| File | Relationship |
+|------|-------------|
+| [`../../tests/docs/api/001_output_api.md`](../../tests/docs/api/001_output_api.md) | Test specification verifying the API contracts defined here |
+
 ### Features
 
 | File | Relationship |
@@ -62,12 +77,6 @@ The function signatures, configuration fields, and result structure are stable a
 | File | Relationship |
 |------|-------------|
 | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle this API implements |
-
-### Test Specs
-
-| File | Relationship |
-|------|-------------|
-| [`../../tests/docs/api/001_output_api.md`](../../tests/docs/api/001_output_api.md) | Test specification verifying the API contracts defined here |
 
 ### Sources
 

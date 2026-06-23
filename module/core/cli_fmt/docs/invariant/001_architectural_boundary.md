@@ -45,7 +45,7 @@ the two crates.
 | [`../feature/001_output_processing.md`](../feature/001_output_processing.md) | CLI output processing — governed by this boundary |
 | [`../feature/002_cli_help_template.md`](../feature/002_cli_help_template.md) | CLI help template rendering — governed by this boundary |
 
-### Test Specs
+### Invariant Tests
 
 | File | Relationship |
 |------|-------------|

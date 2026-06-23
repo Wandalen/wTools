@@ -10,7 +10,7 @@
 - **Closes:** null
 - **Blocked Reason:** null
 - **Dir:** .
-- **Validated By:** Level-3-PASS(58/58 nextest, 4 doc, 0 clippy)
+- **Validated By:** MAAV(VG-1..VG-4 PASS); Level-3-PASS(58/58 nextest, 4 doc, 0 clippy)
 - **Validation Date:** 2026-06-06
 
 ## Goal

@@ -32,6 +32,18 @@
 //! | T-A07 | CliHelpData::default() | N/A | all fields empty; no panic |
 //! | T-A08 | compile_fail doctest | N/A | exhaustive CliHelpData literal rejected by #[non_exhaustive] |
 //! | T-A09 | example construction pattern | tty_detect=false | non-empty output from default + field assignment |
+//! | T-B01 | usage_lines with 3 entries | tty_detect=false | all 3 lines render indented; default header absent |
+//! | T-B02 | arguments with 2 different-length names | tty_detect=false | short name padded to longest name length |
+//! | T-B03 | CommandGroup with empty entries | tty_detect=false | group header renders; no entries emitted; no panic |
+//! | T-B04 | fully empty CliHelpData | tty_detect=false | render succeeds; Usage: and Commands: headers present |
+//! | T-B05 | ExampleEntry with desc=Some("") | tty_detect=false | `# ` marker rendered; no content after it |
+//! | T-B06 | OptionGroup with empty entries | tty_detect=false | group header silently skipped; no panic |
+//! | T-B07 | empty-entry OptionGroup + non-empty options | tty_detect=false | options suppressed; empty group silent |
+//! | T-B08 | both arguments and groups non-empty | tty_detect=false | Arguments: section appears before first group |
+//! | T-B09 | two examples in declaration order | tty_detect=false | first declared example at lower position than second |
+//! | T-B10 | tagline and usage line | tty_detect=false | blank line separates usage from tagline; usage appears first |
+//! | T-B11 | col_gap=4, cmd_name_width=7, one command | tty_detect=false | 4-space gap between padded name column and description (FT-31) |
+//! | T-B12 | cmd_indent=2, cmd_name_width=3, one command | tty_detect=false | 2-space leading indent instead of default 4 (FT-32) |
 
 use cli_fmt::help::*;
 
@@ -886,5 +898,62 @@ fn test_tagline_blank_line_separator()
   assert!(
     pos_usage < pos_tagline,
     "usage line must appear before tagline (pos_usage={pos_usage}, pos_tagline={pos_tagline})"
+  );
+}
+
+// ── T-B11 ─ custom col_gap spacing ───────────────────────────────────────────
+
+/// T-B11 (FT-31): `col_gap=4` produces 4 spaces between the padded name column
+/// and the description text. With `cmd_name_width=7` and `cmd_indent=4` (default),
+/// a command named `"cmd-one"` (7 chars, exact fit) renders as:
+/// `"    cmd-one    do one thing"` — 4-indent, 7-name, 4-gap.
+///
+/// Contrasts with the default `col_gap=2` which would produce
+/// `"    cmd-one  do one thing"`.
+#[ test ]
+fn test_col_gap_custom()
+{
+  let style = CliHelpStyle { col_gap : 4, cmd_name_width : 7, tty_detect : false, ..CliHelpStyle::default() };
+  let mut data = CliHelpData::default();
+  data.groups = vec!
+  [
+    CommandGroup
+    {
+      name    : "CMDS".into(),
+      entries : vec![ CommandEntry { name : "cmd-one".into(), desc : "do one thing".into() } ],
+    },
+  ];
+  let out = CliHelpTemplate::new( style, data ).render();
+  assert!(
+    out.contains( "    cmd-one    do one thing" ),
+    "FT-31: col_gap=4 must produce 4 spaces between padded name column and description, got:\n{out}",
+  );
+}
+
+// ── T-B12 ─ custom cmd_indent leading indent ──────────────────────────────────
+
+/// T-B12 (FT-32): `cmd_indent=2` produces 2-space leading indent for command lines.
+/// With `cmd_name_width=3` and `col_gap=2` (default), a command named `"run"` (3 chars,
+/// exact fit) renders as `"  run  run the app"` — 2-indent, 3-name, 2-gap.
+///
+/// Contrasts with the default `cmd_indent=4` which would produce
+/// `"    run  run the app"`.
+#[ test ]
+fn test_cmd_indent_custom()
+{
+  let style = CliHelpStyle { cmd_indent : 2, cmd_name_width : 3, tty_detect : false, ..CliHelpStyle::default() };
+  let mut data = CliHelpData::default();
+  data.groups = vec!
+  [
+    CommandGroup
+    {
+      name    : "CMDS".into(),
+      entries : vec![ CommandEntry { name : "run".into(), desc : "run the app".into() } ],
+    },
+  ];
+  let out = CliHelpTemplate::new( style, data ).render();
+  assert!(
+    out.contains( "  run  run the app" ),
+    "FT-32: cmd_indent=2 must produce 2-space leading indent instead of default 4, got:\n{out}",
   );
 }
