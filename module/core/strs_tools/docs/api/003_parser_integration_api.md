@@ -17,10 +17,14 @@ The iterator yields tokens in source order. Each token is classified as a delimi
 
 The parser does not collect tokens into a container; it yields one token per call to `next`, keeping memory usage proportional to the largest single token rather than the entire source.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/parser.rs` | Parser, token types, and transformation pipeline |
-| test | `tests/parser_integration_comprehensive_test.rs` | Parser API behaviour and transformation tests |
-| doc | `docs/feature/008_parser_integration.md` | Parser integration feature design |
+- [src/string/parser.rs](../../src/string/parser.rs) — Parser, token types, and transformation pipeline
+
+### Tests
+
+- [tests/parser_integration_comprehensive_test.rs](../../tests/parser_integration_comprehensive_test.rs) — Parser API behaviour and transformation tests
+
+### Features
+
+- [008_parser_integration.md](../feature/008_parser_integration.md) — Parser integration feature design

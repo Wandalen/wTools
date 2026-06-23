@@ -7,7 +7,7 @@
 - **In Scope**: Struct fields, type parameter specializations, trait implementations, and usage patterns.
 - **Out of Scope**: Conceptual shape (see `../input_model/`), formatter behavior (see `../feature/`).
 
-### InputModels
+### Input Models
 
 | File | Relationship |
 |------|-------------|

@@ -1,11 +1,25 @@
-# Extract String Formatting and ANSI Utilities from wplan
+# Extract Formatting Utilities from wplan
 
-**Date**: 2025-11-20
-**Completed**: 2025-11-22
-**Priority**: HIGH
-**Category**: API Enhancement - Code Extraction
-**Status**: ✅ COMPLETE (ANSI utilities only)
-**Source**: wplan_client/src/cli/formatting.rs, wplan_client/src/cli/output_config.rs
+## Execution State
+
+- **Executor Type:** any
+- **Actor:** null
+- **Start Time:** null
+- **Prior State:** null
+- **Reopen Count:** 0
+- **State:** ✅ (Completed)
+- **Closes:** null
+- **Dir:** module/core/strs_tools
+- **Validated By:** null
+- **Validation Date:** null
+
+## Legacy Metadata
+
+- **Date:** 2025-11-20
+- **Completed:** 2025-11-22
+- **Priority:** HIGH
+- **Category:** API Enhancement - Code Extraction
+- **Source:** wplan_client/src/cli/formatting.rs, wplan_client/src/cli/output_config.rs
 
 ## Implementation Status
 
@@ -607,3 +621,15 @@ Each module must include:
 3. **Immediate Value**: wplan migration eliminates ~300 LOC immediately
 4. **Foundation**: Required for unilang Task 089 (output truncation)
 5. **Quality**: Centralizes testing for critical functionality
+
+## Outcomes
+
+Completed 2025-11-22. ANSI utilities extracted; byte formatting rejected (doesnt fit strs_tools scope).
+
+**Delivered:** `strs_tools::ansi` module — full implementation with 68 tests. Functions: `parse_segments()`, `visual_len()`/`visual_len_unicode()`, `strip()`, `has_ansi()`/`has_unclosed_formatting()`, `truncate()`/`truncate_unicode()`, `pad_to_width()`. Types: `Segment` enum, `TruncateOptions` struct. Two-tier architecture: Tier 1 char-based + Tier 2 Unicode grapheme-aware. tree_fmt migrated to use `strs_tools::ansi` (~67 lines deleted).
+
+## History
+
+- **[2025-11-20]** `CREATED` — Task filed. Goal: extract ANSI handling utilities from wplan to strs_tools.
+- **[2025-11-22]** `COMPLETED` — ANSI module delivered with 68 tests; byte formatting rejected.
+- **[2026-06-23]** `UPDATED` — Normalized to tsk.rulebook.md v5.11 format.

@@ -2,12 +2,12 @@
 
 ## Execution State
 
-- **Executor Type:** any
-- **Actor:** dev
-- **Claimed At:** 2026-06-13
-- **Status:** ✅ (Complete)
+- **State:** ✅ (Completed)
+- **ID:** 003
+- **Slug:** cell_padding_all_cells
+- **Executor:** dev
 
-## Goal
+## MOST Goal
 
 Fix the rendering path so that `inner_padding` spaces are emitted before AND after every cell in all border-using table styles (`bordered`, `grid`, `markdown`, `unicode_box`), eliminating the defect where `inner_padding = 1` in these presets produces spaces only at the outer table edges while inter-cell separators have no surrounding spaces.
 (Motivated: `bordered` with `inner_padding=1` renders `| #|PID  |` — no space before the `│`/`|` separator between cells, despite the explicit `inner_padding = 1` preset config — making output visually cramped and non-standard; Observable: `TableFormatter::with_config(TableConfig::bordered()).format(&view)` for a two-column table produces `| col1 | col2 |` with 1 space on each side of every cell, and all separator lines widen symmetrically to match, e.g. `+------+-------+`; Scoped: changes limited to `src/formatters/table/rendering.rs` — specifically `format_single_line_row`, `format_multiline_row`, `format_ascii_horizontal_rule`, `format_unicode_horizontal_rule`, and the Dash/AsciiGrid inline branches of `format_header_separator` — plus exact-string updates in affected test files; no changes to `src/config.rs` or any other formatter; Testable: `w3 .test level::3` passes clean after changes and `assert!(output.contains("| col1 | col2 |"))` holds for bordered output)
@@ -141,9 +141,7 @@ Using demo data: columns `#`(w=1), `PID`(w=5), `CPU%`(w=4), `RAM`(w=4), `Path`(w
 | `plain` | unchanged | unchanged | no assertion change needed |
 | `csv` / `tsv` | unchanged | unchanged | no assertion change needed |
 
-## Closes
-
-null
+**Closes:** null
 
 ## Verification Findings
 

@@ -49,7 +49,7 @@ pub mod own
   pub use super::parse::parse_segments;
   pub use super::visual::{ visual_len, pad_to_width };
   pub use super::strip::strip;
-  pub use super::detect::{ has_ansi, has_unclosed_formatting };
+  pub use super::detect::{ has_ansi, has_unclosed_formatting, is_reset_code, is_sgr_code };
   pub use super::truncate::truncate;
 
   // ANSI truncation with boundary detection

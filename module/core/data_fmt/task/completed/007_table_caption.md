@@ -2,12 +2,12 @@
 
 ## Execution State
 
-- **Executor Type:** any
-- **Actor:** dev
-- **Claimed At:** null
-- **Status:** ✅ (Completed)
+- **State:** ✅ (Completed)
+- **ID:** 007
+- **Slug:** table_caption
+- **Executor:** dev
 
-## Goal
+## MOST Goal
 
 Add a `TableCaption` type to `data_fmt` and a `TableConfig::caption()` builder so that callers can print a titled rule (e.g., `─── Needs Review · 28 PRs · 15 repos ─────`) above any table style with zero impact on tables that do not use the feature.
 (Motivated: The `clr ps` command in `claude_runner` displays active Claude sessions in a `TableConfig::plain()` table and needs a titled summary line such as `─── Active Sessions · 3 running ─────` above it — currently requires a manual `println!` call that breaks visual alignment with the table's column widths; no existing API on `TableFormatter` supports attaching a labelled rule; explicitly requested 2026-06-13 for `clr ps` output; Observable: `TableConfig::plain().caption(TableCaption::new("Results").field("42 items"))` renders a line beginning with `"─── Results · 42 items "` followed by `─` chars filling the resolved terminal width, then the normal table output; Scoped: changes confined to `src/config.rs` (new struct + field + builder), `src/formatters/table/mod.rs` (emit caption before `format_top_border_if_needed`), and tests for FC-1, FC-2, FC-3, FC-5, FC-6 in `tests/table_caption_test.rs`; no changes to any other formatter; Testable: `w3 .test level::3` passes clean and all 5 FC-N cases in `tests/docs/feature/007_table_caption.md` have ✅ implementations)
@@ -71,9 +71,7 @@ All paths relative to the crate root (`module/core/data_fmt/`).
 - `docs/feature/001_table_formatting.md` — existing table formatting feature
 - `docs/api/003_config_types.md` — `TableConfig` API reference (update after implementation to document `TableCaption` and `.caption()`)
 
-## Closes
-
-null
+**Closes:** null
 
 ## History
 

@@ -17,4 +17,4 @@
 | 004 | [Budget Allocation](004_budget_allocation.md) | Algorithm spec for budget allocation | ✅ |
 | 005 | [Column Fold Detection](005_column_fold_detection.md) | Algorithm spec for column fold detection | ✅ |
 | 006 | [CLI Help Alignment](006_cli_help_alignment.md) | Algorithm spec for CLI help text alignment | ✅ |
-| 007 | [Heading Rendering](007_caption_rendering.md) | Algorithm spec for heading line assembly | 7 ✅ |
+| 007 | [Caption Rendering](007_caption_rendering.md) | Algorithm spec for caption rendering | ✅ |

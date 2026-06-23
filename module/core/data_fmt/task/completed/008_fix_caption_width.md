@@ -2,10 +2,10 @@
 
 ## Execution State
 
-- **State**: ✅ (Completed)
-- **ID**: 008
-- **Slug**: fix_caption_width
-- **Executor**: dev
+- **State:** ✅ (Completed)
+- **ID:** 008
+- **Slug:** fix_caption_width
+- **Executor:** dev
 
 ## MOST Goal
 

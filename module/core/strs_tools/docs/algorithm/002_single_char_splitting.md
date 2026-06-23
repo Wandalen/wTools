@@ -17,11 +17,15 @@ This path is substantially faster than the general path for short strings and de
 
 The single-char path produces results identical to the general path for the same input. It is a transparent optimisation: the caller cannot distinguish it from any other code path.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/specialized.rs` | Single-char split specialization implementation |
-| source | `src/string/split.rs` | Fast-path selection at iterator construction |
-| doc | `docs/feature/001_string_splitting.md` | Split feature overview including algorithm selection |
-| doc | `docs/algorithm/003_boyer_moore_splitting.md` | Multi-char single-delimiter counterpart |
+- [src/string/specialized.rs](../../src/string/specialized.rs) — Single-char split specialization implementation
+- [src/string/split.rs](../../src/string/split.rs) — Fast-path selection at iterator construction
+
+### Features
+
+- [001_string_splitting.md](../feature/001_string_splitting.md) — Split feature overview including algorithm selection
+
+### Algorithms
+
+- [003_boyer_moore_splitting.md](../algorithm/003_boyer_moore_splitting.md) — Multi-char single-delimiter counterpart

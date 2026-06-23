@@ -17,15 +17,15 @@ Operations that return owned strings require allocator access. Operations that r
 
 ### Sources
 
-- `../../architecture.md` — Platform Support section; no_std compatibility scope migrated to this invariant.
+- [src/lib.rs](../../src/lib.rs) — Crate-level no_std configuration
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/lib.rs` | Crate-level no_std configuration |
-| doc | `docs/feature/001_string_splitting.md` | Split feature — core, no_std compatible |
-| doc | `docs/feature/002_text_indentation.md` | Indentation feature — core, no_std compatible |
-| doc | `docs/feature/003_string_isolation.md` | Isolation feature — core, no_std compatible |
-| doc | `docs/feature/004_number_parsing.md` | Number parsing feature — core, no_std compatible |
-| doc | `docs/invariant/002_feature_gating_contract.md` | Feature activation mechanism |
+- [001_string_splitting.md](../feature/001_string_splitting.md) — Split feature — core, no_std compatible
+- [002_text_indentation.md](../feature/002_text_indentation.md) — Indentation feature — core, no_std compatible
+- [003_string_isolation.md](../feature/003_string_isolation.md) — Isolation feature — core, no_std compatible
+- [004_number_parsing.md](../feature/004_number_parsing.md) — Number parsing feature — core, no_std compatible
+
+### Invariants
+
+- [002_feature_gating_contract.md](../invariant/002_feature_gating_contract.md) — Feature activation mechanism

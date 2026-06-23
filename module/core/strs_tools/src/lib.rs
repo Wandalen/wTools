@@ -94,8 +94,6 @@ pub mod own
   pub use super::simd;
   #[ cfg( feature = "ansi" ) ]
   pub use super::ansi;
-  #[ cfg( test ) ]
-  pub use super::string::orphan::*;
 }
 
 /// Parented namespace of the module.

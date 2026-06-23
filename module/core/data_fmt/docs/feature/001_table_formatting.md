@@ -37,21 +37,9 @@
 
 #### Style Presets
 
-`TableConfig` provides 9 preset constructors. Each returns a fully configured instance ready for use.
+`TableConfig` provides 9 preset constructors. Each returns a fully configured instance ready for use. See [`formatter/001_table_formatter.md § Variants`](../formatter/001_table_formatter.md) for the complete preset selection table with constructors, feature flags, and variant cross-references.
 
 **Recommended default:** `plain()` is the preferred variant for general-purpose CLI output. It works on all terminals, CI pipelines, and Windows without Unicode support. `TableConfig::default()` returns `plain()`. Use bordered or unicode styles only when a specific visual requirement justifies the narrower compatibility.
-
-| Preset | Description | Usage |
-|--------|-------------|-------|
-| `plain()` | Space-separated columns with dash header separator — **recommended default** | `TableConfig::plain()` |
-| `minimal()` | Space-separated columns, no header separator | `TableConfig::minimal()` |
-| `bordered()` | Traditional pipe-bordered table (PostgreSQL style) | `TableConfig::bordered()` |
-| `markdown()` | GitHub-flavored Markdown table format | `TableConfig::markdown()` |
-| `grid()` | Full ASCII grid with `+` intersections | `TableConfig::grid()` |
-| `unicode_box()` | Unicode box-drawing characters — requires Unicode terminal; avoid for general CLI tools | `TableConfig::unicode_box()` |
-| `csv()` | Comma-separated values | `TableConfig::csv()` |
-| `tsv()` | Tab-separated values | `TableConfig::tsv()` |
-| `compact()` | Minimal spacing for maximum density | `TableConfig::compact()` |
 
 #### Multiline Cells
 

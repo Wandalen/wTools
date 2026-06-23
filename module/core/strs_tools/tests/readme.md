@@ -14,6 +14,7 @@ Comprehensive test suite for the strs_tools core crate.
 | `smoke_test.rs` | Basic package smoke tests |
 | `strs_tools_tests.rs` | Main test suite entry point importing all submodules |
 | `inc/` | Test submodules (indentation, isolate, parse, split, etc.) |
+| `docs/` | Test surface specs tracking doc instance coverage |
 
 ## Test Strategy
 

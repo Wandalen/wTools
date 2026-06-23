@@ -2,12 +2,12 @@
 
 ## Execution State
 
-- **Executor Type:** any
-- **Actor:** dev
-- **Claimed At:** 2026-06-13
-- **Status:** ✅ (Complete)
+- **State:** ✅ (Completed)
+- **ID:** 005
+- **Slug:** columns_env_fallback
+- **Executor:** dev
 
-## Goal
+## MOST Goal
 
 Make `resolve_terminal_width()` in `auto_fit.rs` read the `$COLUMNS` environment variable as an intermediate fallback between `terminal_size` detection and the hardcoded `120` default, so that scripts and CI pipelines can control auto-wrap width without a real TTY.
 (Motivated: `resolve_terminal_width()` falls through directly to the `terminal_size` crate and then to `120` — `$COLUMNS` is never consulted; any script or CI job that sets `COLUMNS=80` gets ignored and wide tables silently overflow; Observable: when `COLUMNS=60` is set and auto-wrap is enabled, a table whose natural row width exceeds 60 characters is folded at the 60-column threshold rather than the 120-column default; Scoped: changes limited to `src/formatters/table/auto_fit.rs` — one `std::env::var("COLUMNS")` read with `parse::<u16>()` guard inserted before the `terminal_size` branch; no public API changes; existing behavior when `COLUMNS` is unset is identical to today; Testable: `w3 .test level::3` passes and a new test in `tests/table_auto_wrap.rs` sets `COLUMNS=40`, renders a table wider than 40 chars, and asserts the output is folded)
@@ -47,9 +47,7 @@ Note: `resolve_terminal_width` is `pub(super)` and cannot be called directly fro
 | `COLUMNS` unset, same table | output line width governed by `terminal_size` or 120 (unchanged behavior) |
 | `COLUMNS=garbage`, same table | parse fails silently; fallback to existing behavior |
 
-## Closes
-
-null
+**Closes:** null
 
 ## Verification Findings
 

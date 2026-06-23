@@ -35,8 +35,7 @@
 | `pattern/` | Documents architectural patterns and design principles |
 | `formatter/` | Documents individual formatter structs and dispatch |
 | `variant/` | Documents per-variant output format and attributes |
-| `variant_attributes.md` | Legacy reference listing all 46 variant attributes with examples |
 | `development_notes.md` | Records implementation decisions and technical history |
 | `feature_selection_guide.md` | Guides feature flag selection for use cases |
-| `entities.md` | Indexes all doc entity types and instances |
+| `entity.md` | Indexes all doc entity types and instances |
 | `doc_graph.yml` | Maps cross-entity dependencies as nodes and edges |

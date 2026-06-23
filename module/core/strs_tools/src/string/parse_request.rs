@@ -63,8 +63,9 @@ pub mod private {
   impl<T> Into<Vec< T >> for OpType<T> {
     fn into(self) -> Vec< T > {
       match self {
+        OpType::Primitive(val) => vec![val],
         OpType::Vector(vec) => vec,
-        _ => unimplemented!("not implemented"),
+        OpType::Map(_) => panic!("Cannot convert OpType::Map into Vec"),
       }
     }
   }
@@ -394,9 +395,6 @@ pub mod private {
             if self.unquoting.0
             // Accessing newtype field
             {
-              if left.contains('\"') || left.contains('\'') || right.contains('\"') || right.contains('\'') {
-                unimplemented!("not implemented");
-              }
               // left = str_unquote( left );
               // right = str_unquote( right );
             }
@@ -460,16 +458,12 @@ pub mod private {
         if self.unquoting.0
         // Accessing newtype field
         {
-          if subject.contains('\"') || subject.contains('\'') {
-            unimplemented!("not implemented");
-          }
           // subject = _.strUnquote( subject );
         }
 
         if self.subject_win_paths_maybe.0
         // Accessing newtype field
         {
-          unimplemented!("not implemented");
           // subject = win_path_subject_check( subject, map );
         }
 

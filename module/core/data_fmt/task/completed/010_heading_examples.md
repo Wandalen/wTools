@@ -2,10 +2,10 @@
 
 ## Execution State
 
-- **State**: ✅ (Completed)
-- **ID**: 010
-- **Slug**: heading_examples
-- **Executor**: dev
+- **State:** ✅ (Completed)
+- **ID:** 010
+- **Slug:** heading_examples
+- **Executor:** dev
 
 ## MOST Goal
 

@@ -33,6 +33,13 @@ use super::Heading;
 /// **Default column separator**: `TableConfig::default()` (= `new()`) sets
 /// `column_separator: Spaces(2)`, NOT `ColumnSeparator::default()` which is `Character('|')`.
 /// Use `bordered()` if pipe-separated output is required without an explicit setter call.
+// Fix(BUG-003): all fields made private; struct literal construction outside this module
+// is now a compile error so callers must use presets or the builder chain.
+// Root cause: struct literal initialization allowed setting `header_separator_variant:
+// Unicode` while relying on `..Default::default()` for `column_separator` (= Spaces(2)),
+// producing misaligned Unicode header separators paired with space-separated data rows.
+// Pitfall: Unicode separator components are interdependent — always use
+// `TableConfig::unicode_box()` rather than manually pairing fields.
 #[ derive( Debug, Clone ) ]
 // TableConfig contains multiple independent boolean display toggles (auto_wrap, auto_fold,
 // show_header, outer_padding, etc.); each controls a distinct rendering axis and a
@@ -88,8 +95,8 @@ pub struct TableConfig
   fold_indent : String,
   /// ANSI escape code applied to every border/separator character (None = no coloring)
   border_color : Option< String >,
-  /// Optional titled rule rendered above the table (None = no caption)
-  caption : Option< Heading >,
+  /// Optional titled rule rendered above the table (None = no heading)
+  heading : Option< Heading >,
 }
 
 impl Default for TableConfig
@@ -122,7 +129,7 @@ impl Default for TableConfig
       fold_style  : FoldStyle::Labeled,
       fold_indent : "    ".to_string(),
       border_color : None,
-      caption : None,
+      heading : None,
     }
   }
 }
@@ -423,7 +430,7 @@ impl TableConfig
   #[ must_use ]
   pub fn with_heading( mut self, h : Heading ) -> Self
   {
-    self.caption = Some( h );
+    self.heading = Some( h );
     self
   }
 }
@@ -580,9 +587,9 @@ impl TableConfig
   }
 
   /// Heading reference (accessor)
-  pub( crate ) fn caption_ref( &self ) -> Option< &Heading >
+  pub( crate ) fn heading_ref( &self ) -> Option< &Heading >
   {
-    self.caption.as_ref()
+    self.heading.as_ref()
   }
 
   /// Whether column separator is comma or tab (CSV/TSV mode disables padding and ANSI)

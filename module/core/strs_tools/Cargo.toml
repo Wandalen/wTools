@@ -56,7 +56,7 @@ enabled = [ "strs_tools_meta/enabled" ]
 # String indentation functionality
 string_indentation = ["enabled"]
 
-# String isolation functionality (left/right/between extraction)
+# String isolation functionality (left/right extraction)
 string_isolate = ["enabled"]
 
 # String splitting functionality (core splitting algorithms)
@@ -161,6 +161,11 @@ harness = false
 path = "benches/simple_specialized_benchmark.rs"
 required-features = ["string_split", "specialized_algorithms"]
 
+[[bench]]
+name = "benchkit_specialized_algorithms"
+harness = false
+path = "benches/benchkit_specialized_algorithms.rs"
+required-features = ["string_split", "specialized_algorithms"]
 
 [[bin]]
 name = "simd_test"

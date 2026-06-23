@@ -2,10 +2,10 @@
 
 ## Execution State
 
-- **State**: ✅ (Completed)
-- **ID**: 009
-- **Slug**: api_consistency_with_prefix
-- **Executor**: dev
+- **State:** ✅ (Completed)
+- **ID:** 009
+- **Slug:** api_consistency_with_prefix
+- **Executor:** dev
 
 ## MOST Goal
 

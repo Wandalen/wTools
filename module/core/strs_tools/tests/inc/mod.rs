@@ -23,3 +23,20 @@ mod parse_test;
 pub mod split_test;
 
 pub mod iterator_vec_delimiter_test;
+
+#[ cfg( feature = "ansi" ) ]
+mod ansi_detect_test;
+#[ cfg( feature = "ansi" ) ]
+mod ansi_parse_test;
+#[ cfg( feature = "ansi" ) ]
+mod ansi_strip_test;
+#[ cfg( feature = "ansi" ) ]
+mod ansi_truncate_test;
+#[ cfg( feature = "ansi" ) ]
+mod ansi_visual_test;
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+mod string_parser_test;
+#[ cfg( all( feature = "string_split", feature = "std" ) ) ]
+mod zero_copy_test;
+#[ cfg( all( feature = "string_split", feature = "specialized_algorithms", feature = "std" ) ) ]
+mod specialized_test;

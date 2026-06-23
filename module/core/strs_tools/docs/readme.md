@@ -1,5 +1,12 @@
 # docs
 
+### Scope
+
+- **Purpose**: Organize behavioral requirements, API contracts, correctness invariants, and algorithmic design documentation for the strs_tools crate.
+- **Responsibility**: Root documentation directory linking to all doc entity directories.
+- **In Scope**: Feature capabilities, public API contracts, correctness guarantees, algorithm documentation.
+- **Out of Scope**: Source code, test code, build configuration.
+
 ### Responsibility Table
 
 | File | Responsibility |

@@ -17,11 +17,18 @@ The parser exposes an iterator interface, making it composable with standard Rus
 
 This feature is the result of the Task 008 parser integration work, which unified the separate tokenization and transformation sub-systems.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/parser.rs` | Parser, token types, and transformation pipeline |
-| test | `tests/parser_integration_comprehensive_test.rs` | Single-pass parsing correctness and pipeline tests |
-| doc | `docs/api/003_parser_integration_api.md` | Parser integration public API contract |
-| task | `task/completed/008_parser_integration.md` | Parser integration implementation task |
+- [src/string/parser.rs](../../src/string/parser.rs) — Parser, token types, and transformation pipeline
+
+### Tests
+
+- [tests/parser_integration_comprehensive_test.rs](../../tests/parser_integration_comprehensive_test.rs) — Single-pass parsing correctness and pipeline tests
+
+### APIs
+
+- [003_parser_integration_api.md](../api/003_parser_integration_api.md) — Parser integration public API contract
+
+### Tasks
+
+- [008_parser_integration.md](../../task/completed/008_parser_integration.md) — Parser integration implementation task

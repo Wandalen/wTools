@@ -13,6 +13,12 @@
 |------|-------------|
 | [001_variant_attributes.md](../data_structure/001_variant_attributes.md) | Attribute definitions for all 46 variant attributes |
 
+### Formatters
+
+| File | Relationship |
+|------|-------------|
+| [010_text_formatter.md](../formatter/010_text_formatter.md) | Parent formatter producing this variant |
+
 ### Sources
 
 | File | Relationship |

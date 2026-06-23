@@ -17,14 +17,14 @@ The SIMD path and the scalar path produce identical results. Correctness is not 
 
 ### Sources
 
-- `../../architecture.md` — SIMD Optimization section; SIMD dependency list and performance characteristics migrated to this instance.
+- [src/simd.rs](../../src/simd.rs) — SIMD feature gating and platform dispatch
+- [src/string/split/simd.rs](../../src/string/split/simd.rs) — Vectorized delimiter search within the split path
 
-### Cross-References
+### Algorithms
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/simd.rs` | SIMD feature gating and platform dispatch |
-| source | `src/string/split/simd.rs` | Vectorized delimiter search within the split path |
-| doc | `docs/algorithm/001_simd_delimiter_search.md` | SIMD delimiter search algorithmic design |
-| doc | `docs/invariant/002_feature_gating_contract.md` | Feature opt-in gating invariant |
-| doc | `docs/invariant/003_simd_fallback_contract.md` | Scalar fallback correctness guarantee |
+- [001_simd_delimiter_search.md](../algorithm/001_simd_delimiter_search.md) — SIMD delimiter search algorithmic design
+
+### Invariants
+
+- [002_feature_gating_contract.md](../invariant/002_feature_gating_contract.md) — Feature opt-in gating invariant
+- [003_simd_fallback_contract.md](../invariant/003_simd_fallback_contract.md) — Scalar fallback correctness guarantee

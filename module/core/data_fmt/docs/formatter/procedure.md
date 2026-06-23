@@ -13,7 +13,7 @@ Any of: new Rust formatter struct added to `src/formatters/`, existing formatter
 1. Assign the next sequential ID (next after current highest in Overview Table).
 2. Create `docs/formatter/NNN_formatter_name.md` with all required sections: Scope, Cross-References, Trait, Input, Variants.
 3. Add a row to `formatter/readme.md` Overview Table.
-4. Add the formatter to `docs/entities.md` Master Doc Instances Table.
+4. Add the formatter to `docs/entity.md` Master Doc Instances Table.
 5. Create corresponding variant doc instances in `docs/variant/` for each variant the formatter produces.
 
 ### Update

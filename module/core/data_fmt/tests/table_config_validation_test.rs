@@ -26,7 +26,7 @@ use data_fmt::
   RowBuilder, TableFormatter, TableConfig, Heading, Format,
   ExpandedConfig, TreeConfig, PaddingSide,
   BorderVariant, HeaderSeparatorVariant, ColumnSeparator, FoldStyle,
-  CAPTION_FIELD_SEP, CAPTION_RULE_CHAR, CAPTION_LEAD_WIDTH,
+  HEADING_FIELD_SEP, HEADING_RULE_CHAR, HEADING_LEAD_WIDTH,
 };
 
 // ============================================================================
@@ -468,7 +468,7 @@ fn table_caption_new_stores_title_no_fields_ap1()
   );
   // No field separator — confirms empty fields collection
   assert!(
-    !caption_line.contains( CAPTION_FIELD_SEP ),
+    !caption_line.contains( HEADING_FIELD_SEP ),
     "AP-1: caption line must not contain field separator when no fields are set; got: '{caption_line}'",
   );
 }
@@ -586,14 +586,14 @@ fn all_presets_default_caption_none_ap5()
   }
 }
 
-/// AP-6 — `api/003`: `CAPTION_FIELD_SEP`, `CAPTION_RULE_CHAR`, `CAPTION_LEAD_WIDTH` have expected values.
+/// AP-6 — `api/003`: `HEADING_FIELD_SEP`, `HEADING_RULE_CHAR`, `HEADING_LEAD_WIDTH` have expected values.
 // test_kind: standard
 #[ test ]
-fn caption_constants_have_expected_values_ap6()
+fn heading_constants_have_expected_values_ap6()
 {
-  assert_eq!( CAPTION_FIELD_SEP, '·', "AP-6: CAPTION_FIELD_SEP must be U+00B7 MIDDLE DOT" );
-  assert_eq!( CAPTION_RULE_CHAR, '─', "AP-6: CAPTION_RULE_CHAR must be U+2500 BOX DRAWINGS LIGHT HORIZONTAL" );
-  assert_eq!( CAPTION_LEAD_WIDTH, 3,  "AP-6: CAPTION_LEAD_WIDTH must be 3" );
+  assert_eq!( HEADING_FIELD_SEP, '·', "AP-6: HEADING_FIELD_SEP must be U+00B7 MIDDLE DOT" );
+  assert_eq!( HEADING_RULE_CHAR, '─', "AP-6: HEADING_RULE_CHAR must be U+2500 BOX DRAWINGS LIGHT HORIZONTAL" );
+  assert_eq!( HEADING_LEAD_WIDTH, 3,  "AP-6: HEADING_LEAD_WIDTH must be 3" );
 }
 
 /// AP-7 — `api/003`: all 39 consuming builder setters across four config types use `with_` prefix.
@@ -693,8 +693,8 @@ fn heading_type_replaces_table_caption_in_public_exports_ap8()
   );
 
   // Constants retained (unchanged by rename — they describe formatting, not the type name)
-  assert_eq!( CAPTION_FIELD_SEP, '·',  "AP-8: CAPTION_FIELD_SEP unchanged after rename" );
-  assert_eq!( CAPTION_RULE_CHAR, '─',  "AP-8: CAPTION_RULE_CHAR unchanged after rename" );
-  assert_eq!( CAPTION_LEAD_WIDTH, 3,   "AP-8: CAPTION_LEAD_WIDTH unchanged after rename" );
+  assert_eq!( HEADING_FIELD_SEP, '·',  "AP-8: HEADING_FIELD_SEP unchanged after rename" );
+  assert_eq!( HEADING_RULE_CHAR, '─',  "AP-8: HEADING_RULE_CHAR unchanged after rename" );
+  assert_eq!( HEADING_LEAD_WIDTH, 3,   "AP-8: HEADING_LEAD_WIDTH unchanged after rename" );
 }
 

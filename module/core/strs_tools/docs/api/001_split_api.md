@@ -15,13 +15,17 @@ The caller supplies a source string slice, one or more delimiter patterns, and a
 
 Each segment yielded by the iterator is classified as either a delimited segment or a delimiter segment. Delimited segments carry string content; delimiter segments carry the delimiter text as matched. Both variants borrow from the original source where possible, satisfying the zero-copy invariant.
 
-The count limit option, when set, caps the number of segments the iterator yields. The remainder of the source string is returned as a single final segment rather than split further.
+A count limit option that caps the number of segments the iterator yields is a planned extension not yet exposed in the builder API.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/split.rs` | Split iterator, builder, and SplitType definition |
-| source | `src/string/split/split_behavior.rs` | Behavioral flag types |
-| doc | `docs/feature/001_string_splitting.md` | Split feature design and capability overview |
-| doc | `docs/invariant/001_zero_copy_contract.md` | Zero-copy borrowing guarantee |
+- [src/string/split.rs](../../src/string/split.rs) — Split iterator, builder, and SplitType definition
+- [src/string/split/split_behavior.rs](../../src/string/split/split_behavior.rs) — Behavioral flag types
+
+### Features
+
+- [001_string_splitting.md](../feature/001_string_splitting.md) — Split feature design and capability overview
+
+### Invariants
+
+- [001_zero_copy_contract.md](../invariant/001_zero_copy_contract.md) — Zero-copy borrowing guarantee

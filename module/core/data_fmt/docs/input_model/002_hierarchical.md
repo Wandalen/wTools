@@ -7,7 +7,7 @@
 - **In Scope**: Node structure, leaf data, invariants, specializations, and builder entry points.
 - **Out of Scope**: Rust type details (see `../input_type/`), construction APIs (see `../builder/`).
 
-### InputTypes
+### Input Types
 
 | File | Relationship |
 |------|-------------|

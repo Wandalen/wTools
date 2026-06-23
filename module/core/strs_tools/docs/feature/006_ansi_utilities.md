@@ -21,14 +21,18 @@ Visual-length calculation counts the number of display columns a string occupies
 
 Truncation cuts a string to a target visual width without splitting multi-byte characters or orphaning escape sequences, ensuring the truncated result renders correctly in a terminal.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/ansi/detect.rs` | ANSI sequence presence detection |
-| source | `src/ansi/parse.rs` | Token-by-token sequence and span parsing |
-| source | `src/ansi/strip.rs` | Escape sequence removal |
-| source | `src/ansi/visual.rs` | Visual-width calculation with Unicode grapheme support |
-| source | `src/ansi/truncate.rs` | Visual-width-aware string truncation |
-| test | `tests/ansi_truncate_tests.rs` | ANSI truncation correctness and edge case tests |
-| doc | `docs/api/002_string_utilities_api.md` | ANSI utility operation contract |
+- [src/ansi/detect.rs](../../src/ansi/detect.rs) — ANSI sequence presence detection
+- [src/ansi/parse.rs](../../src/ansi/parse.rs) — Token-by-token sequence and span parsing
+- [src/ansi/strip.rs](../../src/ansi/strip.rs) — Escape sequence removal
+- [src/ansi/visual.rs](../../src/ansi/visual.rs) — Visual-width calculation with Unicode grapheme support
+- [src/ansi/truncate.rs](../../src/ansi/truncate.rs) — Visual-width-aware string truncation
+
+### Tests
+
+- [tests/ansi_truncate_tests.rs](../../tests/ansi_truncate_tests.rs) — ANSI truncation correctness and edge case tests
+
+### APIs
+
+- [002_string_utilities_api.md](../api/002_string_utilities_api.md) — ANSI utility operation contract

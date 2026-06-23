@@ -2,12 +2,12 @@
 
 ## Execution State
 
-- **Executor Type:** any
-- **Actor:** dev
-- **Claimed At:** null
-- **Status:** ✅ (Completed)
+- **State:** ✅ (Completed)
+- **ID:** 006
+- **Slug:** terminal_size_feature_bundle
+- **Executor:** dev
 
-## Goal
+## MOST Goal
 
 Ensure that enabling the `format_table_visual` Cargo feature alone is sufficient to activate live terminal-width detection by explicitly including `dep:terminal_size` in that feature's dependency list in `Cargo.toml`.
 (Motivated: `terminal_size` is a required dependency for auto-wrap terminal detection, but it may not be bundled into the `format_table_visual` feature — a downstream crate enabling only `format_table_visual` could silently get the hardcoded-120 fallback rather than live detection; Observable: `Cargo.toml` `[features]` entry for `format_table_visual` lists `"dep:terminal_size"` as one of its members so a single `features = ["format_table_visual"]` activation pulls in live detection; Scoped: one-line edit to `Cargo.toml` `[features]` section; no source code changes; Testable: `cargo check --features format_table_visual --no-default-features` compiles without missing-dependency errors and `w3 .test level::3` passes clean)
@@ -40,9 +40,7 @@ All paths relative to the crate root (`module/core/data_fmt/`).
 | Feature-isolated compile | `cargo check --features format_table_visual --no-default-features` | exit 0, no errors |
 | Full test suite | `w3 .test level::3` | all tests pass |
 
-## Closes
-
-null
+**Closes:** null
 
 ## Verification Record
 

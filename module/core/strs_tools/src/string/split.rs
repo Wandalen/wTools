@@ -27,9 +27,8 @@
 //!   unescaping is needed, avoiding unnecessary allocations. This is critical for performance
 //!   when processing large text with minimal escaping.
 //!
-//! - **Iterator State Management**: `SplitFastIterator` maintains internal state that can
-//!   be corrupted if `set_test_state` is used incorrectly in production code. Test-only methods
-//!   are marked with `#[ cfg( test ) ]` for safety.
+//! - **Iterator State Management**: `SplitFastIterator` maintains internal state. All tests
+//!   live in the `tests/` directory (per l2_imp rulebook).
 //!
 //! ## Security Considerations:
 //!
@@ -92,14 +91,6 @@ mod private {
     }
 
     Cow::Owned(output)
-  }
-
-  #[ cfg( test ) ]
-  /// Tests the `unescape_str` function.
-  #[ allow( clippy::elidable_lifetime_names ) ] // Design Rulebook requires explicit lifetimes
-  #[ must_use ] pub fn test_unescape_str< 'a >( input : &'a str ) -> Cow< 'a, str >
-  {
-    unescape_str( input )
   }
 
   /// Represents a segment of a string after splitting.
@@ -1020,9 +1011,7 @@ mod private {
     SplitOptionsFormer::new(<&str>::default())
   }
 }
-// NOTE: The #[cfg(not(test))] mod private block was removed as part of the simplification.
-// All definitions are now in the single `pub mod private` block above,
-// with test-specific items/visibilities handled by #[ cfg( test ) ] attributes.
+// All definitions are in the single `pub mod private` block above.
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -1039,8 +1028,6 @@ pub mod own {
   pub use private::{ split_advanced, SplitOptionsFormer };
   #[ cfg( feature = "simd" ) ]
   pub use super::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
-  #[ cfg( test ) ]
-  pub use private::{ SplitFastIterator, test_unescape_str };
 }
 
 /// Parented namespace of the module.
@@ -1062,8 +1049,6 @@ pub mod exposed {
   pub use super::own::{ split_advanced, SplitOptionsFormer };
   #[ cfg( feature = "simd" ) ]
   pub use super::own::{ SIMDSplitIterator, simd_split_cached, get_or_create_cached_patterns };
-  #[ cfg( test ) ]
-  pub use super::own::{ SplitFastIterator, test_unescape_str };
 }
 
 /// Namespace of the module to include with `use module::*`.
@@ -1074,6 +1059,4 @@ pub mod prelude {
   pub use private::{ Searcher, BasicSplitBuilder, split };
   #[ cfg( all( feature = "string_parse_request", feature = "std" ) ) ]
   pub use private::{ SplitOptionsFormer, split_advanced };
-  #[ cfg( test ) ]
-  pub use private::{ SplitFastIterator, test_unescape_str as unescape_str };
 }

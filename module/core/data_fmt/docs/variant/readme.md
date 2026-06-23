@@ -2,10 +2,10 @@
 
 ### Scope
 
-- **Purpose**: Document every output variant with attributes, examples, and configuration.
+- **Purpose**: Catalog each output variant — its 46-attribute profile, example output, and compatibility characteristics.
 - **Responsibility**: Registry and overview of all variant doc instances.
-- **In Scope**: Per-variant attribute descriptors (46 attributes each), example output, feature flags.
-- **Out of Scope**: Formatter implementation (see `feature/`), attribute definitions (see `data_structure/001_variant_attributes.md`).
+- **In Scope**: Per-variant attribute values (46 attributes each), example output, compatibility and usage context.
+- **Out of Scope**: Formatter struct internals and variant selection dispatch (see `formatter/`), attribute schema definition (see `data_structure/001_variant_attributes.md`).
 
 Required instance sections (in order):
 

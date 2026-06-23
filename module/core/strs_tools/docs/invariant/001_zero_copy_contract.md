@@ -17,14 +17,14 @@ The invariant is intentionally broken when: stripping or unescaping is enabled (
 
 ### Sources
 
-- `../../architecture.md` — Memory Efficiency section; zero-copy and `Cow<str>` patterns migrated to this invariant.
+- [src/string/split.rs](../../src/string/split.rs) — Split iterator lifetime and slice yield
+- [src/string/isolate.rs](../../src/string/isolate.rs) — Isolation slice return
+- [src/string/zero_copy.rs](../../src/string/zero_copy.rs) — Zero-copy utilities and slice helpers
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/split.rs` | Split iterator lifetime and slice yield |
-| source | `src/string/isolate.rs` | Isolation slice return |
-| source | `src/string/zero_copy.rs` | Zero-copy utilities and slice helpers |
-| doc | `docs/feature/001_string_splitting.md` | Split feature design |
-| doc | `docs/api/001_split_api.md` | Split API contract referencing this invariant |
+- [001_string_splitting.md](../feature/001_string_splitting.md) — Split feature design
+
+### APIs
+
+- [001_split_api.md](../api/001_split_api.md) — Split API contract referencing this invariant

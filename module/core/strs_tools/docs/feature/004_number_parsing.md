@@ -15,11 +15,18 @@ The operation accepts a string slice and attempts to parse it as the target nume
 
 Performance is substantially better than the standard library for large volumes of numbers due to SIMD-optimized digit scanning in the underlying `lexical` implementation.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/number.rs` | Number parsing wrapper and format handling |
-| test | `tests/inc/number_test.rs` | Numeric parsing correctness and format tests |
-| doc | `docs/api/002_string_utilities_api.md` | Number parsing operation contract |
-| doc | `docs/invariant/004_no_std_alloc_contract.md` | No-std compatibility guarantee for core operations |
+- [src/string/number.rs](../../src/string/number.rs) — Number parsing wrapper and format handling
+
+### Tests
+
+- [tests/inc/number_test.rs](../../tests/inc/number_test.rs) — Numeric parsing correctness and format tests
+
+### APIs
+
+- [002_string_utilities_api.md](../api/002_string_utilities_api.md) — Number parsing operation contract
+
+### Invariants
+
+- [004_no_std_alloc_contract.md](../invariant/004_no_std_alloc_contract.md) — No-std compatibility guarantee for core operations

@@ -15,10 +15,14 @@ Token boundaries follow whitespace conventions: sequences of whitespace characte
 
 The result is a structured request value containing the command name and the argument list. Both the name and each argument are owned strings.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/parse_request.rs` | Command parsing implementation and ParseRequest type |
-| test | `tests/inc/parse_test.rs` | Command parsing correctness and token boundary tests |
-| doc | `docs/api/002_string_utilities_api.md` | Command parsing operation contract |
+- [src/string/parse_request.rs](../../src/string/parse_request.rs) — Command parsing implementation and ParseRequest type
+
+### Tests
+
+- [tests/inc/parse_test.rs](../../tests/inc/parse_test.rs) — Command parsing correctness and token boundary tests
+
+### APIs
+
+- [002_string_utilities_api.md](../api/002_string_utilities_api.md) — Command parsing operation contract

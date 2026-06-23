@@ -183,7 +183,7 @@ pub use config::{
   TreeConfig, TableConfig, ExpandedConfig, PaddingSide, TreeSymbols,
   BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex, FoldStyle,
   Heading,
-  CAPTION_FIELD_SEP, CAPTION_RULE_CHAR, CAPTION_LEAD_WIDTH,
+  HEADING_FIELD_SEP, HEADING_RULE_CHAR, HEADING_LEAD_WIDTH,
 };
 #[ cfg( feature = "enabled" ) ]
 pub use ansi_str::{ visual_len, pad_to_width, truncate_cell };

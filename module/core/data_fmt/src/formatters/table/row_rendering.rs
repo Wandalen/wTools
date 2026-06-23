@@ -1,4 +1,4 @@
-//! Header, row, and caption rendering for `TableFormatter`
+//! Header, row, and heading rendering for `TableFormatter`
 //!
 //! Extracted to keep `mod.rs` under the 500-line ceiling.
 //! Contains the four dispatch functions that sit between the high-level
@@ -182,18 +182,18 @@ impl TableFormatter
     }
   }
 
-  /// Render the caption titled rule into `output`, or return early if no caption is set.
+  /// Render the heading titled rule into `output`, or return early if no heading is set.
   ///
   /// Format: `─── content ──────...` filling `table_width` display columns.
   /// Uses `unicode_visual_len` for content width (not `.chars().count()`) so that
   /// CJK / wide characters are measured correctly at 2 display columns each.
-  pub( super ) fn render_caption_if_present( &self, output : &mut String, table_width : usize )
+  pub( super ) fn render_heading_if_present( &self, output : &mut String, table_width : usize )
   {
-    let Some( caption ) = self.config.caption_ref() else { return };
-    let content = caption.content_str();
+    let Some( heading ) = self.config.heading_ref() else { return };
+    let content = heading.content_str();
     let tw = table_width;
-    let lead_width = crate::config::CAPTION_LEAD_WIDTH;
-    let rule_char  = crate::config::CAPTION_RULE_CHAR;
+    let lead_width = crate::config::HEADING_LEAD_WIDTH;
+    let rule_char  = crate::config::HEADING_RULE_CHAR;
     // Fix(BUG-015): use unicode_visual_len (display columns) instead of .chars().count().
     // Root cause: CJK characters are 1 char but 2 display columns; .chars().count()
     //   undercounted, making the trail too long and heading line wider than table body.

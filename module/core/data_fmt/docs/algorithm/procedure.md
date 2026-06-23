@@ -12,9 +12,9 @@
 3. Create `docs/algorithm/NNN_name.md` with the following sections in order: `### Scope`, `### Sources`, `### Tests`, `### Trigger Condition`, `### Algorithm` (pseudocode), `### Complexity`.
 4. Add a row to the **Overview Table** in `readme.md`:
    `| NNN | [Name](NNN_name.md) | One-line purpose | 🔄 |`
-5. Add a row to `docs/entities.md` **Master Doc Instances Table**:
+5. Add a row to `docs/entity.md` **Master Doc Instances Table**:
    `| algorithm | NNN | Name | [algorithm/NNN_name.md](algorithm/NNN_name.md) |`
-6. Update the **Instances** count in `docs/entities.md` **Master Doc Entities Table** for the `algorithm/` row.
+6. Update the **Instances** count in `docs/entity.md` **Master Doc Entities Table** for the `algorithm/` row.
 7. Add a node to `docs/doc_graph.yml` under `nodes`:
    `- id: algorithm/NNN, file: algorithm/NNN_name.md, label: Name, entity: algorithm, status: planned`
 8. Update `node_count` in `doc_graph.yml` `meta`.
@@ -25,6 +25,6 @@
 
 1. Do **not** delete `NNN_name.md` or remove its Overview Table row — ID permanence is required.
 2. Change the row status in **Overview Table** to `❌`.
-3. Update `docs/entities.md` Master Doc Instances Table: append `(deprecated)` to the Name column.
+3. Update `docs/entity.md` Master Doc Instances Table: append `(deprecated)` to the Name column.
 4. Remove the node from `doc_graph.yml` `nodes`; remove all edges referencing this node.
 5. Update `node_count` and `edge_count` in `meta`; update the relevant component `nodes` list and `size`.

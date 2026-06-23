@@ -4,7 +4,7 @@
 //! Now split into focused sub-modules, each owning one config type family:
 //! - [`tree_config`] — `TreeConfig`, `TreeSymbols`
 //! - [`table_enums`] — style enums used by `TableConfig`
-//! - [`table_caption`] — `Heading` and heading constants
+//! - [`table_heading`] — `Heading` and heading constants
 //! - [`table_config`] — `TableConfig`, `PaddingSide`
 //! - [`expanded_config`] — `ExpandedConfig`
 
@@ -14,8 +14,8 @@ pub use tree_config::{ TreeConfig, TreeSymbols };
 mod table_enums;
 pub use table_enums::{ BorderVariant, HeaderSeparatorVariant, ColumnSeparator, ColumnFlex, FoldStyle };
 
-mod table_caption;
-pub use table_caption::{ CAPTION_FIELD_SEP, CAPTION_RULE_CHAR, CAPTION_LEAD_WIDTH, Heading };
+mod table_heading;
+pub use table_heading::{ HEADING_FIELD_SEP, HEADING_RULE_CHAR, HEADING_LEAD_WIDTH, Heading };
 
 mod table_config;
 pub use table_config::{ TableConfig, PaddingSide };

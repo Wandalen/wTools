@@ -11,3 +11,4 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
+| 001 | [Variant Attributes](001_variant_attributes.md) | Schema completeness, attribute structure, variant instance compliance | ⏳ |

@@ -10,4 +10,4 @@
 
 | File | Responsibility |
 |------|----------------|
-| *(empty — TSK-008/009/010 verified and moved to task root 2026-06-15)* | |
+| `011_format_aligned_display_width_mismatch.md` | Fix display-width mismatch in format_aligned two-pass algorithm |

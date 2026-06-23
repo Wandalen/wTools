@@ -17,13 +17,13 @@ Test suites run with and without the `simd` feature to verify the invariant hold
 
 ### Sources
 
-- `../../architecture.md` — SIMD Optimization section; graceful degradation guarantee migrated to this invariant.
+- [src/simd.rs](../../src/simd.rs) — SIMD feature gating and scalar fallback dispatch
+- [src/string/split/simd.rs](../../src/string/split/simd.rs) — Vectorized delimiter search with scalar fallback
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/simd.rs` | SIMD feature gating and scalar fallback dispatch |
-| source | `src/string/split/simd.rs` | Vectorized delimiter search with scalar fallback |
-| doc | `docs/feature/007_simd_acceleration.md` | SIMD acceleration feature design |
-| doc | `docs/algorithm/001_simd_delimiter_search.md` | SIMD delimiter search algorithmic detail |
+- [007_simd_acceleration.md](../feature/007_simd_acceleration.md) — SIMD acceleration feature design
+
+### Algorithms
+
+- [001_simd_delimiter_search.md](../algorithm/001_simd_delimiter_search.md) — SIMD delimiter search algorithmic detail

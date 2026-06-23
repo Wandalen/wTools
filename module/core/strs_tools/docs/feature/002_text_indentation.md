@@ -15,11 +15,18 @@ Empty lines receive the prefix and postfix treatment identically to non-empty li
 
 The operation is allocation-based: it constructs a new owned string. No borrowing variant is provided because the result necessarily differs from the source.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/indentation.rs` | Indentation implementation |
-| test | `tests/inc/indentation_test.rs` | Indentation correctness tests |
-| doc | `docs/api/002_string_utilities_api.md` | Indentation operation contract |
-| doc | `docs/invariant/004_no_std_alloc_contract.md` | No-std compatibility guarantee for core operations |
+- [src/string/indentation.rs](../../src/string/indentation.rs) — Indentation implementation
+
+### Tests
+
+- [tests/inc/indentation_test.rs](../../tests/inc/indentation_test.rs) — Indentation correctness tests
+
+### APIs
+
+- [002_string_utilities_api.md](../api/002_string_utilities_api.md) — Indentation operation contract
+
+### Invariants
+
+- [004_no_std_alloc_contract.md](../invariant/004_no_std_alloc_contract.md) — No-std compatibility guarantee for core operations

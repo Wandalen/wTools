@@ -2,26 +2,26 @@
 
 ## Execution State
 
-- **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Status:** ✅ (Completed)
-- **Validated By:** claude-sonnet-4-6
-- **Validation Date:** 2026-05-16
+- **State:** ✅ (Completed)
+- **ID:** 001
+- **Slug:** migrate_decorated_text_strict
+- **Executor:** dev
 
-## Goal
+## MOST Goal
 
 Migrate all text-with-optional-color sites in `data_fmt` from raw `String` to `color_tools::DecoratedText`, eliminating 42 identified gaps across data model, config, theme, and formatter layers, so that cell coloring, key coloring, and reset sequencing are all governed by the single `DecoratedText` API rather than scattered ANSI literals. (Motivated: 42 sites duplicate ANSI reset logic or carry uncolorable text where `DecoratedText` should be used, creating silent inconsistency with the color_tools contract; Observable: `grep -rc '\\x1b\[0m' src/formatters/` returns 0, `TableView::rows` is `Vec<Vec<DecoratedText>>`; Scoped: `data_fmt/src/` only — no cross-crate API changes to `color_tools`; Testable: `w3 .test level::3` passes with zero warnings after migration)
 
 ## In Scope
 
-- `/home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/data.rs` § `TableView::rows`, `ColumnData::columns`
-- `/home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/table_tree.rs` § `RowBuilder::rows`, `RowBuilder::add_row`, `RowBuilder::add_row_with_detail`
-- `/home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/config.rs` § `TableConfig::header_color`, `row_color1`, `row_color2`; `ExpandedConfig::key_color` hardcoded default; `TreeConfig` — add `branch_color`
-- `/home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/themes.rs` § `ColorTheme::reset` field removal; `ColorThemeBuilder::reset` field removal
-- `/home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/formatters/table.rs` § `ANSI_RESET` constant removal; manual push-color/push-text/push-RESET pattern replacement
-- `/home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/formatters/expanded.rs` § manual push-key_color/push-key/push-`"\x1b[0m"` replacement
-- `/home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/tests/` — all test files constructing `Vec<String>` rows (update to `Vec<DecoratedText>` or `vec!["cell".into()]`)
+All paths relative to the crate root (`module/core/data_fmt/`).
+
+- `src/data.rs` § `TableView::rows`, `ColumnData::columns`
+- `src/table_tree.rs` § `RowBuilder::rows`, `RowBuilder::add_row`, `RowBuilder::add_row_with_detail`
+- `src/config.rs` § `TableConfig::header_color`, `row_color1`, `row_color2`; `ExpandedConfig::key_color` hardcoded default; `TreeConfig` — add `branch_color`
+- `src/themes.rs` § `ColorTheme::reset` field removal; `ColorThemeBuilder::reset` field removal
+- `src/formatters/table.rs` § `ANSI_RESET` constant removal; manual push-color/push-text/push-RESET pattern replacement
+- `src/formatters/expanded.rs` § manual push-key_color/push-key/push-`"\x1b[0m"` replacement
+- `tests/` — all test files constructing `Vec<String>` rows (update to `Vec<DecoratedText>` or `vec!["cell".into()]`)
 
 ## Out of Scope
 
@@ -131,10 +131,10 @@ Desired answer for every question is YES.
 
 ### Measurements
 
-- [x] M1 — ANSI_RESET constant removed: `grep -c 'ANSI_RESET' /home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/formatters/table.rs` → `0` (was: `2`)
-- [x] M2 — No raw reset literal in formatters: `grep -rc '"\\x1b\[0m"' /home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/formatters/` → `0` across all files (was: `expanded.rs:2`)
-- [x] M3 — ColorTheme reset field removed: `grep -c 'reset' /home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/themes.rs` → `0` (was: non-zero)
-- [x] M4 — rows field type changed: `grep 'Vec<Vec<DecoratedText>>' /home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/data.rs | wc -l` → `1` (was: `0`)
+- [x] M1 — ANSI_RESET constant removed: `grep -c 'ANSI_RESET' src/formatters/table.rs` → `0` (was: `2`)
+- [x] M2 — No raw reset literal in formatters: `grep -rc '"\\x1b\[0m"' src/formatters/` → `0` across all files (was: `expanded.rs:2`)
+- [x] M3 — ColorTheme reset field removed: `grep -c 'reset' src/themes.rs` → `0` (was: non-zero)
+- [x] M4 — rows field type changed: `grep 'Vec<Vec<DecoratedText>>' src/data.rs | wc -l` → `1` (was: `0`)
 
 ### Invariants
 
@@ -143,10 +143,10 @@ Desired answer for every question is YES.
 
 ### Anti-faking checks
 
-- [x] AF1 — DecoratedText import in data.rs: `grep 'use color_tools' /home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/data.rs` → 1 match. Why: confirms dependency is explicitly declared, not pulled through wildcard re-export.
-- [x] AF2 — No ANSI_RESET definition: `grep 'const ANSI_RESET' /home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/formatters/table.rs` → 0 matches. Why: confirms constant was deleted, not just made unused.
-- [x] AF3 — Colored cell test is non-trivial: `grep -c 'with_color\|DecoratedText.*color' /home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/tests/decorated_cells_test.rs` → ≥ 2. Why: confirms test constructs genuinely colored values, not just `DecoratedText::from("x")` with no color.
-- [ ] AF4 — ExpandedConfig key_color default is empty: `grep 'key_color' /home/user1/pro/lib/wip_core/wtools/dev/module/core/data_fmt/src/config.rs | grep 'x1b'` → 0 matches. Why: confirms the hardcoded `"\x1b[90m"` default was removed.
+- [x] AF1 — DecoratedText import in data.rs: `grep 'use color_tools' src/data.rs` → 1 match. Why: confirms dependency is explicitly declared, not pulled through wildcard re-export.
+- [x] AF2 — No ANSI_RESET definition: `grep 'const ANSI_RESET' src/formatters/table.rs` → 0 matches. Why: confirms constant was deleted, not just made unused.
+- [x] AF3 — Colored cell test is non-trivial: `grep -c 'with_color\|DecoratedText.*color' tests/decorated_cells_test.rs` → ≥ 2. Why: confirms test constructs genuinely colored values, not just `DecoratedText::from("x")` with no color.
+- [ ] AF4 — ExpandedConfig key_color default is empty: `grep 'key_color' src/config.rs | grep 'x1b'` → 0 matches. Why: confirms the hardcoded `"\x1b[90m"` default was removed.
 
 ## Outcomes
 
@@ -177,7 +177,7 @@ Desired answer for every question is YES.
 - `doc_graph.yml` node_count/edge_count metrics in Phase 2 checklist are stale (plan authored before `feature/003_html_rendering.md` was added in commit `c895ad86`); actual counts are node_count=9, edge_count=31 — no action needed, goal fully met
 - `ExpandedConfig::key_color` defaults (`default()` and `property_style()`) were restored to `"\x1b[90m"` by a post-migration linter pass; this supersedes acceptance criterion C2.11 and AF4; all Level 3 tests continue to pass (no test asserts on the default value); the primary migration goal (no raw ANSI in formatters, DecoratedText-typed rows) is unaffected
 
-### Validation Results
+## Verification Record
 
 Retroactive validation performed 2026-05-16 by `claude-sonnet-4-6` (normalization audit — Path A independent review; executor was `dev`, validator is separate).
 

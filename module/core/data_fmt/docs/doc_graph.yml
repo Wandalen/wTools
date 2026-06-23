@@ -1,8 +1,8 @@
 meta:
   description: Cross-reference graph for all doc instances in data_fmt
-  last_updated: 2026_06_13
-  node_count: 80
-  edge_count: 162
+  last_updated: 2026_06_23
+  node_count: 79
+  edge_count: 190
   component_count: 1
 
 nodes:
@@ -206,10 +206,6 @@ nodes:
   - id: trait/001
     file: trait/001_format.md
     label: Format
-    entity: trait
-  - id: trait/002
-    file: trait/002_table_shaped_formatter.md
-    label: TableShapedFormatter
     entity: trait
   - id: trait/003
     file: trait/003_table_shaped_view.md
@@ -466,9 +462,6 @@ edges:
     to: trait/001
     via: typed_reference
   - from: feature/006
-    to: trait/002
-    via: typed_reference
-  - from: feature/006
     to: api/002
     via: typed_reference
   - from: feature/006
@@ -570,9 +563,6 @@ edges:
     to: trait/001
     via: typed_reference
   - from: pattern/003
-    to: trait/002
-    via: typed_reference
-  - from: pattern/003
     to: trait/003
     via: typed_reference
   - from: pattern/003
@@ -592,12 +582,6 @@ edges:
   - from: trait/001
     to: feature/003
     via: typed_reference
-  - from: trait/002
-    to: trait/001
-    via: typed_reference
-  - from: trait/003
-    to: trait/002
-    via: typed_reference
   - from: trait/003
     to: input_model/001
     via: typed_reference
@@ -608,9 +592,6 @@ edges:
     via: typed_reference
   - from: formatter/001
     to: trait/001
-    via: typed_reference
-  - from: formatter/001
-    to: trait/002
     via: typed_reference
   - from: formatter/001
     to: variant/001
@@ -870,6 +851,107 @@ edges:
     to: data_structure/001
     via: typed_reference
 
+  # variant -> formatter reverse cross-references (bidirectionality)
+  - from: variant/001
+    to: formatter/001
+    via: typed_reference
+  - from: variant/002
+    to: formatter/001
+    via: typed_reference
+  - from: variant/003
+    to: formatter/001
+    via: typed_reference
+  - from: variant/004
+    to: formatter/001
+    via: typed_reference
+  - from: variant/005
+    to: formatter/001
+    via: typed_reference
+  - from: variant/006
+    to: formatter/001
+    via: typed_reference
+  - from: variant/007
+    to: formatter/001
+    via: typed_reference
+  - from: variant/008
+    to: formatter/001
+    via: typed_reference
+  - from: variant/009
+    to: formatter/001
+    via: typed_reference
+  - from: variant/010
+    to: formatter/002
+    via: typed_reference
+  - from: variant/011
+    to: formatter/002
+    via: typed_reference
+  - from: variant/012
+    to: formatter/003
+    via: typed_reference
+  - from: variant/013
+    to: formatter/003
+    via: typed_reference
+  - from: variant/014
+    to: formatter/003
+    via: typed_reference
+  - from: variant/015
+    to: formatter/004
+    via: typed_reference
+  - from: variant/016
+    to: formatter/005
+    via: typed_reference
+  - from: variant/017
+    to: formatter/005
+    via: typed_reference
+  - from: variant/018
+    to: formatter/006
+    via: typed_reference
+  - from: variant/019
+    to: formatter/007
+    via: typed_reference
+  - from: variant/020
+    to: formatter/008
+    via: typed_reference
+  - from: variant/021
+    to: formatter/008
+    via: typed_reference
+  - from: variant/022
+    to: formatter/008
+    via: typed_reference
+  - from: variant/023
+    to: formatter/008
+    via: typed_reference
+  - from: variant/024
+    to: formatter/009
+    via: typed_reference
+  - from: variant/025
+    to: formatter/009
+    via: typed_reference
+  - from: variant/026
+    to: formatter/009
+    via: typed_reference
+  - from: variant/027
+    to: formatter/009
+    via: typed_reference
+  - from: variant/028
+    to: formatter/010
+    via: typed_reference
+  - from: variant/029
+    to: formatter/010
+    via: typed_reference
+  - from: variant/030
+    to: formatter/010
+    via: typed_reference
+  - from: variant/031
+    to: formatter/010
+    via: typed_reference
+  - from: variant/032
+    to: formatter/010
+    via: typed_reference
+  - from: variant/033
+    to: formatter/010
+    via: typed_reference
+
   # api/003 → feature/007 bidirectionality
   - from: api/003
     to: feature/007
@@ -877,7 +959,7 @@ edges:
 
 components:
   - id: 1
-    size: 80
+    size: 79
     isolated: false
     nodes:
       - algorithm/001
@@ -925,7 +1007,6 @@ components:
       - pattern/003
       - pattern/004
       - trait/001
-      - trait/002
       - trait/003
       - variant/001
       - variant/002

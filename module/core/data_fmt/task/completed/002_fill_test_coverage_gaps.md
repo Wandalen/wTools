@@ -2,12 +2,12 @@
 
 ## Execution State
 
-- **Executor Type:** any
-- **Actor:** dev
-- **Claimed At:** 2026-05-16
-- **Status:** ✅ (Complete)
+- **State:** ✅ (Completed)
+- **ID:** 002
+- **Slug:** fill_test_coverage_gaps
+- **Executor:** dev
 
-## Goal
+## MOST Goal
 
 Implement the 56 remaining missing Rust test functions across existing test files to bring all ⬜ spec cases to ✅ status in the test surface spec files under `tests/docs/`, eliminating the gap between the documented test surface and its actual test implementation. (Motivated: spec completeness prevents silent behavioral regressions in areas not yet exercised; Observable: every ⬜ row in the spec Case Index tables becomes ✅ and `w3 .test level::3` passes clean; Scoped: additions only to existing test files under `tests/` — no source code changes; Testable: `cargo nextest run --all-features 2>&1 | grep -E "PASS|FAIL"` shows 0 failures and the new test names are present.)
 

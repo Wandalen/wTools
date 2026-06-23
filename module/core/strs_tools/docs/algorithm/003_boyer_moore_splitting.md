@@ -17,11 +17,15 @@ Scanning proceeds from left to right in the source. At each candidate position t
 
 For long delimiters in inputs where the delimiter is rare, this algorithm reduces the number of byte comparisons substantially compared with a naive left-to-right scan. For short delimiters or dense inputs the benefit is smaller, and the single-char path or SIMD path may be preferable — selection logic accounts for this.
 
-### Cross-References
+### Sources
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/string/specialized.rs` | Boyer-Moore split specialization and skip table |
-| source | `src/string/split.rs` | Fast-path selection at iterator construction |
-| doc | `docs/feature/001_string_splitting.md` | Split feature overview including algorithm selection |
-| doc | `docs/algorithm/002_single_char_splitting.md` | Single-char fast path counterpart |
+- [src/string/specialized.rs](../../src/string/specialized.rs) — Boyer-Moore split specialization and skip table
+- [src/string/split.rs](../../src/string/split.rs) — Fast-path selection at iterator construction
+
+### Features
+
+- [001_string_splitting.md](../feature/001_string_splitting.md) — Split feature overview including algorithm selection
+
+### Algorithms
+
+- [002_single_char_splitting.md](../algorithm/002_single_char_splitting.md) — Single-char fast path counterpart

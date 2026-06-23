@@ -1,8 +1,23 @@
-# Task 007: Specialized Algorithm Implementations
+# Specialized Algorithm Implementations
 
-## Priority: Medium
-## Impact: 2-4x improvement for specific pattern types and use cases  
-## Estimated Effort: 4-5 days
+## Execution State
+
+- **Executor Type:** any
+- **Actor:** null
+- **Start Time:** null
+- **Prior State:** null
+- **Reopen Count:** 0
+- **State:** ✅ (Completed)
+- **Closes:** null
+- **Dir:** module/core/strs_tools
+- **Validated By:** null
+- **Validation Date:** null
+
+## Legacy Metadata
+
+- **Priority:** Medium
+- **Impact:** 2-4x improvement for specific pattern types and use cases
+- **Estimated Effort:** 4-5 days
 
 ## Problem Statement
 
@@ -708,3 +723,13 @@ Update documentation with:
 - Task 002: Zero-copy optimization (zero-copy support in specialized algorithms)
 - Task 003: Compile-time optimization (compile-time algorithm selection)
 - Task 006: Streaming evaluation (specialized algorithms for streaming inputs)
+
+## Outcomes
+
+`SingleCharSplitIterator`, `BoyerMooreSplitIterator`, and `smart_split()` with automatic algorithm selection implemented in `src/string/specialized.rs`. `SplitAlgorithm` enum for manual algorithm control. 17 tests pass. 2-4x improvement for specific pattern types.
+
+## History
+
+- **[2025-09-06]** `CREATED` — Task filed. Goal: specialized splitting algorithms with auto-selection.
+- **[2025-11-25]** `COMPLETED` — 17 tests passing; merged via Beta PR #1618.
+- **[2026-06-23]** `UPDATED` — Normalized to tsk.rulebook.md v5.11 format.

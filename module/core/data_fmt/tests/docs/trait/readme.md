@@ -11,3 +11,6 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
+| 001 | [Format](001_format.md) | Trait method compliance, error variants, trait object dispatch | ⏳ |
+| 002 | [TableShapedFormatter](002_table_shaped_formatter.md) | Removed trait verification, migration path, Format trait replacement | ⏳ |
+| 003 | [TableShapedView](003_table_shaped_view.md) | Header extraction, structural check, row matrix extraction, edge cases | ⏳ |

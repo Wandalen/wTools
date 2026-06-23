@@ -2,12 +2,12 @@
 
 ## Execution State
 
-- **Executor Type:** any
-- **Actor:** dev
-- **Claimed At:** 2026-06-13
-- **Status:** ✅ (Complete)
+- **State:** ✅ (Completed)
+- **ID:** 004
+- **Slug:** wire_border_color
+- **Executor:** dev
 
-## Goal
+## MOST Goal
 
 Connect the `border_color` field defined in every `ColorTheme` preset to the rendering path so that separator characters (column dividers, horizontal rules, corners, junctions) are decorated with the configured ANSI style, eliminating the silent dead-field defect where theming a table leaves borders uncolored.
 (Motivated: all 6 `ColorTheme` presets define `border_color: DecoratedText` but `apply_to_table()` never forwards it to `TableConfig` and rendering never reads it — `dark_theme().apply_to_table(formatter)` silently discards the border-color intent, making themed borders visually identical to unthemed output despite documented API intent; Observable: a two-column `bordered` table rendered through `ColorTheme::dark_theme()` has every `|` and `+` character wrapped in the theme's border ANSI escape sequence, confirmed by asserting ANSI codes appear specifically on horizontal-rule lines; Scoped: changes limited to `src/config.rs` (add `border_color: Option<DecoratedText>` to `TableConfig`), `src/themes.rs` (forward `self.border_color` in `apply_to_table()`), and `src/formatters/table/rendering.rs` (apply color on all separator/junction/corner chars); no public API additions beyond the new builder method; Testable: `w3 .test level::3` passes and a new `test_dark_theme_border_color` in `tests/theme_test.rs` confirms that horizontal-rule output lines contain ANSI escape sequences when rendered through `dark_theme()`)
@@ -48,9 +48,7 @@ All paths relative to the crate root (`module/core/data_fmt/`).
 | `dark_theme()` + `bordered`, header/data lines | `\x1b` codes present on border chars; row content color unchanged |
 | `TableConfig::bordered()` alone (no theme, `border_color = None`) | no ANSI codes on border chars |
 
-## Closes
-
-null
+**Closes:** null
 
 ## Verification Findings
 

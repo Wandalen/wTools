@@ -19,13 +19,13 @@ The algorithm produces byte offset positions for each match. The split iterator 
 
 ### Sources
 
-- `../../architecture.md` — SIMD Optimization section; dependency list and performance range migrated to this instance.
+- [src/simd.rs](../../src/simd.rs) — SIMD feature gating and library import
+- [src/string/split/simd.rs](../../src/string/split/simd.rs) — Vectorized search integration with the split iterator
 
-### Cross-References
+### Features
 
-| Type | File | Responsibility |
-|------|------|----------------|
-| source | `src/simd.rs` | SIMD feature gating and library import |
-| source | `src/string/split/simd.rs` | Vectorized search integration with the split iterator |
-| doc | `docs/feature/007_simd_acceleration.md` | SIMD feature boundary and activation |
-| doc | `docs/invariant/003_simd_fallback_contract.md` | Result equivalence guarantee between SIMD and scalar |
+- [007_simd_acceleration.md](../feature/007_simd_acceleration.md) — SIMD feature boundary and activation
+
+### Invariants
+
+- [003_simd_fallback_contract.md](../invariant/003_simd_fallback_contract.md) — Result equivalence guarantee between SIMD and scalar

@@ -5,7 +5,7 @@
 - **Purpose**: Document Rust types that carry data into formatters.
 - **Responsibility**: Registry and overview of all input type doc instances.
 - **In Scope**: Concrete Rust struct/enum type definitions — `TableView`, `TreeNode` specializations, their fields and generic parameters.
-- **Out of Scope**: Abstract conceptual data shape models (see `input_model/`), formatting output (see `variant/`).
+- **Out of Scope**: Abstract conceptual data shape models (see `input_model/`), formatting output (see `variant/`), complete public API surface and operation signatures (see `api/`).
 
 Required instance sections (in order):
 
