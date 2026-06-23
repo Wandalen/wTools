@@ -79,7 +79,7 @@ fn run_framework_comparison() -> error_tools::Result<String>
     {
       let count = string::split()
         .src(&single_char_data_1)
-        .delimeter(",")
+        .delimiter(",")
         .perform()
         .count();
       std::hint::black_box(count);
@@ -111,7 +111,7 @@ fn run_framework_comparison() -> error_tools::Result<String>
     {
       let count = string::split()
         .src(&multi_char_data_1)
-        .delimeter("::")
+        .delimiter("::")
         .perform()
         .count();
       std::hint::black_box(count);
@@ -193,7 +193,7 @@ fn run_scaling_analysis() -> error_tools::Result<String>
     {
       let count = string::split()
         .src(&generic_data)
-        .delimeter(",")
+        .delimiter(",")
         .perform()
         .count();
       std::hint::black_box(count);
@@ -218,7 +218,7 @@ fn run_scaling_analysis() -> error_tools::Result<String>
     {
       let count = string::split()
         .src(&boyer_moore_generic_data)
-        .delimeter("::")
+        .delimiter("::")
         .perform()
         .count();
       std::hint::black_box(count);
@@ -257,7 +257,7 @@ fn run_unilang_scenarios() -> error_tools::Result<String>
     {
       let count = string::split()
         .src(&list_generic_data)
-        .delimeter(",")
+        .delimiter(",")
         .perform()
         .count();
       std::hint::black_box(count);
@@ -277,7 +277,7 @@ fn run_unilang_scenarios() -> error_tools::Result<String>
     {
       let count = string::split()
         .src(&namespace_generic_data)
-        .delimeter("::")
+        .delimiter("::")
         .perform()
         .count();
       std::hint::black_box(count);
@@ -357,7 +357,7 @@ fn run_throughput_analysis() -> error_tools::Result<String>
     .algorithm("generic_comma_throughput", move ||
     {
       let mut total_len = 0usize;
-      for result in string::split().src(&generic_comma_data).delimeter(",").perform()
+      for result in string::split().src(&generic_comma_data).delimiter(",").perform()
       {
         total_len += result.string.len();
       }
@@ -366,7 +366,7 @@ fn run_throughput_analysis() -> error_tools::Result<String>
     .algorithm("generic_colon_throughput", move ||
     {
       let mut total_len = 0usize;
-      for result in string::split().src(&generic_colon_data).delimeter("::").perform()
+      for result in string::split().src(&generic_colon_data).delimiter("::").perform()
       {
         total_len += result.string.len();
       }
@@ -444,14 +444,12 @@ fn generate_comprehensive_report(analyses: Vec<(&str, String)>) -> String
 #[cfg(test)]
 mod tests
 {
-  use super::*;
-
   #[test]
   #[ignore = "Integration test - run with cargo test --ignored"]
   fn test_benchkit_integration()
   {
     // Test that benchkit integration works correctly
-    let result = main();
+    let result = super::main();
     assert!(result.is_ok(), "Benchkit integration should complete successfully");
   }
 }

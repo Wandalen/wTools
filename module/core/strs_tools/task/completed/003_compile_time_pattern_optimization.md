@@ -27,7 +27,7 @@ Current `strs_tools` performs pattern compilation and analysis at runtime, even 
 // Runtime pattern analysis every time
 let result = string::split()
     .src(input)
-    .delimeter(vec!["::", ":", "."]) // ← Known at compile time
+    .delimiter(vec!["::", ":", "."]) // ← Known at compile time
     .perform()
     .collect();
 ```
@@ -322,7 +322,7 @@ fn bench_runtime_pattern_analysis(b: &mut Bencher)
         // Runtime analysis every iteration
         let result: Vec<_> = split()
             .src(input)
-            .delimeter(vec![":", ",", ";"])
+            .delimiter(vec![":", ",", ";"])
             .perform()
             .collect();
         black_box(result)

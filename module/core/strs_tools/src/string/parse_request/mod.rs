@@ -12,6 +12,8 @@ use std::{ vec, vec::Vec, string::String };
 #[ cfg( all( feature = "use_alloc", not( feature = "std" ) ) ) ]
 use alloc::{ vec, vec::Vec, string::String };
 
+mod op_type;
+
 /// Internal implementation details exposed for testing
 pub mod private {
   #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
@@ -27,100 +29,7 @@ pub mod private {
     isolate::private::Delimiter,
   };
   use super::*;
-
-  ///
-  /// Wrapper types to make transformation.
-  ///
-  #[ derive( Debug, Clone, PartialEq, Eq ) ]
-  pub enum OpType<T> {
-    /// Wrapper over single element of type `<T>`.
-    Primitive(T),
-    /// Wrapper over vector of elements of type `<T>`.
-    Vector(Vec< T >),
-    /// Wrapper over hash map of elements of type `<T>`.
-    Map(HashMap<String, T>),
-  }
-
-  impl<T: Default> Default for OpType<T> {
-    fn default() -> Self {
-      OpType::Primitive(T::default())
-    }
-  }
-
-  impl<T> From<T> for OpType<T> {
-    fn from(value: T) -> Self {
-      OpType::Primitive(value)
-    }
-  }
-
-  impl<T> From<Vec< T >> for OpType<T> {
-    fn from(value: Vec< T >) -> Self {
-      OpType::Vector(value)
-    }
-  }
-
-  #[ allow( clippy::from_over_into ) ]
-  impl<T> Into<Vec< T >> for OpType<T> {
-    fn into(self) -> Vec< T > {
-      match self {
-        OpType::Primitive(val) => vec![val],
-        OpType::Vector(vec) => vec,
-        OpType::Map(_) => panic!("Cannot convert OpType::Map into Vec"),
-      }
-    }
-  }
-
-  impl<T: Clone> OpType<T> {
-    /// Append item of `OpType` to current value. If current type is `Primitive`, then it will be converted to
-    /// `Vector`.
-    /// # Panics
-    /// Panics if `self` or `item` is `OpType::Map` — use `insert` to add items to map variants.
-    #[ must_use ]
-    pub fn append(mut self, item: OpType<T>) -> OpType<T> {
-      let mut mut_item = item;
-      match self {
-        OpType::Primitive(value) => match mut_item {
-          OpType::Primitive(ins) => {
-            let vector = vec![value, ins];
-            OpType::Vector(vector)
-          }
-          OpType::Vector(ref mut vector) => {
-            vector.insert(0, value);
-            mut_item
-          }
-          OpType::Map(_) => panic!("Unexpected operation. Please, use method `insert` to insert item in hash map."),
-        },
-        OpType::Vector(ref mut vector) => match mut_item {
-          OpType::Primitive(ins) => {
-            vector.push(ins);
-            self
-          }
-          OpType::Vector(ref mut ins_vec) => {
-            vector.append(ins_vec);
-            self
-          }
-          OpType::Map(_) => panic!("Unexpected operation. Please, use method `insert` to insert item in hash map."),
-        },
-        OpType::Map(_) => panic!("Unexpected operation. Please, use method `insert` to insert item in hash map."),
-      }
-    }
-
-    /// Unwrap primitive value. Consumes self.
-    pub fn primitive(self) -> Option< T > {
-      match self {
-        OpType::Primitive(v) => Some(v),
-        _ => None,
-      }
-    }
-
-    /// Unwrap vector value. Consumes self.
-    pub fn vector(self) -> Option<Vec< T >> {
-      match self {
-        OpType::Vector(vec) => Some(vec),
-        _ => None,
-      }
-    }
-  }
+  pub use super::op_type::OpType;
 
   ///
   /// Parsed request data.
@@ -131,9 +40,9 @@ pub mod private {
     /// Original request string.
     pub original: &'a str,
     /// Delimiter for pairs `key:value`.
-    pub key_val_delimeter: &'a str,
+    pub key_val_delimiter: &'a str,
     /// Delimiter for commands.
-    pub commands_delimeter: &'a str,
+    pub commands_delimiter: &'a str,
     /// Parsed subject of first command.
     pub subject: String,
     /// All subjects of the commands in request.
@@ -148,19 +57,11 @@ pub mod private {
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct ParseSrc<'a>(pub &'a str);
 
-  // impl Default for ParseSrc<'_>
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self( "" )
-  //   }
-  // }
-
   /// Newtype for the key-value delimiter string slice in `ParseOptions`.
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
-  pub struct ParseKeyValDelimeter<'a>(pub &'a str);
+  pub struct ParseKeyValDelimiter<'a>(pub &'a str);
 
-  impl Default for ParseKeyValDelimeter<'_>
+  impl Default for ParseKeyValDelimiter<'_>
   {
     fn default() -> Self
     {
@@ -170,9 +71,9 @@ pub mod private {
 
   /// Newtype for the commands delimiter string slice in `ParseOptions`.
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash ) ]
-  pub struct ParseCommandsDelimeter<'a>(pub &'a str);
+  pub struct ParseCommandsDelimiter<'a>(pub &'a str);
 
-  impl Default for ParseCommandsDelimeter<'_>
+  impl Default for ParseCommandsDelimiter<'_>
   {
     fn default() -> Self
     {
@@ -220,25 +121,9 @@ pub mod private {
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct ParseSeveralValues(pub bool);
 
-  // impl Default for ParseSeveralValues
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self( false )
-  //   }
-  // }
-
   /// Newtype for the `subject_win_paths_maybe` boolean flag in `ParseOptions`.
   #[ derive( Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default ) ]
   pub struct ParseSubjectWinPathsMaybe(pub bool);
-
-  // impl Default for ParseSubjectWinPathsMaybe
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self( false )
-  //   }
-  // }
 
   ///
   /// Options for parser.
@@ -249,9 +134,9 @@ pub mod private {
     /// Source string slice.
     pub src: ParseSrc<'a>,
     /// Delimiter for pairs `key:value`.
-    pub key_val_delimeter: ParseKeyValDelimeter<'a>,
-    /// Delimeter for commands.
-    pub commands_delimeter: ParseCommandsDelimeter<'a>,
+    pub key_val_delimiter: ParseKeyValDelimiter<'a>,
+    /// Delimiter for commands.
+    pub commands_delimiter: ParseCommandsDelimiter<'a>,
     /// Quoting of strings.
     pub quoting: ParseQuoting,
     /// Unquoting of string.
@@ -264,24 +149,6 @@ pub mod private {
     pub subject_win_paths_maybe: ParseSubjectWinPathsMaybe,
   }
 
-  // impl Default for ParseOptions<'_> // Removed manual impl
-  // {
-  //   fn default() -> Self
-  //   {
-  //     Self
-  //     {
-  //       src : ParseSrc::default(),
-  //       key_val_delimeter : ParseKeyValDelimeter::default(),
-  //       commands_delimeter : ParseCommandsDelimeter::default(),
-  //       quoting : ParseQuoting::default(),
-  //       unquoting : ParseUnquoting::default(),
-  //       parsing_arrays : ParseParsingArrays::default(),
-  //       several_values : ParseSeveralValues::default(),
-  //       subject_win_paths_maybe : ParseSubjectWinPathsMaybe::default(),
-  //     }
-  //   }
-  // }
-
   impl<'a> ParseOptions<'a> {
     /// Do parsing.
     #[ allow( clippy::assigning_clones, clippy::too_many_lines, clippy::collapsible_if ) ]
@@ -292,8 +159,8 @@ pub mod private {
     {
       let mut result = Request {
         original: self.src.0,                          // Accessing newtype field
-        key_val_delimeter: self.key_val_delimeter.0,   // Accessing newtype field
-        commands_delimeter: self.commands_delimeter.0, // Accessing newtype field
+        key_val_delimiter: self.key_val_delimiter.0,   // Accessing newtype field
+        commands_delimiter: self.commands_delimiter.0, // Accessing newtype field
         ..Default::default()
       };
 
@@ -305,32 +172,32 @@ pub mod private {
         return result;
       }
 
-      let commands = if self.commands_delimeter.0.trim().is_empty()
+      let commands = if self.commands_delimiter.0.trim().is_empty()
       // Accessing newtype field
       {
         vec![self.src.0.to_string()] // Accessing newtype field
       } else {
         let iter = split()
         .src( self.src.0 ) // Accessing newtype field
-        .delimeter( self.commands_delimeter.0 ) // Accessing newtype field
+        .delimiter( self.commands_delimiter.0 ) // Accessing newtype field
         .quoting( self.quoting.0 ) // Accessing newtype field
         .stripping( true )
         .preserving_empty( false )
-        .preserving_delimeters( false )
+        .preserving_delimiters( false )
         .perform();
         iter.map(String::from).collect::<Vec< _ >>()
       };
 
       for command in commands {
         let mut map_entries;
-        if self.key_val_delimeter.0.trim().is_empty()
+        if self.key_val_delimiter.0.trim().is_empty()
         // Accessing newtype field
         {
           map_entries = (command.as_str(), None, "");
         } else {
-          map_entries = match command.split_once( self.key_val_delimeter.0 ) // Accessing newtype field
+          map_entries = match command.split_once( self.key_val_delimiter.0 ) // Accessing newtype field
           {
-            Some( entries ) => ( entries.0, Some( self.key_val_delimeter.0 ), entries.1 ), // Accessing newtype field
+            Some( entries ) => ( entries.0, Some( self.key_val_delimiter.0 ), entries.1 ), // Accessing newtype field
             None => ( command.as_str(), None, "" ),
           };
         }
@@ -352,11 +219,11 @@ pub mod private {
 
           let mut splits = split()
           .src( join.as_str() )
-          .delimeter( self.key_val_delimeter.0 ) // Accessing newtype field
+          .delimiter( self.key_val_delimiter.0 ) // Accessing newtype field
           .stripping( false )
           .quoting( self.quoting.0 ) // Accessing newtype field
           .preserving_empty( true )
-          .preserving_delimeters( true )
+          .preserving_delimiters( true )
           .preserving_quoting( true )
           .perform()
           .map( String::from ).collect::< Vec<  _  > >();
@@ -412,11 +279,11 @@ pub mod private {
 
             let splits = split()
             .src( &src[ 1..src.len() - 1 ] )
-            .delimeter( "," )
+            .delimiter( "," )
             .stripping( true )
             .quoting( self.quoting.0 ) // Accessing newtype field
             .preserving_empty( false )
-            .preserving_delimeters( false )
+            .preserving_delimiters( false )
             .preserving_quoting( false )
             .perform()
             .map( | e | String::from( e ).trim().to_owned() ).collect::< Vec<  String  > >();
@@ -513,14 +380,13 @@ pub mod own {
     Request,
     ParseOptions,
     ParseSrc,
-    ParseKeyValDelimeter,
-    ParseCommandsDelimeter,
+    ParseKeyValDelimiter,
+    ParseCommandsDelimiter,
     ParseQuoting,
     ParseUnquoting,
     ParseParsingArrays,
     ParseSeveralValues,
     ParseSubjectWinPathsMaybe,
-    // ParseOptionsAdapter, // Removed
   };
   #[ cfg( all( feature = "string_split", feature = "string_isolate", feature = "std" ) ) ]
   pub use private::request_parse;
@@ -551,5 +417,4 @@ pub mod exposed {
 pub mod prelude {
   #[ allow( unused_imports ) ]
   use super::*;
-  // pub use private::ParseOptionsAdapter; // Removed
 }

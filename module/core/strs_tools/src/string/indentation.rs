@@ -24,7 +24,7 @@ mod private
   /// ```
   ///   let iter = strs_tools ::string ::split()
   ///   .src( "abc def" )
-  ///   .delimeter( " " )
+  ///   .delimiter( " " )
   ///   .perform();
   /// ```
   ///

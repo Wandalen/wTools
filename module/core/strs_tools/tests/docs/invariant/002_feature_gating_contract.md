@@ -10,8 +10,8 @@
 |---|--------|------|
 | IN-1 | ✅ | Default features include enabled and core capabilities |
 | IN-2 | ✅ | Enabled-only compiles without warnings |
-| IN-3 | ⏳ | Each capability is individually gated |
-| IN-4 | ⏳ | Full feature activates all capabilities |
+| IN-3 | ✅ | Each capability is individually gated |
+| IN-4 | ✅ | Full feature activates all capabilities |
 
 ### IN-1 — Default features include enabled and core capabilities
 
@@ -32,11 +32,11 @@
 - **Given:** A specific capability feature (e.g., `string_split`) is disabled
 - **When:** Code attempts to use the split API
 - **Then:** The symbols are absent — compilation fails with an unresolved import
-- **Test:** ⏳
+- **Test:** `tests/invariant_contract_test.rs` — `inv_002_in_3_each_capability_individually_gated`
 
 ### IN-4 — Full feature activates all capabilities
 
 - **Given:** The crate compiled with the `full` feature
 - **When:** All capability APIs are accessed
 - **Then:** Every API is available and functional
-- **Test:** ⏳
+- **Test:** `tests/invariant_contract_test.rs` — `inv_002_in_4_full_feature_activates_all_capabilities`

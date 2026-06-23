@@ -7,6 +7,7 @@ Comprehensive test suite for the strs_tools core crate.
 | File | Responsibility |
 |------|----------------|
 | `ansi_truncate_tests.rs` | ANSI truncation with boundary detection tests |
+| `invariant_contract_test.rs` | Invariant contract tests from tests/docs/invariant/ specs |
 | `issue_001_mre.rs` | Minimal reproducible example for escaped quotes bug (ISSUE-001) |
 | `issue_002_example_feature_guards.rs` | Feature guard correctness for the `enabled` feature |
 | `namespace_verification_test.rs` | Namespace pattern verification tests |

@@ -29,7 +29,7 @@ fn basic_string_splitting()
   let src = "abc def ghi";
   let iter = string ::split()
   .src( src )                    // Set source string
-  .delimeter( " " )              // Set delimiter to space
+  .delimiter( " " )              // Set delimiter to space
   .perform();                    // Execute the split operation
   
   let result: Vec< String > = iter
@@ -43,7 +43,7 @@ fn basic_string_splitting()
   // Example with delimiter that doesn't exist
   let iter = string ::split()
   .src( src )
-  .delimeter( "x" )              // Delimiter not found in string
+  .delimiter( "x" )              // Delimiter not found in string
   .perform();
   
   let result: Vec< String > = iter.map( String ::from ).collect();
@@ -68,7 +68,7 @@ fn delimiter_preservation()
   // Split while preserving delimiters (spaces)
   let iter = string ::split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .stripping( false )            // Keep delimiters in output
   .perform();
   

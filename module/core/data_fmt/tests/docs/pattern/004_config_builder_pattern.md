@@ -11,9 +11,9 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| PT-1 | Config setter returns Self for chaining | ⏳ |
-| PT-2 | Default values apply to unchained fields | ⏳ |
-| PT-3 | Config passed by value to formatter constructor | ⏳ |
+| PT-1 | Config setter returns Self for chaining | ✅ |
+| PT-2 | Default values apply to unchained fields | ✅ |
+| PT-3 | Config passed by value to formatter constructor | ✅ |
 
 ---
 
@@ -46,3 +46,9 @@
 | File | Relationship |
 |------|-------------|
 | [`docs/pattern/004_config_builder_pattern.md`](../../../docs/pattern/004_config_builder_pattern.md) | Source pattern doc — fluent builder API, config struct names, construction |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/pattern_config_builder_test.rs`](../../pattern_config_builder_test.rs) | Spec tests for PT-1..PT-3 config builder chaining and defaults |

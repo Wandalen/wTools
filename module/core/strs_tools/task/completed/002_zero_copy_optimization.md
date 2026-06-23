@@ -27,7 +27,7 @@ Current `strs_tools` implementation returns owned `String` objects from split op
 // Current approach - allocates new String for each segment
 let result: Vec<String> = string::split()
     .src(input)
-    .delimeter(" ")
+    .delimiter(" ")
     .perform()
     .map(String::from)  // ← Unnecessary allocation
     .collect();
@@ -122,7 +122,7 @@ impl<'a> ZeroCopySplit<'a> {
         self
     }
     
-    pub fn delimeter(mut self, delim: &'a str) -> Self 
+    pub fn delimiter(mut self, delim: &'a str) -> Self 
 {
         self.delimiters.push(delim);
         self
@@ -277,7 +277,7 @@ fn bench_memory_allocation_patterns(b: &mut Bencher)
     b.iter(|| {
         let owned_strings: Vec<String> = split()
             .src(&input)
-            .delimeter(" ")
+            .delimiter(" ")
             .perform()
             .collect();
         black_box(owned_strings)
@@ -293,7 +293,7 @@ fn bench_zero_copy_patterns(b: &mut Bencher)
     b.iter(|| {
         let segments: Vec<&str> = split()
             .src(&input)
-            .delimeter(" ")
+            .delimiter(" ")
             .perform_zero_copy()
             .map(|seg| seg.as_str())
             .collect();
@@ -325,20 +325,20 @@ fn bench_zero_copy_patterns(b: &mut Bencher)
 #### Phase 1: Opt-in Zero-Copy API
 ```rust
 // Existing code unchanged
-let strings: Vec<String> = split().src(input).delimeter(" ").perform().collect();
+let strings: Vec<String> = split().src(input).delimiter(" ").perform().collect();
 
 // New zero-copy opt-in
-let segments: Vec<&str> = split().src(input).delimeter(" ").perform_zero_copy()
+let segments: Vec<&str> = split().src(input).delimiter(" ").perform_zero_copy()
     .map(|seg| seg.as_str()).collect();
 ```
 
 #### Phase 2: Performance-Aware Defaults
 ```rust
 // Automatic zero-copy for read-only patterns
-let count = split().src(input).delimeter(" ").perform().count();  // Uses zero-copy
+let count = split().src(input).delimiter(" ").perform().count();  // Uses zero-copy
 
 // Explicit allocation when mutation needed
-let mut strings: Vec<String> = split().src(input).delimeter(" ").perform().to_owned().collect();
+let mut strings: Vec<String> = split().src(input).delimiter(" ").perform().to_owned().collect();
 ```
 
 ### Success Metrics Documentation

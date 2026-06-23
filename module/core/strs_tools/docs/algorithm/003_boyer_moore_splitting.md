@@ -19,8 +19,8 @@ For long delimiters in inputs where the delimiter is rare, this algorithm reduce
 
 ### Sources
 
-- [src/string/specialized.rs](../../src/string/specialized.rs) — Boyer-Moore split specialization and skip table
-- [src/string/split.rs](../../src/string/split.rs) — Fast-path selection at iterator construction
+- [src/string/specialized/mod.rs](../../src/string/specialized/mod.rs) — Boyer-Moore split specialization and skip table
+- [src/string/split/mod.rs](../../src/string/split/mod.rs) — Fast-path selection at iterator construction
 
 ### Features
 

@@ -18,8 +18,8 @@ fn simd_scalar_equivalence_single_delimiter()
 
   let scalar: Vec< _ > = BasicSplitBuilder::new()
     .src( input )
-    .delimeter( "," )
-    .preserving_delimeters( true )
+    .delimiter( "," )
+    .preserving_delimiters( true )
     .perform()
     .collect();
 
@@ -30,8 +30,8 @@ fn simd_scalar_equivalence_single_delimiter()
   assert_eq!( scalar.len(), simd.len(), "segment count mismatch: scalar={} simd={}", scalar.len(), simd.len() );
   for ( i, ( s, si ) ) in scalar.iter().zip( simd.iter() ).enumerate()
   {
-    assert_eq!( s.string.as_ref(), si.string.as_ref(), "segment {} content mismatch", i );
-    assert_eq!( s.typ, si.typ, "segment {} type mismatch", i );
+    assert_eq!( s.string.as_ref(), si.string.as_ref(), "segment {i} content mismatch" );
+    assert_eq!( s.typ, si.typ, "segment {i} type mismatch" );
   }
 }
 
@@ -44,8 +44,8 @@ fn simd_scalar_equivalence_multi_delimiter()
 
   let scalar: Vec< _ > = BasicSplitBuilder::new()
     .src( input )
-    .delimeters( delimiters )
-    .preserving_delimeters( true )
+    .delimiters( delimiters )
+    .preserving_delimiters( true )
     .perform()
     .collect();
 
@@ -56,7 +56,7 @@ fn simd_scalar_equivalence_multi_delimiter()
   assert_eq!( scalar.len(), simd.len(), "segment count mismatch: scalar={} simd={}", scalar.len(), simd.len() );
   for ( i, ( s, si ) ) in scalar.iter().zip( simd.iter() ).enumerate()
   {
-    assert_eq!( s.string.as_ref(), si.string.as_ref(), "segment {} content mismatch", i );
+    assert_eq!( s.string.as_ref(), si.string.as_ref(), "segment {i} content mismatch" );
   }
 }
 

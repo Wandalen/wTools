@@ -18,7 +18,7 @@ fn mre_exact_from_issue_001()
 
   let result : Vec< _ > = split::split()
     .src( input )
-    .delimeters( &[ "::", " ", "\t" ] )
+    .delimiters( &[ "::", " ", "\t" ] )
     .quoting( true )
     .preserving_quoting( false ) // Remove quotes, unescape content
     .perform()
@@ -42,7 +42,7 @@ fn mre_simpler_case()
 
   let result : Vec< _ > = split::split()
     .src( input )
-    .delimeter( " " )
+    .delimiter( " " )
     .quoting( true )
     .preserving_quoting( false ) // Remove quotes, unescape content
     .perform()
@@ -64,7 +64,7 @@ fn mre_without_unescaping()
 
   let result : Vec< _ > = split::split()
     .src( input )
-    .delimeters( &[ "::", " ", "\t" ] )
+    .delimiters( &[ "::", " ", "\t" ] )
     .quoting( true )
     .preserving_quoting( true ) // Keep quotes in output
     .perform()
@@ -89,7 +89,7 @@ fn mre_unilang_exact_input()
 
   let result : Vec< _ > = split::split()
     .src( input )
-    .delimeters( &[ "::", " ", "\t" ] )
+    .delimiters( &[ "::", " ", "\t" ] )
     .quoting( true )
     .preserving_quoting( false ) // Unescape content
     .perform()
@@ -120,7 +120,7 @@ fn mre_exact_unilang_parser_call()
   let all_delimiters = vec![ " ", "\n", "\t", "\r", "#", "::" ];
 
   let splits_iter = split::split()
-    .delimeters( all_delimiters.as_slice() )
+    .delimiters( all_delimiters.as_slice() )
     .quoting( true )
     .preserving_empty( false )
     .src( input )

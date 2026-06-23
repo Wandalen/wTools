@@ -13,5 +13,5 @@
 |----|------|---------|--------|
 | 001 | [Three-Layer Architecture](001_three_layer_architecture.md) | Layer 1/2/3 data types, builders, formatters observability | ⏳ |
 | 002 | [Design Principles](002_design_principles.md) | Single data structure, unified format, granular features | ⏳ |
-| 003 | [Formatter Design](003_formatter_design.md) | Format trait coverage, TableShapedView decoupling, dual output | ⏳ |
-| 004 | [Config Builder Pattern](004_config_builder_pattern.md) | Fluent setters, default values, config-by-value construction | ⏳ |
+| 003 | [Formatter Design](003_formatter_design.md) | Format trait coverage, TableShapedView decoupling, dual output | ✅ |
+| 004 | [Config Builder Pattern](004_config_builder_pattern.md) | Fluent setters, default values, config-by-value construction | ✅ |

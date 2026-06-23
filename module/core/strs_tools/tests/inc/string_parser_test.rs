@@ -44,12 +44,12 @@ fn test_key_value_parsing()
   let result: Result< Vec< _ >, _ > = input.parse_command_line().collect();
 
   if result.is_err() {
-    println!( "DEBUG: Error = {:?}", result );
+    println!( "DEBUG: Error = {result:?}" );
   }
   assert!( result.is_ok() );
   let tokens = result.unwrap();
 
-  println!( "DEBUG: tokens = {:?}", tokens );
+  println!( "DEBUG: tokens = {tokens:?}" );
   assert_eq!( tokens.len(), 3 );
   assert!( matches!( tokens[ 0 ], ParsedToken::Command( "config" ) ) );
 
@@ -96,8 +96,8 @@ fn test_empty_and_invalid_tokens()
     .collect();
 
   // Should have validation errors for "123" token (not alphabetic)
-  assert!( results.iter().any( std::result::Result::is_err ) );
+  assert!( results.iter().any( core::result::Result::is_err ) );
 
   // Should have successful results for "valid" and "banana"
-  assert!( results.iter().any( std::result::Result::is_ok ) );
+  assert!( results.iter().any( core::result::Result::is_ok ) );
 }

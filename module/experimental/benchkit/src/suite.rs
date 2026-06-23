@@ -185,11 +185,11 @@ impl SuiteResults
   println!("=== {} Results ===", self.suite_name);
   
   let mut sorted_results: Vec< _ > = self.results.iter().collect();
-  sorted_results.sort_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()));
-  
-  for (name, result) in sorted_results 
+  sorted_results.sort_by_key(|a| a.1.mean_time());
+
+  for (name, result) in sorted_results
   {
-   println!("  {} : {:.2?} (±{:.2?})", 
+   println!("  {} : {:.2?} (±{:.2?})",
    name, 
    result.mean_time(), 
    result.std_deviation());
@@ -260,9 +260,9 @@ impl MarkdownReport
   output.push_str("|-----------|-----------|---------|-----|-----|----------|\n");
   
   let mut sorted_results: Vec< _ > = self.results.iter().collect();
-  sorted_results.sort_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()));
-  
-  for (name, result) in &sorted_results 
+  sorted_results.sort_by_key(|a| a.1.mean_time());
+
+  for (name, result) in &sorted_results
   {
    output.push_str(&format!(
   "| {} | {:.2?} | {:.0} | {:.2?} | {:.2?} | {:.2?} |\n",

@@ -147,11 +147,11 @@ lazy_static = { version = "1.4", optional = true }
 unicode-segmentation = { workspace = true, optional = true }
 
 # Unicode display width calculation for ANSI padding (required for correct alignment)
-unicode-width = "0.1"
+unicode-width = { workspace = true }
 
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
 benchkit = { workspace = true, features = [ "enabled" ] }
 ctor = { version = "0.2" }
 

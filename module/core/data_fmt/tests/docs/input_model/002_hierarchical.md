@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| IM-1 | every tree has exactly one root node | ⏳ |
-| IM-2 | leaf nodes carry data, directory nodes have None | ⏳ |
-| IM-3 | node names are plain strings not paths | ⏳ |
-| IM-4 | three specializations consume hierarchical data | ⏳ |
+| IM-1 | every tree has exactly one root node | ✅ |
+| IM-2 | leaf nodes carry data, directory nodes have None | ✅ |
+| IM-3 | node names are plain strings not paths | ✅ |
+| IM-4 | three specializations consume hierarchical data | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/data.rs`](../../data.rs) | Data model test implementation |
+| [`tests/input_model_test.rs`](../../input_model_test.rs) | Spec tests for IM-1..IM-4 hierarchical model |

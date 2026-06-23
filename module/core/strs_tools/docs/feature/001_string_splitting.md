@@ -23,10 +23,10 @@ Specialized algorithm selection — single-char fast path, Boyer-Moore, SIMD —
 
 ### Sources
 
-- [src/string/split.rs](../../src/string/split.rs) — Split iterator, builder, and SplitType definition
+- [src/string/split/mod.rs](../../src/string/split/mod.rs) — Split iterator, builder, and SplitType definition
 - [src/string/split/split_behavior.rs](../../src/string/split/split_behavior.rs) — Split configuration flags
 - [src/string/split/simd.rs](../../src/string/split/simd.rs) — SIMD-accelerated delimiter search path
-- [src/string/specialized.rs](../../src/string/specialized.rs) — Single-char and Boyer-Moore split specializations
+- [src/string/specialized/mod.rs](../../src/string/specialized/mod.rs) — Single-char and Boyer-Moore split specializations
 
 ### Tests
 

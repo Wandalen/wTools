@@ -10,7 +10,7 @@
 |---|--------|------|
 | IN-1 | ✅ | Split segments borrow from source |
 | IN-2 | ✅ | Isolation slices borrow from source |
-| IN-3 | ⏳ | Stripping breaks zero-copy — returns owned |
+| IN-3 | ✅ | Stripping breaks zero-copy — returns owned |
 | IN-4 | ✅ | Number parsing breaks zero-copy — returns numeric value |
 
 ### IN-1 — Split segments borrow from source
@@ -32,7 +32,7 @@
 - **Given:** A source string containing quote characters around content
 - **When:** Isolation is invoked with stripping enabled
 - **Then:** The returned value is an owned string, not a subslice of the source
-- **Test:** ⏳
+- **Test:** `tests/invariant_contract_test.rs` — `inv_001_in_3_stripping_breaks_zero_copy`
 
 ### IN-4 — Number parsing breaks zero-copy — returns numeric value
 

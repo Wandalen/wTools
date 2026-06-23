@@ -71,7 +71,7 @@ fn performance_comparison()
   {
    let traditional_result: Vec< String > = string ::split()
   .src( &large_input )
-  .delimeter( "," )
+  .delimiter( "," )
   .perform()
   .map( |split| split.string.into_owned() )
   .collect();
@@ -116,7 +116,7 @@ fn memory_efficiency_demonstration()
   // Traditional approach: each field becomes an owned String
   let traditional_fields: Vec< String > = string ::split()
    .src( csv_line )
-   .delimeter( "," )
+   .delimiter( "," )
    .perform()
    .map( |split| split.string.into_owned() )
    .collect();

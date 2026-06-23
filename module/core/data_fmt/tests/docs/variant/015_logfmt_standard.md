@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is key=value pairs per line | ⏳ |
-| VT-2 | pairs are space-separated | ⏳ |
-| VT-3 | values with spaces are quoted | ⏳ |
-| VT-4 | empty table produces empty output | ⏳ |
+| VT-1 | output is key=value pairs per line | ✅ |
+| VT-2 | pairs are space-separated | ✅ |
+| VT-3 | values with spaces are quoted | ✅ |
+| VT-4 | empty table produces empty output | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/logfmt.rs`](../../logfmt.rs) | Logfmt formatter test implementation |
+| [`tests/variant_015_logfmt_test.rs`](../../variant_015_logfmt_test.rs) | Spec tests for VT-1..VT-4 logfmt variant |

@@ -25,10 +25,10 @@ Current `strs_tools` uses generic algorithms for all splitting scenarios, missin
 
 ```rust
 // All these use the same generic algorithm:
-split().src(text).delimeter(" ").perform();           // ← Single char could use memchr
-split().src(text).delimeter("::").perform();          // ← Fixed pattern could use Boyer-Moore  
-split().src(csv).delimeter(",").perform();            // ← CSV could use specialized parser
-split().src(url).delimeter(["://", "/", "?", "#"]).perform(); // ← URL could use state machine
+split().src(text).delimiter(" ").perform();           // ← Single char could use memchr
+split().src(text).delimiter("::").perform();          // ← Fixed pattern could use Boyer-Moore  
+split().src(csv).delimiter(",").perform();            // ← CSV could use specialized parser
+split().src(url).delimiter(["://", "/", "?", "#"]).perform(); // ← URL could use state machine
 ```
 
 This leads to suboptimal performance:
@@ -497,7 +497,7 @@ pub fn smart_split(input: &str, delimiters: &[&str]) -> Box<dyn Iterator<Item = 
             // Use existing generic implementation
             Box::new(crate::string::split()
                 .src(input)
-                .delimeter(delimiters.to_vec())
+                .delimiter(delimiters.to_vec())
                 .perform()
                 .map(|s| Box::leak(s.string.into_owned().into_boxed_str()) as &str))
         },

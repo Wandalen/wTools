@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | each row rendered with bullet prefix | ⏳ |
-| VT-2 | no border or alignment characters | ⏳ |
-| VT-3 | multi-column rows formatted as key-value | ⏳ |
-| VT-4 | empty table produces no bullets | ⏳ |
+| VT-1 | each row rendered with bullet prefix | ✅ |
+| VT-2 | no border or alignment characters | ✅ |
+| VT-3 | multi-column rows formatted as key-value | ✅ |
+| VT-4 | empty table produces no bullets | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/text.rs`](../../text.rs) | Text formatter test implementation |
+| [`tests/variant_028_text_bullets_test.rs`](../../variant_028_text_bullets_test.rs) | Spec tests for VT-1..VT-4 text bullets variant |

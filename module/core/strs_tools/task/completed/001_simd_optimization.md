@@ -27,7 +27,7 @@ The `strs_tools` crate is heavily used throughout Unilang for string operations 
 // Current scalar implementation in strs_tools
 strs_tools::split()
     .src(input)
-    .delimeter(vec![":", "?", "#", ".", "!"])
+    .delimiter(vec![":", "?", "#", ".", "!"])
     .perform()
 ```
 
@@ -244,7 +244,7 @@ fn bench_scalar_split(b: &mut Bencher)
 {
     let input = ".namespace.command arg1::value1 arg2::value2";
     b.iter(|| {
-        split().src(input).delimeter(vec![":", ".", "!"]).perform().collect::<Vec<_>>()
+        split().src(input).delimiter(vec![":", ".", "!"]).perform().collect::<Vec<_>>()
     });
 }
 

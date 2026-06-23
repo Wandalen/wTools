@@ -19,8 +19,8 @@ The single-char path produces results identical to the general path for the same
 
 ### Sources
 
-- [src/string/specialized.rs](../../src/string/specialized.rs) — Single-char split specialization implementation
-- [src/string/split.rs](../../src/string/split.rs) — Fast-path selection at iterator construction
+- [src/string/specialized/mod.rs](../../src/string/specialized/mod.rs) — Single-char split specialization implementation
+- [src/string/split/mod.rs](../../src/string/split/mod.rs) — Fast-path selection at iterator construction
 
 ### Features
 

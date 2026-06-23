@@ -155,7 +155,7 @@ fn test_simd_zero_copy_integration()
     Err( e ) =>
     {
       // SIMD might not be available in test environment
-      eprintln!( "SIMD test failed (expected in some environments): {}", e );
+      eprintln!( "SIMD test failed (expected in some environments): {e}" );
     }
   }
 }

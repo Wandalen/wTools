@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is valid parseable TOML | ⏳ |
-| VT-2 | rows use array-of-tables notation | ⏳ |
-| VT-3 | header names become TOML keys | ⏳ |
-| VT-4 | empty table produces valid TOML | ⏳ |
+| VT-1 | output is valid parseable TOML | ✅ |
+| VT-2 | rows use array-of-tables notation | ✅ |
+| VT-3 | header names become TOML keys | ✅ |
+| VT-4 | empty table produces valid TOML | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/toml_fmt.rs`](../../toml_fmt.rs) | TOML formatter test implementation |
+| [`tests/variant_019_toml_test.rs`](../../variant_019_toml_test.rs) | Spec tests for VT-1..VT-4 TOML variant |

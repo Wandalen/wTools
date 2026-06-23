@@ -11,10 +11,10 @@ fn mre_simple_unescape_test()
   let src = r#"instruction "arg1" "arg2 \" "arg3 \\" "#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
   .stripping(false)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .preserving_empty(false)
   .perform()
   .map(|e| e.string)
@@ -41,9 +41,9 @@ fn no_quotes_test()
   let src = "a b c";
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -57,10 +57,10 @@ fn empty_quoted_section_test()
   let src = r#"a "" b"#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
   .preserving_empty(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -74,9 +74,9 @@ fn multiple_escape_sequences_test()
   let src = r#" "a\n\t\"\\" b "#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -90,9 +90,9 @@ fn quoted_at_start_middle_end_test()
   let src = r#""start" middle "end""#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -106,9 +106,9 @@ fn unterminated_quote_test()
   let src = r#"a "b c"#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -121,9 +121,9 @@ fn escaped_quote_only_test()
   let src = r#" "a\"b" "#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -137,9 +137,9 @@ fn escaped_backslash_only_test()
   let src = r#" "a\\b" "#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -154,9 +154,9 @@ fn escaped_backslash_then_quote_test()
   let src = r#" "a\\\"b" "#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -170,9 +170,9 @@ fn consecutive_escaped_backslashes_test()
   let src = r#" "a\\\\b" "#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -187,9 +187,9 @@ fn test_mre_arg2_isolated()
   let src = r#""arg2 \" ""#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -204,9 +204,9 @@ fn test_mre_arg3_isolated()
   let src = r#""arg3 \\""#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -221,9 +221,9 @@ fn test_consecutive_escaped_backslashes_and_quote()
   let src = r#""a\\\\\"b""#;
   let splits: Vec< _ > = strs_tools ::string ::split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .quoting(true)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .map(|e| e.string)
   .collect();
@@ -241,8 +241,8 @@ fn test_multiple_delimiters_space_and_double_colon()
   let input = "cmd key :: value";
   let splits_iter = strs_tools ::string ::split()
   .src(input)
-  .delimeters(&[ " :: ", " " ])
-  .preserving_delimeters(true)
+  .delimiters(&[ " :: ", " " ])
+  .preserving_delimiters(true)
   .perform();
 
   let splits: Vec< strs_tools ::string ::split ::Split<'_ >> = splits_iter.collect();
@@ -311,8 +311,8 @@ fn test_quoted_value_simple()
   let input = r#"key :: "value""#;
   let splits_iter = strs_tools ::string ::split()
   .src(input)
-  .delimeter(" :: ")
-  .preserving_delimeters(true)
+  .delimiter(" :: ")
+  .preserving_delimiters(true)
   .quoting(true)
   .perform();
 
@@ -354,8 +354,8 @@ fn test_quoted_value_with_internal_quotes()
   let input = r#"key :: "value with \"quotes\"""#;
   let splits_iter = strs_tools ::string ::split()
   .src(input)
-  .delimeter(" :: ")
-  .preserving_delimeters(true)
+  .delimiter(" :: ")
+  .preserving_delimiters(true)
   .quoting(true)
   .perform();
 
@@ -397,8 +397,8 @@ fn test_quoted_value_with_escaped_backslashes()
   let input = r#"key :: "value with \\slash\\""#;
   let splits_iter = strs_tools ::string ::split()
   .src(input)
-  .delimeter(" :: ")
-  .preserving_delimeters(true)
+  .delimiter(" :: ")
+  .preserving_delimiters(true)
   .quoting(true)
   .perform();
 
@@ -440,8 +440,8 @@ fn test_mixed_quotes_and_escapes()
   let input = r#"key :: "value with \"quotes\" and \\slash\\""#;
   let splits_iter = strs_tools ::string ::split()
   .src(input)
-  .delimeter(" :: ")
-  .preserving_delimeters(true)
+  .delimiter(" :: ")
+  .preserving_delimiters(true)
   .quoting(true)
   .perform();
 
@@ -483,8 +483,8 @@ fn mre_from_task_test()
   let input = r#"cmd key :: "value with \"quotes\" and \\slash\\""#;
   let splits_iter = strs_tools ::string ::split()
   .src(input)
-  .delimeters(&[ " ", " :: "])
-  .preserving_delimeters(true)
+  .delimiters(&[ " ", " :: "])
+  .preserving_delimiters(true)
   .quoting(true)
   .perform();
 

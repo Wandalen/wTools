@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is space-separated with no borders | ⏳ |
-| VT-2 | column separator is double space | ⏳ |
-| VT-3 | header separator is dashes | ⏳ |
-| VT-4 | empty table produces minimal output | ⏳ |
+| VT-1 | output is space-separated with no borders | ✅ |
+| VT-2 | column separator is double space | ✅ |
+| VT-3 | header separator is dashes | ✅ |
+| VT-4 | empty table produces minimal output | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/table_styles_presets.rs`](../../table_styles_presets.rs) | Preset configuration and output tests |
+| [`tests/variant_001_table_plain_test.rs`](../../variant_001_table_plain_test.rs) | Spec tests for VT-1..VT-4 plain variant |

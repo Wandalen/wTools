@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output uses Unicode box-drawing connectors | ⏳ |
-| VT-2 | hierarchical indentation increases with depth | ⏳ |
-| VT-3 | leaf nodes display data after arrow | ⏳ |
-| VT-4 | single-node tree produces root-only output | ⏳ |
+| VT-1 | output uses Unicode box-drawing connectors | ✅ |
+| VT-2 | hierarchical indentation increases with depth | ✅ |
+| VT-3 | leaf nodes display data after arrow | ✅ |
+| VT-4 | single-node tree produces root-only output | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/aligned_tree_basic.rs`](../../aligned_tree_basic.rs) | Tree alignment and rendering tests |
+| [`tests/variant_012_tree_hierarchical_test.rs`](../../variant_012_tree_hierarchical_test.rs) | Spec tests for VT-1..VT-4 tree hierarchical variant |

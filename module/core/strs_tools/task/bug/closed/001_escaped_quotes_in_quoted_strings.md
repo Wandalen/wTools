@@ -47,7 +47,7 @@ fn main() {
 
   let result: Vec<_> = split()
     .src(input)
-    .delimeters(&["::", " ", "\t"])
+    .delimiters(&["::", " ", "\t"])
     .quoting(true)
     .stripping_quoting(true)
     .perform()
@@ -300,7 +300,7 @@ cat /home/user1/pro/lib/wTools/module/core/unilang_parser/tests/issue_084_mre.rs
 fn test_escaped_quotes_inside_quoted_string() {
   let result: Vec<_> = split()
     .src(r#"key::"value with \"inner\" quotes""#)
-    .delimeters(&["::", " "])
+    .delimiters(&["::", " "])
     .quoting(true)
     .stripping_quoting(true)
     .perform()
@@ -316,7 +316,7 @@ fn test_escaped_quotes_inside_quoted_string() {
 fn test_escaped_backslash_before_quote() {
   let result: Vec<_> = split()
     .src(r#"key::"path\\\"file""#)
-    .delimeters(&["::", " "])
+    .delimiters(&["::", " "])
     .quoting(true)
     .stripping_quoting(true)
     .perform()
@@ -329,7 +329,7 @@ fn test_escaped_backslash_before_quote() {
 fn test_multiple_escaped_quotes() {
   let result: Vec<_> = split()
     .src(r#"key::"\"quoted\" \"again\"""#)
-    .delimeters(&["::", " "])
+    .delimiters(&["::", " "])
     .quoting(true)
     .stripping_quoting(true)
     .perform()

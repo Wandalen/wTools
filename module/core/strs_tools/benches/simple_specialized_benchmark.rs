@@ -24,7 +24,7 @@ fn main()
   let (_generic_count, generic_time) = time_block(|| {
   string ::split()
    .src(&single_char_data)
-   .delimeter(",")
+   .delimiter(",")
    .perform()
    .count()
  });
@@ -50,7 +50,7 @@ fn main()
   let (_generic_multi_count, generic_multi_time) = time_block(|| {
   string ::split()
    .src(&multi_char_data)
-   .delimeter(" :: ")
+   .delimiter(" :: ")
    .perform()
    .count()
  });

@@ -14,7 +14,7 @@
 | `input_type/` | Registry and overview of all input type doc instances | [input_type/readme.md](input_type/readme.md) | 2 |
 | `invariant/` | Registry and overview of all invariant doc instances | [invariant/readme.md](invariant/readme.md) | 5 |
 | `pattern/` | Registry and overview of all pattern doc instances | [pattern/readme.md](pattern/readme.md) | 4 |
-| `trait/` | Registry and overview of all trait doc instances | [trait/readme.md](trait/readme.md) | 2 |
+| `trait/` | Registry and overview of all trait doc instances | [trait/readme.md](trait/readme.md) | 3 |
 | `variant/` | Registry and overview of all variant doc instances | [variant/readme.md](variant/readme.md) | 33 |
 | `tests/docs/algorithm/` | Test spec coverage for algorithm doc instances | [tests/docs/algorithm/readme.md](../tests/docs/algorithm/readme.md) | 7 |
 | `tests/docs/api/` | Test spec coverage for API doc instances | [tests/docs/api/readme.md](../tests/docs/api/readme.md) | 4 |
@@ -26,7 +26,7 @@
 | `tests/docs/input_type/` | Test spec coverage for input type doc instances | [tests/docs/input_type/readme.md](../tests/docs/input_type/readme.md) | 2 |
 | `tests/docs/invariant/` | Test spec coverage for invariant doc instances | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 5 |
 | `tests/docs/pattern/` | Test spec coverage for pattern doc instances | [tests/docs/pattern/readme.md](../tests/docs/pattern/readme.md) | 4 |
-| `tests/docs/trait/` | Test spec coverage for trait doc instances | [tests/docs/trait/readme.md](../tests/docs/trait/readme.md) | 2 |
+| `tests/docs/trait/` | Test spec coverage for trait doc instances | [tests/docs/trait/readme.md](../tests/docs/trait/readme.md) | 3 |
 | `tests/docs/variant/` | Test spec coverage for variant doc instances | [tests/docs/variant/readme.md](../tests/docs/variant/readme.md) | 33 |
 
 ## Master Doc Instances Table
@@ -78,6 +78,7 @@
 | pattern | 003 | Formatter Design | [pattern/003_formatter_design.md](pattern/003_formatter_design.md) |
 | pattern | 004 | Config Builder Pattern | [pattern/004_config_builder_pattern.md](pattern/004_config_builder_pattern.md) |
 | trait | 001 | Format | [trait/001_format.md](trait/001_format.md) |
+| trait | 002 | TableShapedFormatter | [trait/002_table_shaped_formatter.md](trait/002_table_shaped_formatter.md) |
 | trait | 003 | TableShapedView | [trait/003_table_shaped_view.md](trait/003_table_shaped_view.md) |
 | variant | 001 | Table Plain | [variant/001_table_plain.md](variant/001_table_plain.md) |
 | variant | 002 | Table Minimal | [variant/002_table_minimal.md](variant/002_table_minimal.md) |
@@ -148,6 +149,7 @@
 | tests/docs/invariant | 004 | Column Fold Invariants | [tests/docs/invariant/004_column_fold_invariants.md](../tests/docs/invariant/004_column_fold_invariants.md) |
 | tests/docs/invariant | 005 | Heading Rendering | [tests/docs/invariant/005_heading.md](../tests/docs/invariant/005_heading.md) |
 | tests/docs/trait | 001 | Format | [tests/docs/trait/001_format.md](../tests/docs/trait/001_format.md) |
+| tests/docs/trait | 002 | TableShapedFormatter | [tests/docs/trait/002_table_shaped_formatter.md](../tests/docs/trait/002_table_shaped_formatter.md) |
 | tests/docs/trait | 003 | TableShapedView | [tests/docs/trait/003_table_shaped_view.md](../tests/docs/trait/003_table_shaped_view.md) |
 | tests/docs/data_structure | 001 | Variant Attributes | [tests/docs/data_structure/001_variant_attributes.md](../tests/docs/data_structure/001_variant_attributes.md) |
 | tests/docs/input_model | 001 | Tabular | [tests/docs/input_model/001_tabular.md](../tests/docs/input_model/001_tabular.md) |

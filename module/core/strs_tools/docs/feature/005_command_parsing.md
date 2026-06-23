@@ -17,7 +17,7 @@ The result is a structured request value containing the command name and the arg
 
 ### Sources
 
-- [src/string/parse_request.rs](../../src/string/parse_request.rs) — Command parsing implementation and ParseRequest type
+- [src/string/parse_request/mod.rs](../../src/string/parse_request/mod.rs) — Command parsing implementation and ParseRequest type
 
 ### Tests
 

@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is valid ANSI SQL INSERT statement | ⏳ |
-| VT-2 | values are single-quote escaped | ⏳ |
-| VT-3 | column names listed in INSERT | ⏳ |
-| VT-4 | empty table produces no INSERT statements | ⏳ |
+| VT-1 | output is valid ANSI SQL INSERT statement | ✅ |
+| VT-2 | values are single-quote escaped | ✅ |
+| VT-3 | column names listed in INSERT | ✅ |
+| VT-4 | empty table produces no INSERT statements | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/sql.rs`](../../sql.rs) | SQL formatter test implementation |
+| [`tests/variant_024_sql_ansi_test.rs`](../../variant_024_sql_ansi_test.rs) | Spec tests for VT-1..VT-4 SQL ANSI variant |

@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| TR-1 | trait is not exported from public API | ⏳ |
-| TR-2 | former implementors implement Format trait | ⏳ |
-| TR-3 | build_view replaces build for TableView construction | ⏳ |
-| TR-4 | migration path produces equivalent output | ⏳ |
+| TR-1 | trait is not exported from public API | ✅ |
+| TR-2 | former implementors implement Format trait | ✅ |
+| TR-3 | build_view replaces build for TableView construction | ✅ |
+| TR-4 | migration path produces equivalent output | ✅ |
 
 ---
 
@@ -55,3 +55,9 @@
 | File | Relationship |
 |------|-------------|
 | [`docs/trait/002_table_shaped_formatter.md`](../../../docs/trait/002_table_shaped_formatter.md) | Source trait doc — removed trait signature, former implementors, migration path |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/trait_table_shaped_formatter_test.rs`](../../trait_table_shaped_formatter_test.rs) | Spec tests for TR-1..TR-4 removal verification |

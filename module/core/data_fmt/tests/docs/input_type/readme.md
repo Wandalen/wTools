@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [TableView](001_table_view.md) | TableView construction, metadata, row_details, Format trait coverage | ⏳ |
-| 002 | [TreeNode](002_tree_node.md) | TreeNode specializations, TableShapedView extraction, legacy removal | ⏳ |
+| 001 | [TableView](001_table_view.md) | TableView construction, metadata, row_details, Format trait coverage | ✅ |
+| 002 | [TreeNode](002_tree_node.md) | TreeNode specializations, TableShapedView extraction, legacy removal | ✅ |

@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| IV-1 | generic hierarchical specialization stores typed leaf data | ⏳ |
-| IV-2 | multi-column specialization uses ColumnData | ⏳ |
-| IV-3 | TableShapedView extracts headers and rows from tree | ⏳ |
-| IV-4 | legacy tabular specialization removed in v0.3.0 | ⏳ |
+| IV-1 | generic hierarchical specialization stores typed leaf data | ✅ |
+| IV-2 | multi-column specialization uses ColumnData | ✅ |
+| IV-3 | TableShapedView extracts headers and rows from tree | ✅ |
+| IV-4 | legacy tabular specialization removed in v0.3.0 | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/data.rs`](../../data.rs) | Data model test implementation |
+| [`tests/input_type_test.rs`](../../input_type_test.rs) | Spec tests for IV-1..IV-4 TreeNode type |

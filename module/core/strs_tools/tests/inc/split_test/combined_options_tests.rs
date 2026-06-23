@@ -9,9 +9,9 @@ fn test_m_t3_13_quoting_preserve_all_strip() // Renamed from test_split_indices_
   let src = "a 'b c' d";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .preserving_empty( true )
-  .preserving_delimeters( true )
+  .preserving_delimiters( true )
   .stripping( true ) // S=T
   .quoting( true )
   .preserving_quoting( true ) // Explicitly preserve quotes
@@ -47,9 +47,9 @@ fn test_m_t3_12_quoting_no_preserve_strip() // Renamed from test_split_indices_t
   let src = "a 'b c' d";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .preserving_empty( false )
-  .preserving_delimeters( false )
+  .preserving_delimiters( false )
   .stripping( true )
   .quoting( true )
   // preserving_quoting is false by default
@@ -76,9 +76,9 @@ fn test_combo_preserve_empty_true_preserve_delimiters_true_no_strip()
   let src = "a b c";
   let iter = split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .preserving_empty(true)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .stripping(false)
   .perform();
   assert_eq!(
@@ -95,9 +95,9 @@ fn test_combo_preserve_empty_false_preserve_delimiters_true_no_strip()
   let src = "a b c";
   let iter = split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .preserving_empty(false)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .stripping(false)
   .perform();
   assert_eq!(
@@ -114,9 +114,9 @@ fn test_combo_preserve_empty_true_strip_no_delimiters()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .preserving_empty( true )
-  .preserving_delimeters( false ) // Explicitly false
+  .preserving_delimiters( false ) // Explicitly false
   .stripping( true )
   .perform();
   assert_eq!(iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(), vec!["a", "b", "c"]);

@@ -74,7 +74,7 @@ fn multiple_newlines_only()
   assert_eq!( lines.len(), 4, "3 newlines split into 4 lines, got {}", lines.len() );
   for ( i, line ) in lines.iter().enumerate()
   {
-    assert_eq!( *line, ">>", "line {} should be just the prefix, got '{}'", i, line );
+    assert_eq!( *line, ">>", "line {i} should be just the prefix, got '{line}'" );
   }
 }
 
@@ -90,6 +90,6 @@ fn long_prefix_boundary()
   let got = indentation( &long_prefix, src, "" );
   let lines : Vec< &str > = got.split( '\n' ).collect();
   assert_eq!( lines.len(), 2, "two source lines, got {}", lines.len() );
-  assert_eq!( lines[ 0 ], format!( "{}a", long_prefix ), "first line with long prefix" );
-  assert_eq!( lines[ 1 ], format!( "{}b", long_prefix ), "second line with long prefix" );
+  assert_eq!( lines[ 0 ], format!( "{long_prefix}a" ), "first line with long prefix" );
+  assert_eq!( lines[ 1 ], format!( "{long_prefix}b" ), "second line with long prefix" );
 }

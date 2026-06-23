@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| [001](001_row_builder.md) | RowBuilder | BL-1..BL-8: row construction, chaining, details, validation | ⏳ |
-| [002](002_tree_builder.md) | TreeBuilder | BL-9..BL-16: tree building, paths, batch, siblings | ⏳ |
+| [001](001_row_builder.md) | RowBuilder | BL-1..BL-8: row construction, chaining, details, validation | ✅ |
+| [002](002_tree_builder.md) | TreeBuilder | BL-9..BL-16: tree building, paths, batch, siblings | ✅ |

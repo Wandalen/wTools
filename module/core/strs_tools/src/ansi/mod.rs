@@ -47,7 +47,7 @@ pub mod own
 
   // Re-export Tier 1 functions
   pub use super::parse::parse_segments;
-  pub use super::visual::{ visual_len, pad_to_width };
+  pub use super::visual::{ visual_len, visual_width, pad_to_width };
   pub use super::strip::strip;
   pub use super::detect::{ has_ansi, has_unclosed_formatting, is_reset_code, is_sgr_code };
   pub use super::truncate::truncate;
@@ -59,6 +59,8 @@ pub mod own
   // Re-export Tier 2 functions (unicode)
   #[ cfg( feature = "ansi_unicode" ) ]
   pub use super::visual::visual_len_unicode;
+  #[ cfg( feature = "ansi_unicode" ) ]
+  pub use super::visual::visual_width_unicode;
   #[ cfg( feature = "ansi_unicode" ) ]
   pub use super::truncate::truncate_unicode;
   #[ cfg( feature = "ansi_unicode" ) ]
@@ -87,7 +89,7 @@ pub mod exposed
 pub mod prelude
 {
   pub use super::parse::parse_segments;
-  pub use super::visual::visual_len;
+  pub use super::visual::{ visual_len, visual_width };
   pub use super::strip::strip;
 }
 

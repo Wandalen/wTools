@@ -19,7 +19,7 @@ This feature is the result of the Task 008 parser integration work, which unifie
 
 ### Sources
 
-- [src/string/parser.rs](../../src/string/parser.rs) — Parser, token types, and transformation pipeline
+- [src/string/parser/mod.rs](../../src/string/parser/mod.rs) — Parser, token types, and transformation pipeline
 
 ### Tests
 

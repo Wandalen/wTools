@@ -96,7 +96,7 @@ impl ComparisonAnalysisReport {
   #[must_use]
   pub fn sorted_by_performance(&self) -> Vec<(&String, &BenchmarkResult)> {
     let mut results: Vec<_> = self.results.iter().collect();
-    results.sort_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()));
+    results.sort_by_key(|a| a.1.mean_time());
     results
   }
 

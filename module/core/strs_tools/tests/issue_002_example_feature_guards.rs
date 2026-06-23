@@ -48,7 +48,7 @@ fn test_default_features_enable_string_split()
   let src = "a,b,c";
   let iter = strs_tools::string::split()
     .src( src )
-    .delimeter( "," )
+    .delimiter( "," )
     .perform();
 
   let result: Vec< String > = iter.map( String::from ).collect();
@@ -65,7 +65,7 @@ fn test_no_std_and_string_split_coexist()
   let src = "x:y";
   let iter = strs_tools::string::split()
     .src( src )
-    .delimeter( ":" )
+    .delimiter( ":" )
     .perform();
 
   let count = iter.count();

@@ -92,6 +92,91 @@ pub fn visual_len_unicode( text : &str ) -> usize
     .sum()
 }
 
+/// Calculate terminal display columns after stripping ANSI escapes (char-based, Tier 1).
+///
+/// Unlike `visual_len` which counts Unicode codepoints, `visual_width` measures
+/// terminal display columns. Wide characters (CJK, emoji) occupy 2 columns;
+/// combining marks occupy 0 columns.
+///
+/// # Arguments
+///
+/// * `text` - Input text potentially containing ANSI escape sequences
+///
+/// # Returns
+///
+/// Number of terminal display columns.
+///
+/// # Examples
+///
+/// ```rust
+/// # #[ cfg( feature = "ansi" ) ]
+/// # {
+/// use strs_tools::ansi::visual_width;
+///
+/// assert_eq!( visual_width( "hello" ), 5 );
+/// assert_eq!( visual_width( "你好" ), 4 );  // CJK = 2 columns each
+/// assert_eq!( visual_width( "\x1b[31mred\x1b[0m" ), 3 );
+/// # }
+/// ```
+pub fn visual_width( text : &str ) -> usize
+{
+  use unicode_width::UnicodeWidthChar;
+
+  parse_segments( text )
+    .iter()
+    .filter_map( | seg | match seg
+    {
+      Segment::Text( t ) => Some(
+        t.chars().map( | c | c.width().unwrap_or( 0 ) ).sum::< usize >()
+      ),
+      Segment::Ansi( _ ) => None,
+    })
+    .sum()
+}
+
+/// Calculate terminal display columns using grapheme clusters (Tier 2).
+///
+/// Like `visual_width` but processes grapheme clusters rather than
+/// individual codepoints, giving accurate results for combining marks
+/// and complex emoji sequences.
+///
+/// # Arguments
+///
+/// * `text` - Input text potentially containing ANSI escape sequences
+///
+/// # Returns
+///
+/// Number of terminal display columns using grapheme-cluster boundaries.
+///
+/// # Examples
+///
+/// ```rust
+/// # #[ cfg( all( feature = "ansi_unicode" ) ) ]
+/// # {
+/// use strs_tools::ansi::visual_width_unicode;
+///
+/// assert_eq!( visual_width_unicode( "e\u{0301}" ), 1 );
+/// assert_eq!( visual_width_unicode( "日本語" ), 6 );
+/// # }
+/// ```
+#[ cfg( feature = "ansi_unicode" ) ]
+pub fn visual_width_unicode( text : &str ) -> usize
+{
+  use unicode_segmentation::UnicodeSegmentation;
+  use unicode_width::UnicodeWidthStr;
+
+  parse_segments( text )
+    .iter()
+    .filter_map( | seg | match seg
+    {
+      Segment::Text( t ) => Some(
+        t.graphemes( true ).map( UnicodeWidthStr::width ).sum::< usize >()
+      ),
+      Segment::Ansi( _ ) => None,
+    })
+    .sum()
+}
+
 /// Pad text to target display width while respecting ANSI codes and wide Unicode characters.
 ///
 /// Uses display width (terminal columns) instead of character count.

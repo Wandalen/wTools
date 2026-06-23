@@ -7,11 +7,11 @@
 - **Start Time:** null
 - **Prior State:** null
 - **Reopen Count:** 0
-- **State:** 🎯 (Verified)
+- **State:** ✅ (Completed)
 - **Closes:** null
 - **Dir:** module/core/strs_tools
-- **Validated By:** null
-- **Validation Date:** null
+- **Validated By:** MAAV (independent adversarial subagent)
+- **Validation Date:** 2026-06-23
 
 ## Goal
 
@@ -74,31 +74,31 @@ Add a `visual_width()` function to `src/ansi/visual.rs` that strips ANSI escapes
 ### Checklist
 
 **visual_width function**
-- [ ] C1 — Does `src/ansi/visual.rs` contain a `pub fn visual_width` function?
-- [ ] C2 — Does it use `UnicodeWidthChar::width()` for measurement?
-- [ ] C3 — Does it strip ANSI via `parse_segments()` before measuring?
-- [ ] C4 — Is `visual_width` re-exported in `src/ansi/mod.rs` exposed section?
+- [x] C1 — Does `src/ansi/visual.rs` contain a `pub fn visual_width` function?
+- [x] C2 — Does it use `UnicodeWidthChar::width()` for measurement?
+- [x] C3 — Does it strip ANSI via `parse_segments()` before measuring?
+- [x] C4 — Is `visual_width` re-exported in `src/ansi/mod.rs` exposed section?
 
 **visual_width_unicode function**
-- [ ] C5 — Does `src/ansi/visual.rs` contain a `pub fn visual_width_unicode` gated on `ansi_unicode`?
+- [x] C5 — Does `src/ansi/visual.rs` contain a `pub fn visual_width_unicode` gated on `ansi_unicode`?
 
 **Out of Scope confirmation**
-- [ ] C6 — Is `visual_len()` unchanged (no signature or behavior modification)?
-- [ ] C7 — Are there zero changes to `data_fmt` or `cli_fmt` crates?
+- [x] C6 — Is `visual_len()` unchanged (no signature or behavior modification)?
+- [x] C7 — Are there zero changes to `data_fmt` or `cli_fmt` crates?
 
 ### Measurements
 
-- [ ] M1 — test count: `cargo nextest run --all-features -E 'test(visual_width)' -- --list` >= 8 tests
+- [x] M1 — test count: `cargo nextest run --all-features -E 'test(visual_width)' -- --list` >= 8 tests
 
 ### Invariants
 
-- [ ] I1 — test suite: `w3 .test level::3` passes with 0 failures
-- [ ] I2 — compiler clean: `RUSTFLAGS="-D warnings" cargo check --all-features` passes with 0 warnings
+- [x] I1 — test suite: `w3 .test level::3` passes with 0 failures
+- [x] I2 — compiler clean: `RUSTFLAGS="-D warnings" cargo check --all-features` passes with 0 warnings
 
 ### Anti-faking checks
 
-- [ ] AF1 — integration proof: `grep -r 'visual_width' src/ansi/mod.rs` shows re-export
-- [ ] AF2 — negative: `grep -c 'visual_len' src/ansi/visual.rs` count unchanged from baseline
+- [x] AF1 — integration proof: `grep -r 'visual_width' src/ansi/mod.rs` shows re-export
+- [x] AF2 — negative: `grep -c 'visual_len' src/ansi/visual.rs` count unchanged from baseline
 
 ## Verification Record
 
@@ -116,3 +116,4 @@ Add a `visual_width()` function to `src/ansi/visual.rs` that strips ANSI escapes
 - **[2025-11-22]** `CREATED` — Task filed. Goal: add display-column measurement function to fix visual_len/pad_to_width mismatch.
 - **[2026-06-23]** `UPDATED` — Normalized to tsk.rulebook.md v5.11 template. Preserved all original content; added Execution State, Scope, Delivery Requirements, Test Matrix, Validation sections.
 - **[2026-06-23]** `VERIFIED` — MAAV verification (2 agents: feasibility + adversarial). 2 corrections applied: (1) Goal text updated — data_fmt TSK-011 already fixed format_aligned internally; task value is general-purpose API, not downstream fix; (2) unicode-width 0.1→0.2 migration moved from Out of Scope to In Scope — workspace already standardized on ^0.2, strs_tools is sole holdout, leaving it creates duplicate-dep binary. T07 noted as weak discriminator (combining accent returns 1 for both variants) but non-blocking.
+- **[2026-06-23]** `COMPLETED` — All 4 plan phases implemented and validated: (1) L2 hygiene fixes, (2) unicode-width migration + visual_width/visual_width_unicode implementation, (3) structural splits (parse_request/, parser/, specialized/ directories), (4) delimeter→delimiter API rename. Validation checklist C1–C7, M1, I1–I2, AF1–AF2 all passed via independent MAAV subagent. 247/247 nextest + 0 clippy warnings.

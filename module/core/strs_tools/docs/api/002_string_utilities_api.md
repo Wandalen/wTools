@@ -34,7 +34,7 @@
 - [src/string/indentation.rs](../../src/string/indentation.rs) — Indentation implementation
 - [src/string/isolate.rs](../../src/string/isolate.rs) — Isolation implementation
 - [src/string/number.rs](../../src/string/number.rs) — Number parsing wrapper
-- [src/string/parse_request.rs](../../src/string/parse_request.rs) — Command parsing implementation
+- [src/string/parse_request/mod.rs](../../src/string/parse_request/mod.rs) — Command parsing implementation
 - [src/ansi/detect.rs](../../src/ansi/detect.rs) — ANSI sequence detection
 - [src/ansi/parse.rs](../../src/ansi/parse.rs) — ANSI token parsing
 - [src/ansi/strip.rs](../../src/ansi/strip.rs) — ANSI sequence stripping

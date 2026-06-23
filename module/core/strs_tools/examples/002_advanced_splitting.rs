@@ -34,7 +34,7 @@ fn quote_aware_splitting()
   
   let iter = string ::split()
   .src( command_line )
-  .delimeter( " " )
+  .delimiter( " " )
   .quoting( true )               // Enable quote awareness
   .stripping( true )             // Remove delimiters from output
   .perform();
@@ -72,7 +72,7 @@ fn escape_sequence_handling()
   
   let iter = string ::split()
   .src( complex_string )
-  .delimeter( " " )
+  .delimiter( " " )
   .quoting( true )
   .stripping( true )
   .perform();
@@ -117,7 +117,7 @@ fn complex_delimiter_scenarios()
   // First pass: split on semicolons (respecting quotes)
   let iter = string ::split()
   .src( mixed_format )
-  .delimeter( ";" )
+  .delimiter( ";" )
   .quoting( true )
   .stripping( true )
   .perform();
@@ -136,7 +136,7 @@ fn complex_delimiter_scenarios()
    } else {
     let sub_iter = string ::split()
     .src( section.as_str() )
-    .delimeter( "," )
+    .delimiter( "," )
     .stripping( true )
     .perform();
 
@@ -174,7 +174,7 @@ fn performance_optimization_demo()
   // Use SIMD-optimized splitting for large data
   let iter = string ::split()
   .src( &large_text )
-  .delimeter( " " )
+  .delimiter( " " )
   .stripping( true )
   .perform();
   

@@ -9,7 +9,7 @@
 | # | Status | Case |
 |---|--------|------|
 | IN-1 | ✅ | SIMD and scalar produce identical segments |
-| IN-2 | ⏳ | SIMD degrades to scalar on unsupported platforms |
+| IN-2 | ✅ | SIMD degrades to scalar on unsupported platforms |
 | IN-3 | ✅ | Byte-for-byte output identity across paths |
 
 ### IN-1 — SIMD and scalar produce identical segments
@@ -24,7 +24,7 @@
 - **Given:** The `simd` feature is enabled at compile time
 - **When:** The runtime platform does not support the required SIMD instructions
 - **Then:** The split operation succeeds using the scalar fallback with no caller intervention
-- **Test:** ⏳
+- **Test:** `tests/invariant_contract_test.rs` — `inv_003_in_2_simd_degrades_to_scalar`
 
 ### IN-3 — Byte-for-byte output identity across paths
 

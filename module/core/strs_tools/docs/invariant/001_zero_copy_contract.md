@@ -17,7 +17,7 @@ The invariant is intentionally broken when: stripping or unescaping is enabled (
 
 ### Sources
 
-- [src/string/split.rs](../../src/string/split.rs) — Split iterator lifetime and slice yield
+- [src/string/split/mod.rs](../../src/string/split/mod.rs) — Split iterator lifetime and slice yield
 - [src/string/isolate.rs](../../src/string/isolate.rs) — Isolation slice return
 - [src/string/zero_copy.rs](../../src/string/zero_copy.rs) — Zero-copy utilities and slice helpers
 

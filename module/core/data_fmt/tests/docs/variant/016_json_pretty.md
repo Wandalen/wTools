@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is valid parseable JSON | ⏳ |
-| VT-2 | output is indented with newlines | ⏳ |
-| VT-3 | special characters are backslash-escaped | ⏳ |
-| VT-4 | empty table produces valid JSON structure | ⏳ |
+| VT-1 | output is valid parseable JSON | ✅ |
+| VT-2 | output is indented with newlines | ✅ |
+| VT-3 | special characters are backslash-escaped | ✅ |
+| VT-4 | empty table produces valid JSON structure | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/json.rs`](../../json.rs) | JSON formatter test implementation |
+| [`tests/variant_016_json_pretty_test.rs`](../../variant_016_json_pretty_test.rs) | Spec tests for VT-1..VT-4 JSON pretty variant |

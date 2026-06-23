@@ -28,7 +28,7 @@ pub mod private {
   /// Options for isolate.
   ///
   #[ allow( dead_code ) ]
-  #[ derive( Debug ) ] // Removed Assign derive
+  #[ derive( Debug ) ]
   pub struct IsolateOptions<'a> {
     /// Source string slice.
     pub src: Src<'a>,
@@ -191,7 +191,6 @@ pub mod own {
 
   pub use orphan::*; // Added
   pub use i::IsolateOptions;
-  // pub use i::IsolateOptionsAdapter; // Removed
   pub use i::isolate;
   pub use i::isolate_left;
   pub use i::isolate_right;
@@ -217,7 +216,6 @@ pub mod exposed {
 
   use super::private as i;
 
-  // pub use i::IsolateOptionsAdapter; // Removed
   pub use i::isolate;
   pub use i::isolate_left;
   pub use i::isolate_right;
@@ -229,6 +227,4 @@ pub mod prelude {
   #[ allow( unused_imports ) ]
   use super::*;
   use super::private as i;
-
-  // pub use i::IsolateOptionsAdapter; // Removed
 }

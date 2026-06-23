@@ -9,7 +9,7 @@ fn test_scenario_default_char_split()
   let src = "abc";
   let iter = split()
   .src( src )
-  .delimeter( "x" ) // Use valid delimiter that doesn't exist in string
+  .delimiter( "x" ) // Use valid delimiter that doesn't exist in string
   .perform();
   assert_eq!(iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(), vec!["abc"]);
 }
@@ -20,11 +20,11 @@ fn test_scenario_default_char_split()
 fn test_scenario_default_char_split_form_methods()
 {
   let src = "abc";
-  let iter = split().src(src).delimeter( "x" ).perform();
+  let iter = split().src(src).delimiter( "x" ).perform();
   assert_eq!(iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(), vec!["abc"]);
 
   let src = "abc";
-  let iter = split().src(src).delimeter( "x" ).perform();
+  let iter = split().src(src).delimiter( "x" ).perform();
   assert_eq!(iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(), vec!["abc"]);
 }
 
@@ -39,7 +39,7 @@ fn test_scenario_multi_delimiters_incl_empty_char_split()
   let src = "abc";
   let iter = split()
   .src( src )
-  .delimeters( &[ "a", "b" ] )  // Remove empty delimiter
+  .delimiters( &[ "a", "b" ] )  // Remove empty delimiter
   // preserving_delimiters defaults to true
   .perform();
   assert_eq!(iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(), vec!["a", "b", "c"]);
@@ -57,7 +57,7 @@ fn test_basic_multi_delimiters_some_match()
   let src = "abc";
   let iter = split()
   .src( src )
-  .delimeters( &[ "b", "d" ] )
+  .delimiters( &[ "b", "d" ] )
   // preserving_delimiters defaults to true
   .perform();
   assert_eq!(iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(), vec!["a", "b", "c"]);

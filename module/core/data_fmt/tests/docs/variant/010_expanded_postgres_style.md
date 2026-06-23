@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | vertical record layout with one field per line | ⏳ |
-| VT-2 | field label and value separated by pipe | ⏳ |
-| VT-3 | record separator between multiple records | ⏳ |
-| VT-4 | empty table produces no records | ⏳ |
+| VT-1 | vertical record layout with one field per line | ✅ |
+| VT-2 | field label and value separated by pipe | ✅ |
+| VT-3 | record separator between multiple records | ✅ |
+| VT-4 | empty table produces no records | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/expanded_behavior.rs`](../../expanded_behavior.rs) | Expanded formatter test implementation |
+| [`tests/variant_010_expanded_postgres_test.rs`](../../variant_010_expanded_postgres_test.rs) | Spec tests for VT-1..VT-4 expanded postgres variant |

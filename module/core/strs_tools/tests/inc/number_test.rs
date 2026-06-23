@@ -69,7 +69,7 @@ fn scientific_notation()
 fn invalid_input()
 {
   let result = crate::the_module::string::number::parse::< i32, _ >( "not_a_number" );
-  assert!( result.is_err(), "expected Err for non-numeric input, got {:?}", result );
+  assert!( result.is_err(), "expected Err for non-numeric input, got {result:?}" );
 }
 
 /// Overflowing integer returns an error.
@@ -77,7 +77,7 @@ fn invalid_input()
 fn overflow_i32()
 {
   let result = crate::the_module::string::number::parse::< i32, _ >( "99999999999999999999" );
-  assert!( result.is_err(), "expected Err for overflow, got {:?}", result );
+  assert!( result.is_err(), "expected Err for overflow, got {result:?}" );
 }
 
 /// f64 boundary value at MAX parses successfully.
@@ -85,7 +85,7 @@ fn overflow_i32()
 fn f64_boundary()
 {
   let result = crate::the_module::string::number::parse::< f64, _ >( "1.7976931348623157e+308" );
-  assert!( result.is_ok(), "f64::MAX should parse, got {:?}", result );
+  assert!( result.is_ok(), "f64::MAX should parse, got {result:?}" );
   let val = result.unwrap();
   assert!( ( val - f64::MAX ).abs() < 1e292, "parsed value should be close to f64::MAX" );
 }

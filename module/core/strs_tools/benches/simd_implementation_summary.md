@@ -126,14 +126,14 @@ use strs_tools::string::split;
 // Existing API unchanged - now includes SIMD by default
 let result: Vec<_> = split()
     .src("data:value1,value2;value3")
-    .delimeter(vec![":", ",", ";"])
+    .delimiter(vec![":", ",", ";"])
     .perform()  // Automatically uses SIMD when beneficial
     .collect();
 
 // Or explicitly request SIMD
 let result: Vec<_> = split()
     .src("data:value1,value2;value3")
-    .delimeter(vec![":", ",", ";"])
+    .delimiter(vec![":", ",", ";"])
     .perform_simd()  // Explicit SIMD optimization
     .collect();
 ```

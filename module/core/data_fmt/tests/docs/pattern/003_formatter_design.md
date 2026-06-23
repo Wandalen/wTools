@@ -11,9 +11,9 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| PT-1 | Format trait implemented by 9 formatters | ⏳ |
-| PT-2 | TableShapedView decouples formatters from tree internals | ⏳ |
-| PT-3 | Dual output surface available | ⏳ |
+| PT-1 | Format trait implemented by 9 formatters | ✅ |
+| PT-2 | TableShapedView decouples formatters from tree internals | ✅ |
+| PT-3 | Dual output surface available | ✅ |
 
 ---
 
@@ -46,3 +46,9 @@
 | File | Relationship |
 |------|-------------|
 | [`docs/pattern/003_formatter_design.md`](../../../docs/pattern/003_formatter_design.md) | Source pattern doc — trait hierarchy, TableShapedView decoupling, output surface |
+
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/pattern_formatter_test.rs`](../../pattern_formatter_test.rs) | Spec tests for PT-1..PT-3 formatter design patterns |

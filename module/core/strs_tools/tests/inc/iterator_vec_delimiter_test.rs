@@ -9,8 +9,8 @@ fn test_split_with_vec_delimiter_iterator()
   let delimiters = vec![" "];
   let splits: Vec< Split<'_ >> = strs_tools ::split()
   .src(input)
-  .delimeters(&delimiters)
-  .preserving_delimeters(false)
+  .delimiters(&delimiters)
+  .preserving_delimiters(false)
   .perform()
   .collect();
 

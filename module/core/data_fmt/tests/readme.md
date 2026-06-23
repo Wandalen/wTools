@@ -82,6 +82,21 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `auto_fold_test.rs` | Column folding T01–T25: basic fold, fold styles, combinations, bug reproducers |
 | `auto_fold_acceptance_test.rs` | Column fold acceptance criteria (CF AC-6–AC-8): Bare style, per-row fold, single overflow |
 | `expanded_format_trait.rs` | Tests ExpandedFormatter via unified Format trait |
+| `input_model_test.rs` | Spec tests for tabular and hierarchical input models (IM-1..IM-4) |
+| `input_type_test.rs` | Spec tests for TableView and TreeNode input types (IV-1..IV-4) |
+| `trait_table_shaped_formatter_test.rs` | Spec tests for TableShapedView→Format migration (TR-1..TR-4) |
+| `pattern_formatter_test.rs` | Spec tests for formatter pattern coverage (PT-1..PT-3) |
+| `pattern_config_builder_test.rs` | Spec tests for config builder chaining and defaults (PT-1..PT-3) |
+| `variant_001_table_plain_test.rs` | Spec tests for Table Plain variant (VT-1..VT-4) |
+| `variant_010_expanded_postgres_test.rs` | Spec tests for Expanded Postgres variant (VT-1..VT-4) |
+| `variant_012_tree_hierarchical_test.rs` | Spec tests for Tree Hierarchical variant (VT-1..VT-4) |
+| `variant_015_logfmt_test.rs` | Spec tests for Logfmt Standard variant (VT-1..VT-4) |
+| `variant_016_json_pretty_test.rs` | Spec tests for JSON Pretty variant (VT-1..VT-4) |
+| `variant_018_yaml_test.rs` | Spec tests for YAML Standard variant (VT-1..VT-4) |
+| `variant_019_toml_test.rs` | Spec tests for TOML Standard variant (VT-1..VT-4) |
+| `variant_020_html_minimal_test.rs` | Spec tests for HTML Minimal variant (VT-1..VT-4) |
+| `variant_024_sql_ansi_test.rs` | Spec tests for SQL ANSI variant (VT-1..VT-4) |
+| `variant_028_text_bullets_test.rs` | Spec tests for Text Bullets variant (VT-1..VT-4) |
 
 ## Test Files
 - **data.rs** (18 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)

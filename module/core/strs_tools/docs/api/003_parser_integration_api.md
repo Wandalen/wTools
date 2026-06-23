@@ -19,7 +19,7 @@ The parser does not collect tokens into a container; it yields one token per cal
 
 ### Sources
 
-- [src/string/parser.rs](../../src/string/parser.rs) — Parser, token types, and transformation pipeline
+- [src/string/parser/mod.rs](../../src/string/parser/mod.rs) — Parser, token types, and transformation pipeline
 
 ### Tests
 

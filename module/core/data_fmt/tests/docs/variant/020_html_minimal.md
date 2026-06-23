@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is valid HTML table structure | ⏳ |
-| VT-2 | header cells use th elements | ⏳ |
-| VT-3 | no CSS classes or framework-specific attributes | ⏳ |
-| VT-4 | empty table produces valid HTML | ⏳ |
+| VT-1 | output is valid HTML table structure | ✅ |
+| VT-2 | header cells use th elements | ✅ |
+| VT-3 | no CSS classes or framework-specific attributes | ✅ |
+| VT-4 | empty table produces valid HTML | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/html.rs`](../../html.rs) | HTML formatter test implementation |
+| [`tests/variant_020_html_minimal_test.rs`](../../variant_020_html_minimal_test.rs) | Spec tests for VT-1..VT-4 HTML minimal variant |

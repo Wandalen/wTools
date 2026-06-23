@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| IM-1 | headers define column schema | ⏳ |
-| IM-2 | every row has same cell count as headers | ⏳ |
-| IM-3 | row details parallel to rows | ⏳ |
-| IM-4 | column order stable across rows | ⏳ |
+| IM-1 | headers define column schema | ✅ |
+| IM-2 | every row has same cell count as headers | ✅ |
+| IM-3 | row details parallel to rows | ✅ |
+| IM-4 | column order stable across rows | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/data.rs`](../../data.rs) | Data model test implementation |
+| [`tests/input_model_test.rs`](../../input_model_test.rs) | Spec tests for IM-1..IM-4 tabular model |

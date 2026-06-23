@@ -10,7 +10,7 @@ fn test_stripping_true_default_delimiter()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .stripping( true )
   .preserving_empty( true ) // Explicitly set, though default PE is false.
   // preserving_delimiters defaults to true
@@ -29,9 +29,9 @@ fn test_stripping_false_default_delimiter()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .stripping( false )
-  .preserving_delimeters( true ) // Explicitly set, matches new default
+  .preserving_delimiters( true ) // Explicitly set, matches new default
   .perform();
   assert_eq!(
   iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(),
@@ -47,9 +47,9 @@ fn test_stripping_true_custom_delimiter_b()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( "b" )
+  .delimiter( "b" )
   .stripping( true )
-  .preserving_delimeters( true ) // Explicitly set, matches new default
+  .preserving_delimiters( true ) // Explicitly set, matches new default
   .perform();
   assert_eq!(iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(), vec!["a", "b", "c"]);
 }
@@ -62,8 +62,8 @@ fn test_stripping_true_custom_delimiter_b_no_preserve_delimiters()
   let src = "a b c";
   let iter = split()
   .src(src)
-  .delimeter("b")
-  .preserving_delimeters(false)
+  .delimiter("b")
+  .preserving_delimiters(false)
   .stripping(true)
   .perform();
   assert_eq!(iter.map(|e| String ::from(e.string)).collect :: < Vec<_ >>(), vec!["a", "c"]);
@@ -78,9 +78,9 @@ fn test_m_t3_2_no_preserve_no_strip_no_quote()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .preserving_empty( false )
-  .preserving_delimeters( false )
+  .preserving_delimiters( false )
   .stripping( false ) // Key for this test, though it's in stripping_options_tests for grouping by original file
   .quoting( false )
   .perform();
@@ -105,9 +105,9 @@ fn test_m_t3_4_leading_trailing_space_no_preserve_no_strip()
   let src = " a b ";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .preserving_empty( false )
-  .preserving_delimeters( false )
+  .preserving_delimiters( false )
   .stripping( false ) // Key for this test
   .quoting( false )
   .perform();

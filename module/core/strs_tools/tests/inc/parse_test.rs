@@ -57,8 +57,8 @@ fn basic()
     subjects : vec![],
     map : HashMap ::new(),
     maps : vec![],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -73,8 +73,8 @@ fn basic()
     subjects : vec![],
     map : HashMap ::new(),
     maps : vec![],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -89,8 +89,8 @@ fn basic()
     subjects : vec![],
     map : HashMap ::new(),
     maps : vec![],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 }
@@ -111,8 +111,8 @@ fn with_subject_and_map_single_command()
     subjects : vec![ "subj".to_string() ],
     map : HashMap ::new(),
     maps : vec![ HashMap ::new() ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -127,8 +127,8 @@ fn with_subject_and_map_single_command()
     subjects : vec![ "subj with space".to_string() ],
     map : HashMap ::new(),
     maps : vec![ HashMap ::new() ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -144,8 +144,8 @@ fn with_subject_and_map_single_command()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -165,8 +165,8 @@ fn with_subject_and_map_single_command()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 }
@@ -187,8 +187,8 @@ fn with_subject_and_map_multi_command()
     subjects : vec![ "subj1".to_string(), "subj2".to_string() ],
     map : HashMap ::new(),
     maps : vec![ HashMap ::new(), HashMap ::new() ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -204,8 +204,8 @@ fn with_subject_and_map_multi_command()
     subjects : vec![ "subj1".to_string(), "subj2".to_string() ],
     map : m.clone(),
     maps : vec![ m, HashMap ::new() ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -222,8 +222,8 @@ fn with_subject_and_map_multi_command()
     subjects : vec![ "subj1".to_string(), "subj2".to_string() ],
     map : m1.clone(),
     maps : vec![ m1, m2 ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -248,8 +248,8 @@ fn with_subject_and_map_multi_command()
     subjects : vec![ "subj1".to_string(), "subj2".to_string() ],
     map : m1.clone(),
     maps : vec![ m1, m2 ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 }
@@ -272,8 +272,8 @@ fn with_several_values()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -290,8 +290,8 @@ fn with_several_values()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 }
@@ -314,8 +314,8 @@ fn with_parsing_arrays()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -332,8 +332,8 @@ fn with_parsing_arrays()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -353,8 +353,8 @@ fn with_parsing_arrays()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -372,8 +372,8 @@ fn with_parsing_arrays()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 
@@ -391,8 +391,8 @@ fn with_parsing_arrays()
     subjects : vec![ "subj".to_string() ],
     map : m.clone(),
     maps : vec![ m ],
-    key_val_delimeter : ": ",
-    commands_delimeter : ";",
+    key_val_delimiter : ": ",
+    commands_delimiter : ";",
   };
   assert_eq!( req, exp );
 }

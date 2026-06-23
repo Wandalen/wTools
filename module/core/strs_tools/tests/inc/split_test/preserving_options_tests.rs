@@ -9,9 +9,9 @@ fn test_preserving_empty_true_no_strip()
   let src = "a b c";
   let iter = split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .preserving_empty(true)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .stripping(false)
   .perform();
   assert_eq!(
@@ -28,9 +28,9 @@ fn test_preserving_empty_false_no_strip()
   let src = "a b c";
   let iter = split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .preserving_empty(false)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .stripping(false)
   .perform();
   assert_eq!(
@@ -47,7 +47,7 @@ fn test_preserving_empty_true_with_strip()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .preserving_empty( true )
   // preserving_delimiters defaults to true now
   .stripping( true )
@@ -68,7 +68,7 @@ fn test_preserving_empty_false_with_strip()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( " " )
+  .delimiter( " " )
   .preserving_empty( false )
   // preserving_delimiters defaults to true now
   .stripping( true )
@@ -89,8 +89,8 @@ fn test_preserving_delimiters_true_no_strip()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( " " )
-  .preserving_delimeters( true )
+  .delimiter( " " )
+  .preserving_delimiters( true )
   .stripping( false )
   // preserving_empty defaults to false
   .perform();
@@ -108,8 +108,8 @@ fn test_preserving_delimiters_false_no_strip()
   let src = "a b c";
   let iter = split()
   .src( src )
-  .delimeter( " " )
-  .preserving_delimeters( false )
+  .delimiter( " " )
+  .preserving_delimiters( false )
   .stripping( false )
   // preserving_empty defaults to false
   .perform();
@@ -124,9 +124,9 @@ fn test_m_t3_1_preserve_all_no_strip_no_quote()
   let src = "a b c";
   let iter = split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .preserving_empty(true)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .stripping(false)
   .quoting(false)
   .perform();
@@ -152,9 +152,9 @@ fn test_m_t3_3_leading_trailing_space_preserve_all()
   let src = " a b ";
   let iter = split()
   .src(src)
-  .delimeter(" ")
+  .delimiter(" ")
   .preserving_empty(true)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .stripping(false)
   .quoting(false)
   .perform();
@@ -167,26 +167,28 @@ fn test_m_t3_3_leading_trailing_space_preserve_all()
   (" ", SplitType ::Delimiter, 4, 5),
   ("", SplitType ::Delimited, 5, 5),
  ];
-  for (i, split) in iter.enumerate() 
+  let result : Vec< _ > = iter.collect();
+  assert_eq!( result.len(), expected.len(), "segment count mismatch" );
+  for (i, split) in result.iter().enumerate()
   {
-  assert_eq!(split.string, expected[i].0);
-  assert_eq!(split.typ, expected[i].1);
-  assert_eq!(split.start, expected[i].2);
-  assert_eq!(split.end, expected[i].3);
+  assert_eq!(split.string, expected[i].0, "string mismatch at index {i}");
+  assert_eq!(split.typ, expected[i].1, "typ mismatch at index {i}");
+  assert_eq!(split.start, expected[i].2, "start mismatch at index {i}");
+  assert_eq!(split.end, expected[i].3, "end mismatch at index {i}");
  }
 }
 
 // Test Matrix ID: T3.5
 // Description: src="a,,b", del=",", PE=T, PD=T, S=F, Q=F
 #[ test ]
-fn test_m_t3_5_consecutive_delimiters_preserve_all() 
+fn test_m_t3_5_consecutive_delimiters_preserve_all()
 {
   let src = "a,,b";
   let iter = split()
   .src(src)
-  .delimeter(",")
+  .delimiter(",")
   .preserving_empty(true)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .stripping(false)
   .quoting(false)
   .perform();
@@ -195,11 +197,13 @@ fn test_m_t3_5_consecutive_delimiters_preserve_all()
   ("", SplitType ::Delimited, 2, 2),
   (",", SplitType ::Delimiter, 2, 3),
   ("b", SplitType ::Delimited, 3, 4)];
-  for (i, split) in iter.enumerate() 
+  let result : Vec< _ > = iter.collect();
+  assert_eq!( result.len(), expected.len(), "segment count mismatch" );
+  for (i, split) in result.iter().enumerate()
   {
-  assert_eq!(split.string, expected[i].0);
-  assert_eq!(split.typ, expected[i].1);
-  assert_eq!(split.start, expected[i].2);
-  assert_eq!(split.end, expected[i].3);
+  assert_eq!(split.string, expected[i].0, "string mismatch at index {i}");
+  assert_eq!(split.typ, expected[i].1, "typ mismatch at index {i}");
+  assert_eq!(split.start, expected[i].2, "start mismatch at index {i}");
+  assert_eq!(split.end, expected[i].3, "end mismatch at index {i}");
  }
 }

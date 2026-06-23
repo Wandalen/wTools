@@ -87,6 +87,75 @@ fn pad_empty_string()
   assert_eq!( pad_to_width( "", 3, true ), "   " );
 }
 
+// ==================== visual_width tests ====================
+
+#[ test ]
+fn visual_width_pure_ascii()
+{
+  // FT-9: Pure ASCII — 1 column per char
+  use the_module::ansi::visual_width;
+  assert_eq!( visual_width( "hello" ), 5 );
+}
+
+#[ test ]
+fn visual_width_emoji()
+{
+  // FT-10: Emoji — 2 columns each
+  use the_module::ansi::visual_width;
+  assert_eq!( visual_width( "😀😀" ), 4 );
+}
+
+#[ test ]
+fn visual_width_cjk()
+{
+  // FT-11: CJK — 2 columns each
+  use the_module::ansi::visual_width;
+  assert_eq!( visual_width( "你好" ), 4 );
+}
+
+#[ test ]
+fn visual_width_ansi_stripped()
+{
+  // FT-12: ANSI stripped, ASCII chars = 1 column each
+  use the_module::ansi::visual_width;
+  assert_eq!( visual_width( "\x1b[31mred\x1b[0m" ), 3 );
+}
+
+#[ test ]
+fn visual_width_empty()
+{
+  // FT-13: Empty string — 0
+  use the_module::ansi::visual_width;
+  assert_eq!( visual_width( "" ), 0 );
+}
+
+#[ test ]
+fn visual_width_mixed_ascii_emoji()
+{
+  // FT-14: Mixed ASCII + emoji — 1+2+1 = 4
+  use the_module::ansi::visual_width;
+  assert_eq!( visual_width( "a😀b" ), 4 );
+}
+
+#[ test ]
+fn visual_width_ansi_emoji_text()
+{
+  // FT-16: ANSI + emoji + space + text — 2+1+4 = 7
+  use the_module::ansi::visual_width;
+  assert_eq!( visual_width( "\x1b[1m😀\x1b[0m text" ), 7 );
+}
+
+// ==================== visual_width_unicode tests ====================
+
+#[ cfg( feature = "ansi_unicode" ) ]
+#[ test ]
+fn visual_width_unicode_combining_accent()
+{
+  // FT-15: e + combining accent — 1 grapheme, 1 display column
+  use the_module::ansi::visual_width_unicode;
+  assert_eq!( visual_width_unicode( "e\u{0301}" ), 1 );
+}
+
 // ==================== visual_len_unicode tests ====================
 
 #[ cfg( feature = "ansi_unicode" ) ]

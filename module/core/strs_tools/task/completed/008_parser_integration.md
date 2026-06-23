@@ -30,7 +30,7 @@ let input = "command arg1:value1 arg2:value2 --flag";
 // Pass 1: Split into tokens  
 let tokens: Vec<String> = string::split()
     .src(input)
-    .delimeter(" ")
+    .delimiter(" ")
     .perform()
     .collect();
 
@@ -41,7 +41,7 @@ for token in tokens {
         // Pass 3: Split key-value pairs
         let parts: Vec<String> = string::split()
             .src(&token)
-            .delimeter(":")
+            .delimiter(":")
             .perform()  
             .collect();
         args.push((parts[0].clone(), parts[1].clone()));
@@ -504,7 +504,7 @@ impl ParserIntegrationExt for str
     {
         string::split()
             .src(self)
-            .delimeter(delimiters.to_vec())
+            .delimiter(delimiters.to_vec())
             .perform()
             .map(move |token| {
                 let token_str = token.string.as_ref();
@@ -682,7 +682,7 @@ fn bench_multipass_command_parsing(b: &mut Bencher)
     
     b.iter(|| {
         // Traditional multi-pass approach
-        let tokens: Vec<String> = split().src(input).delimeter(" ").perform().collect();
+        let tokens: Vec<String> = split().src(input).delimiter(" ").perform().collect();
         let mut results = Vec::new();
         
         for token in tokens {

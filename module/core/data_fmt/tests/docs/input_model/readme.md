@@ -11,5 +11,5 @@
 
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
-| 001 | [Tabular](001_tabular.md) | Header schema, row-length invariant, row details, column order | ⏳ |
-| 002 | [Hierarchical](002_hierarchical.md) | Single root, leaf vs directory, node names, specializations | ⏳ |
+| 001 | [Tabular](001_tabular.md) | Header schema, row-length invariant, row details, column order | ✅ |
+| 002 | [Hierarchical](002_hierarchical.md) | Single root, leaf vs directory, node names, specializations | ✅ |

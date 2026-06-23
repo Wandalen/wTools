@@ -15,7 +15,7 @@ fn main()
   let input = "a,b,c";
   let result: Vec< _ > = split()
    .src( input )
-   .delimeter( "," )
+   .delimiter( "," )
    .perform()
    .map( |s| s.string.to_string() )
    .collect();

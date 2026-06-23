@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is valid parseable YAML | ⏳ |
-| VT-2 | indentation-based nesting structure | ⏳ |
-| VT-3 | header names used as keys | ⏳ |
-| VT-4 | empty table produces valid YAML | ⏳ |
+| VT-1 | output is valid parseable YAML | ✅ |
+| VT-2 | indentation-based nesting structure | ✅ |
+| VT-3 | header names used as keys | ✅ |
+| VT-4 | empty table produces valid YAML | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/yaml.rs`](../../yaml.rs) | YAML formatter test implementation |
+| [`tests/variant_018_yaml_test.rs`](../../variant_018_yaml_test.rs) | Spec tests for VT-1..VT-4 YAML variant |

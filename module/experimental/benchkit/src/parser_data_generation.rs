@@ -260,7 +260,7 @@ impl ParserCommandGenerator
   {
   let arg_count = match self.complexity
   {
-   CommandComplexity ::Simple => (index % 2).max(0),
+   CommandComplexity ::Simple => index % 2,
    CommandComplexity ::Standard => (index % 3) + 1,
    CommandComplexity ::Complex => (index % self.max_arguments) + 2,
    CommandComplexity ::Comprehensive => (index % self.max_arguments) + 3,

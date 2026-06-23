@@ -9,9 +9,9 @@ fn test_m_t3_9_mod_index_first()
   let src = "abc";
   let mut iter = split()
   .src(src)
-  .delimeter("b")
+  .delimiter("b")
   .preserving_empty(true)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .stripping(false)
   .quoting(false)
   .perform();
@@ -35,9 +35,9 @@ fn test_m_t3_10_mod_index_last()
   let src = "abc";
   let iter = split() // Changed from `let mut iter`
   .src(src)
-  .delimeter("b")
+  .delimiter("b")
   .preserving_empty(false)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .stripping(false)
   .quoting(false)
   .perform();
@@ -61,9 +61,9 @@ fn test_scenario_index_positive_1()
   let src = "a,b,c,d";
   let mut iter = split()
   .src(src)
-  .delimeter(",")
+  .delimiter(",")
   .preserving_empty(false)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform();
 
   let result = iter.nth(1); // Call nth(1) on the iterator
@@ -88,9 +88,9 @@ fn test_scenario_index_negative_2()
   let src = "a,b,c,d";
   let splits: Vec< _ > = split()
   .src(src)
-  .delimeter(",")
+  .delimiter(",")
   .preserving_empty(false)
-  .preserving_delimeters(false)
+  .preserving_delimiters(false)
   .perform()
   .collect();
 
@@ -114,7 +114,7 @@ fn test_scenario_index_out_of_bounds_positive()
   let src = "a,b";
   let mut iter = split()
   .src( src )
-  .delimeter( "," )
+  .delimiter( "," )
   // preserving_delimiters defaults to true
   .perform();
   let result = iter.nth(5);
@@ -129,7 +129,7 @@ fn test_scenario_index_out_of_bounds_negative()
   let src = "a,b";
   let splits: Vec< _ > = split()
   .src( src )
-  .delimeter( "," )
+  .delimiter( "," )
   // preserving_delimiters defaults to true
   .perform()
   .collect();
@@ -150,9 +150,9 @@ fn test_scenario_index_preserving_delimiters_and_empty()
   let src = "a,,b";
   let mut iter = split()
   .src(src)
-  .delimeter(",")
+  .delimiter(",")
   .preserving_empty(true)
-  .preserving_delimeters(true)
+  .preserving_delimiters(true)
   .perform();
 
   let result = iter.nth(1); // Get the second element (index 1)

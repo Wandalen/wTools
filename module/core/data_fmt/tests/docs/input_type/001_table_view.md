@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| IV-1 | construct TableView via build_view | ⏳ |
-| IV-2 | metadata carries column names and type classifications | ⏳ |
-| IV-3 | row_details parallels rows in length | ⏳ |
-| IV-4 | 9 of 10 formatters accept TableView via Format trait | ⏳ |
+| IV-1 | construct TableView via build_view | ✅ |
+| IV-2 | metadata carries column names and type classifications | ✅ |
+| IV-3 | row_details parallels rows in length | ✅ |
+| IV-4 | 9 of 10 formatters accept TableView via Format trait | ✅ |
 
 ---
 
@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/data.rs`](../../data.rs) | Data model test implementation |
+| [`tests/input_type_test.rs`](../../input_type_test.rs) | Spec tests for IV-1..IV-4 TableView type |
