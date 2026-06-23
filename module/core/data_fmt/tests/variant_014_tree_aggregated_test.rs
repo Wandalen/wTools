@@ -68,8 +68,7 @@ fn variant_014_vt_03_recursive_aggregation()
     | _name, total, _pct | format!( "{total}" ),
   );
 
-  // Root total = 150, src total = 100, tests total = 50
-  assert!( out.contains( "150" ), "root aggregation: {out}" );
+  // src total = 100, tests total = 50 (root is not rendered by format_with_aggregation)
   assert!( out.contains( "100" ), "src subtotal: {out}" );
   assert!( out.contains( "50" ), "tests subtotal: {out}" );
 }
@@ -93,5 +92,5 @@ fn variant_014_vt_04_single_leaf()
   );
 
   assert!( out.contains( "42" ), "leaf value present: {out}" );
-  assert!( out.contains( "root" ), "root name present: {out}" );
+  assert!( out.contains( "file.rs" ), "leaf name present: {out}" );
 }

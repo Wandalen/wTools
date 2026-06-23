@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | fields rendered as key: value pairs | ⏳ |
-| VT-2 | colon separator between key and value | ⏳ |
-| VT-3 | multiple rows produce separate record blocks | ⏳ |
-| VT-4 | empty table produces no key-value output | ⏳ |
+| VT-1 | fields rendered as key: value pairs | ✅ |
+| VT-2 | colon separator between key and value | ✅ |
+| VT-3 | multiple rows produce separate record blocks | ✅ |
+| VT-4 | empty table produces no key-value output | ✅ |
 
 ---
 

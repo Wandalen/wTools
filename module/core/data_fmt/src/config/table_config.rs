@@ -597,6 +597,18 @@ impl TableConfig
   {
     matches!( self.column_separator, ColumnSeparator::Character( ',' | '\t' ) )
   }
+
+  /// Whether column separator is comma (CSV mode — RFC 4180 quoting applies)
+  pub( crate ) fn is_csv( &self ) -> bool
+  {
+    matches!( self.column_separator, ColumnSeparator::Character( ',' ) )
+  }
+
+  /// Whether output is Markdown table (pipe escaping applies to cell content)
+  pub( crate ) fn is_markdown( &self ) -> bool
+  {
+    matches!( self.header_separator_variant, HeaderSeparatorVariant::Markdown )
+  }
 }
 
 /// Where to place alignment padding in key-value pairs

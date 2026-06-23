@@ -48,7 +48,8 @@ fn data_structure_001_ds_01_ten_attribute_groups()
     .count();
 
   assert!( h4_count >= 10, "at least 10 attribute group headings present: found {h4_count}" );
-  assert_eq!( found, expected_groups.len() as u32, "all expected groups found" );
+  let expected_count = u32::try_from( expected_groups.len() ).expect( "group count fits in u32" );
+  assert_eq!( found, expected_count, "all expected groups found" );
 }
 
 /// DS-2: schema defines exactly 46 attributes
@@ -119,11 +120,16 @@ fn data_structure_001_ds_04_variant_fills_all_attributes()
   assert_eq!( schema_attrs.len(), 46, "precondition: schema has 46 attrs" );
 
   // Count attribute rows in variant doc (markdown list items: `- **attr**: value`)
+  // Exclude Scope section bullets (Purpose, Responsibility, In Scope, Out of Scope)
   let variant_attr_count = VARIANT_DOC.lines()
     .filter( | line |
     {
       let trimmed = line.trim();
-      trimmed.starts_with( "- **" ) && trimmed.contains( "**:" )
+      if !trimmed.starts_with( "- **" ) || !trimmed.contains( "**:" ) { return false; }
+      !trimmed.starts_with( "- **Purpose**" )
+        && !trimmed.starts_with( "- **Responsibility**" )
+        && !trimmed.starts_with( "- **In Scope**" )
+        && !trimmed.starts_with( "- **Out of Scope**" )
     })
     .count();
 

@@ -95,12 +95,38 @@ impl TableFormatter
   )
   {
     let is_csv_or_tsv = self.config.is_csv_or_tsv();
+    let is_csv = self.config.is_csv();
+    let is_markdown = self.config.is_markdown();
     let should_pad = !is_csv_or_tsv;
 
-    // Extract plain text; CSV/TSV escapes newlines
+    // Fix(BUG-021): apply RFC 4180 quoting for CSV cells containing comma or double-quote.
+    // Root cause: CSV cells with commas were emitted raw, making in-value commas
+    //   indistinguishable from column separators — corrupting downstream CSV parsers.
+    // Pitfall: apply quoting AFTER newline escaping so the literal `\n` is inside quotes.
+    //
+    // Fix(BUG-022): escape pipe characters in Markdown cell content.
+    // Root cause: unescaped `|` in cell text was indistinguishable from column separator,
+    //   producing extra columns and corrupting the Markdown table structure.
+    // Pitfall: only escape in Markdown mode — other styles emit `|` as a border char
+    //   separately via the rendering pipeline, not embedded in cell text.
     let cells_prepared : Vec< String > = cells
       .iter()
-      .map( | ct | if is_csv_or_tsv { ct.text.replace( '\n', "\\n" ) } else { ct.text.clone() } )
+      .map( | ct |
+      {
+        if is_csv_or_tsv
+        {
+          let escaped = ct.text.replace( '\n', "\\n" );
+          if is_csv { Self::csv_quote( &escaped ) } else { escaped }
+        }
+        else if is_markdown
+        {
+          ct.text.replace( '|', "\\|" )
+        }
+        else
+        {
+          ct.text.clone()
+        }
+      } )
       .collect();
 
     let has_multiline = !is_csv_or_tsv && cells_prepared.iter().any( | cell | cell.contains( '\n' ) );
@@ -141,13 +167,39 @@ impl TableFormatter
     if is_csv_or_tsv
     {
       // CSV/TSV: plain text, no ANSI
+      // Fix(BUG-021): apply RFC 4180 quoting for CSV cells.
+      let is_csv = self.config.is_csv();
       let cells_plain : Vec< String > = cells
         .iter()
-        .map( | ct | ct.text.replace( '\n', "\\n" ) )
+        .map( | ct |
+        {
+          let escaped = ct.text.replace( '\n', "\\n" );
+          if is_csv { Self::csv_quote( &escaped ) } else { escaped }
+        } )
         .collect();
       self.format_single_line_row( output, &cells_plain, column_widths, false );
       return;
     }
+
+    // Fix(BUG-022): preprocess pipe escaping for Markdown cells before color rendering.
+    // Escape text BEFORE color wrapping so ANSI codes surround the escaped content.
+    let md_cells_buf : Vec< DecoratedText >;
+    let cells = if self.config.is_markdown()
+    {
+      md_cells_buf = cells.iter()
+        .map( | ct |
+        {
+          let mut escaped = DecoratedText::from( ct.text.replace( '|', "\\|" ) );
+          if let Some( ref c ) = ct.color { escaped = escaped.with_color( c.clone() ); }
+          escaped
+        } )
+        .collect();
+      &md_cells_buf
+    }
+    else
+    {
+      cells
+    };
 
     // Check for multiline (based on text content, not rendered ANSI)
     let has_multiline = cells.iter().any( | ct | ct.text.contains( '\n' ) );
@@ -210,6 +262,30 @@ impl TableFormatter
     output.push( ' ' );
     output.push_str( &trail_str );
     output.push( '\n' );
+  }
+
+  /// Apply RFC 4180 quoting: wrap cell in double-quotes and double internal `"`
+  /// when text contains comma or double-quote.
+  ///
+  /// Called after newline escaping, so literal `\n` in the text does not trigger quoting.
+  ///
+  /// # Fix(BUG-021)
+  ///
+  /// Root cause: CSV cells containing commas were emitted without quoting, making
+  ///   in-value commas indistinguishable from column separators.
+  /// Pitfall: always quote after newline escaping — the escaped `\n` literal does
+  ///   not need RFC 4180 quoting, but commas and double-quotes do.
+  fn csv_quote( text : &str ) -> String
+  {
+    if text.contains( ',' ) || text.contains( '"' )
+    {
+      let escaped = text.replace( '"', "\"\"" );
+      format!( "\"{escaped}\"" )
+    }
+    else
+    {
+      text.to_string()
+    }
   }
 
 }

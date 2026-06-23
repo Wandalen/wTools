@@ -11,9 +11,9 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| PT-1 | Single Data Structure principle observable | ⏳ |
-| PT-2 | Unified Format Interface principle observable | ⏳ |
-| PT-3 | Granular Features principle observable | ⏳ |
+| PT-1 | Single Data Structure principle observable | ✅ |
+| PT-2 | Unified Format Interface principle observable | ✅ |
+| PT-3 | Granular Features principle observable | ✅ |
 
 ---
 

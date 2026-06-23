@@ -230,11 +230,12 @@ mod sql_tests
     let formatter = SqlFormatter::new( "empty_table" );
     let result = formatter.format( &view );
 
-    // Should produce valid SQL even with no data rows
+    // Fix(BUG-020): zero rows → empty string (not invalid `VALUES;`)
     let sql = result.unwrap();
-    assert!( sql.contains( "INSERT INTO \"empty_table\"" ) );
-    assert!( sql.contains( "(\"col1\", \"col2\")" ) );
-    assert!( sql.contains( "VALUES" ) );
+    assert!(
+      sql.is_empty(),
+      "zero-row SQL output must be empty string, got: '{sql}'",
+    );
   }
 
   #[ test ]

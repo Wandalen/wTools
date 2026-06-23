@@ -47,7 +47,7 @@ impl<'a, D: Searcher> Iterator for SplitFastIterator<'a, D> {
     {
       return None;
     }
-    // Fix(BUG-014): When iterable is exhausted after a delimiter phase (even counter),
+    // Fix(BUG-002): When iterable is exhausted after a delimiter phase (even counter),
     // yield one trailing empty content segment before stopping.
     // Root cause: the early return unconditionally stopped when iterable was empty,
     // even when the last yielded item was a delimiter that should be followed by

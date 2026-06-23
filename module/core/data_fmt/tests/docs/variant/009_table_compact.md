@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output uses single-space column separation | ⏳ |
-| VT-2 | no header separator line | ⏳ |
-| VT-3 | no border characters present | ⏳ |
-| VT-4 | empty table produces minimal output | ⏳ |
+| VT-1 | output uses single-space column separation | ✅ |
+| VT-2 | no header separator line | ✅ |
+| VT-3 | no border characters present | ✅ |
+| VT-4 | empty table produces minimal output | ✅ |
 
 ---
 

@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| DS-1 | all 10 attribute groups present | ⏳ |
-| DS-2 | schema defines exactly 46 attributes | ⏳ |
-| DS-3 | every attribute has name, purpose, and example values | ⏳ |
-| DS-4 | variant doc instances fill all 46 attributes | ⏳ |
+| DS-1 | all 10 attribute groups present | ✅ |
+| DS-2 | schema defines exactly 46 attributes | ✅ |
+| DS-3 | every attribute has name, purpose, and example values | ✅ |
+| DS-4 | variant doc instances fill all 46 attributes | ✅ |
 
 ---
 

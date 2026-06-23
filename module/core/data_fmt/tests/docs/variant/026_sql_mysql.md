@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output uses MySQL backtick quoting | ⏳ |
-| VT-2 | column identifiers are backtick-quoted | ⏳ |
-| VT-3 | valid MySQL INSERT syntax | ⏳ |
-| VT-4 | empty table produces no INSERT statements | ⏳ |
+| VT-1 | output uses MySQL backtick quoting | ✅ |
+| VT-2 | column identifiers are backtick-quoted | ✅ |
+| VT-3 | valid MySQL INSERT syntax | ✅ |
+| VT-4 | empty table produces no INSERT statements | ✅ |
 
 ---
 

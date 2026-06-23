@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | each row rendered as a section with header | ⏳ |
-| VT-2 | section header has underline separator | ⏳ |
-| VT-3 | fields listed under section header | ⏳ |
-| VT-4 | empty table produces no sections | ⏳ |
+| VT-1 | each row rendered as a section with header | ✅ |
+| VT-2 | section header has underline separator | ✅ |
+| VT-3 | fields listed under section header | ✅ |
+| VT-4 | empty table produces no sections | ✅ |
 
 ---
 

@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output contains Tailwind CSS utility classes | ⏳ |
-| VT-2 | valid HTML table structure | ⏳ |
-| VT-3 | no Bootstrap or custom CSS classes | ⏳ |
-| VT-4 | empty table produces valid Tailwind HTML | ⏳ |
+| VT-1 | output contains Tailwind CSS utility classes | ✅ |
+| VT-2 | valid HTML table structure | ✅ |
+| VT-3 | no Bootstrap or custom CSS classes | ✅ |
+| VT-4 | empty table produces valid Tailwind HTML | ✅ |
 
 ---
 

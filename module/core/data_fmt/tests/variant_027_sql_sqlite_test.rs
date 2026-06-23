@@ -1,10 +1,10 @@
-//! Variant 027: SQL SQLite spec tests (VT-1..VT-4)
+//! Variant 027: SQL `SQLite` spec tests (VT-1..VT-4)
 
 #![ cfg( feature = "enabled" ) ]
 
 use data_fmt::{ RowBuilder, SqlFormatter, SqlVariant, Format };
 
-/// VT-1: output uses SQLite quoting conventions
+/// VT-1: output uses `SQLite` quoting conventions
 // test_kind: spec_case(VT-1)
 #[ test ]
 fn variant_027_vt_01_sqlite_quoting()
@@ -22,7 +22,7 @@ fn variant_027_vt_01_sqlite_quoting()
   assert!( out.contains( "VALUES" ), "VALUES present: {out}" );
 }
 
-/// VT-2: valid SQLite INSERT syntax
+/// VT-2: valid `SQLite` INSERT syntax
 // test_kind: spec_case(VT-2)
 #[ test ]
 fn variant_027_vt_02_valid_insert_syntax()

@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is tab-separated with no borders | ⏳ |
-| VT-2 | column separator is tab character | ⏳ |
-| VT-3 | no header separator line | ⏳ |
-| VT-4 | empty table produces header-only TSV | ⏳ |
+| VT-1 | output is tab-separated with no borders | ✅ |
+| VT-2 | column separator is tab character | ✅ |
+| VT-3 | no header separator line | ✅ |
+| VT-4 | empty table produces header-only TSV | ✅ |
 
 ---
 

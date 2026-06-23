@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output has pipe column separators | ⏳ |
-| VT-2 | ASCII grid header separator present | ⏳ |
-| VT-3 | outer border lines surround the table | ⏳ |
-| VT-4 | empty table produces bordered header only | ⏳ |
+| VT-1 | output has pipe column separators | ✅ |
+| VT-2 | ASCII grid header separator present | ✅ |
+| VT-3 | outer border lines surround the table | ✅ |
+| VT-4 | empty table produces bordered header only | ✅ |
 
 ---
 

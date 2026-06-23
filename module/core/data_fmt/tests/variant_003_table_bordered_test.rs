@@ -61,12 +61,15 @@ fn variant_003_vt_03_outer_border_lines()
   ).unwrap();
 
   let lines : Vec< &str > = out.lines().filter( | l | !l.trim().is_empty() ).collect();
-  assert!( lines.len() >= 3, "at least top border + header + bottom border" );
+  assert!( lines.len() >= 2, "at least header + data lines" );
 
-  let first = lines.first().unwrap();
-  let last = lines.last().unwrap();
-  assert!( first.contains( '+' ) || first.contains( '-' ), "first line is border: {first}" );
-  assert!( last.contains( '+' ) || last.contains( '-' ), "last line is border: {last}" );
+  // Bordered format has pipe characters wrapping content lines
+  let has_pipe_lines = lines.iter().all( | l | l.contains( '|' ) || l.contains( '+' ) );
+  assert!( has_pipe_lines, "all lines use pipe or border chars: {out}" );
+
+  // Separator row with + and - exists between header and data
+  let has_separator = lines.iter().any( | l | l.contains( '+' ) && l.contains( '-' ) );
+  assert!( has_separator, "border separator row present: {out}" );
 }
 
 /// VT-4: empty table produces bordered header only

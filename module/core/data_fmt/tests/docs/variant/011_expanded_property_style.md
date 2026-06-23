@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | vertical layout with colon separator | ⏳ |
-| VT-2 | no record header line | ⏳ |
-| VT-3 | multiple records separated by blank line | ⏳ |
-| VT-4 | empty table produces no output | ⏳ |
+| VT-1 | vertical layout with colon separator | ✅ |
+| VT-2 | no record header line | ✅ |
+| VT-3 | multiple records separated by blank line | ✅ |
+| VT-4 | empty table produces no output | ✅ |
 
 ---
 

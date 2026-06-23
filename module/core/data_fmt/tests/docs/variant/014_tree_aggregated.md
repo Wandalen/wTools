@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | directory nodes show aggregated totals | ⏳ |
-| VT-2 | leaf values preserved alongside aggregation | ⏳ |
-| VT-3 | aggregation function applied recursively | ⏳ |
-| VT-4 | single-leaf tree shows leaf value without aggregation | ⏳ |
+| VT-1 | directory nodes show aggregated totals | ✅ |
+| VT-2 | leaf values preserved alongside aggregation | ✅ |
+| VT-3 | aggregation function applied recursively | ✅ |
+| VT-4 | single-leaf tree shows leaf value without aggregation | ✅ |
 
 ---
 

@@ -97,6 +97,33 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `variant_020_html_minimal_test.rs` | Spec tests for HTML Minimal variant (VT-1..VT-4) |
 | `variant_024_sql_ansi_test.rs` | Spec tests for SQL ANSI variant (VT-1..VT-4) |
 | `variant_028_text_bullets_test.rs` | Spec tests for Text Bullets variant (VT-1..VT-4) |
+| `data_structure_test.rs` | Spec tests for Variant Attributes schema (DS-1..DS-4) |
+| `pattern_architecture_test.rs` | Spec tests for Three-Layer Architecture pattern (PT-1..PT-3) |
+| `pattern_design_test.rs` | Spec tests for Design Principles pattern (PT-1..PT-3) |
+| `variant_002_table_minimal_test.rs` | Spec tests for Table Minimal variant (VT-1..VT-4) |
+| `variant_003_table_bordered_test.rs` | Spec tests for Table Bordered variant (VT-1..VT-4) |
+| `variant_004_table_markdown_test.rs` | Spec tests for Table Markdown variant (VT-1..VT-4) |
+| `variant_005_table_grid_test.rs` | Spec tests for Table Grid variant (VT-1..VT-4) |
+| `variant_006_table_unicode_box_test.rs` | Spec tests for Table Unicode Box variant (VT-1..VT-4) |
+| `variant_007_table_csv_test.rs` | Spec tests for Table CSV variant (VT-1..VT-4) |
+| `variant_008_table_tsv_test.rs` | Spec tests for Table TSV variant (VT-1..VT-4) |
+| `variant_009_table_compact_test.rs` | Spec tests for Table Compact variant (VT-1..VT-4) |
+| `variant_011_expanded_property_test.rs` | Spec tests for Expanded Property variant (VT-1..VT-4) |
+| `variant_013_tree_aligned_test.rs` | Spec tests for Tree Aligned variant (VT-1..VT-4) |
+| `variant_014_tree_aggregated_test.rs` | Spec tests for Tree Aggregated variant (VT-1..VT-4) |
+| `variant_017_json_compact_test.rs` | Spec tests for JSON Compact variant (VT-1..VT-4) |
+| `variant_021_html_bootstrap_test.rs` | Spec tests for HTML Bootstrap variant (VT-1..VT-4) |
+| `variant_022_html_tailwind_test.rs` | Spec tests for HTML Tailwind variant (VT-1..VT-4) |
+| `variant_023_html_custom_test.rs` | Spec tests for HTML Custom variant (VT-1..VT-4) |
+| `variant_025_sql_postgresql_test.rs` | Spec tests for SQL PostgreSQL variant (VT-1..VT-4) |
+| `variant_026_sql_mysql_test.rs` | Spec tests for SQL MySQL variant (VT-1..VT-4) |
+| `variant_027_sql_sqlite_test.rs` | Spec tests for SQL SQLite variant (VT-1..VT-4) |
+| `variant_029_text_numbered_test.rs` | Spec tests for Text Numbered variant (VT-1..VT-4) |
+| `variant_030_text_sections_test.rs` | Spec tests for Text Sections variant (VT-1..VT-4) |
+| `variant_031_text_keyvalue_test.rs` | Spec tests for Text KeyValue variant (VT-1..VT-4) |
+| `variant_032_text_compact_test.rs` | Spec tests for Text Compact variant (VT-1..VT-4) |
+| `variant_033_text_cli_help_test.rs` | Spec tests for Text CLI Help variant (VT-1..VT-4) |
+| `corner_case_bug_reproducer_test.rs` | Bug reproducers for BUG-018..BUG-022: KeyValue trailing blank, HTML empty class, SQL zero rows, CSV quoting, Markdown pipe escaping |
 
 ## Test Files
 - **data.rs** (18 tests) - Core data structures (`TreeNode`, `RowBuilder`, `TableView` trait)

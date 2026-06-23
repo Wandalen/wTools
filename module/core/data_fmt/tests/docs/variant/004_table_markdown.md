@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | every line starts and ends with pipe | ⏳ |
-| VT-2 | Markdown separator line between header and data | ⏳ |
-| VT-3 | output is valid GFM table syntax | ⏳ |
-| VT-4 | empty table produces header-only Markdown | ⏳ |
+| VT-1 | every line starts and ends with pipe | ✅ |
+| VT-2 | Markdown separator line between header and data | ✅ |
+| VT-3 | output is valid GFM table syntax | ✅ |
+| VT-4 | empty table produces header-only Markdown | ✅ |
 
 ---
 

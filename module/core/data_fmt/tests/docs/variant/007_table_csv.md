@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is comma-separated with no borders | ⏳ |
-| VT-2 | first line is header row | ⏳ |
-| VT-3 | fields containing commas are quoted | ⏳ |
-| VT-4 | empty table produces header-only CSV | ⏳ |
+| VT-1 | output is comma-separated with no borders | ✅ |
+| VT-2 | first line is header row | ✅ |
+| VT-3 | fields containing commas are quoted | ✅ |
+| VT-4 | empty table produces header-only CSV | ✅ |
 
 ---
 

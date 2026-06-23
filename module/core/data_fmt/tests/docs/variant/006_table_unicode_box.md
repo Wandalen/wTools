@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output uses Unicode box-drawing characters | ⏳ |
-| VT-2 | column separator is │ (U+2502) | ⏳ |
-| VT-3 | header separator uses Unicode horizontal lines | ⏳ |
-| VT-4 | empty table produces box-drawing header only | ⏳ |
+| VT-1 | output uses Unicode box-drawing characters | ✅ |
+| VT-2 | column separator is │ (U+2502) | ✅ |
+| VT-3 | header separator uses Unicode horizontal lines | ✅ |
+| VT-4 | empty table produces box-drawing header only | ✅ |
 
 ---
 

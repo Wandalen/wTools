@@ -173,6 +173,11 @@ impl HtmlFormatter
       HtmlVariant::Minimal => None,
       HtmlVariant::Bootstrap => Some( "table table-striped table-hover".to_string() ),
       HtmlVariant::Tailwind => Some( "min-w-full divide-y divide-gray-200".to_string() ),
+      // Fix(BUG-019): treat empty custom class the same as Minimal (no class attr).
+      // Root cause: `Some("")` caused `class=""` to be emitted in the opening tag,
+      // which is semantically incorrect — an empty class attribute is never useful.
+      // Pitfall: always check for empty custom class string before emitting the attr.
+      HtmlVariant::Custom( class ) if class.is_empty() => None,
       HtmlVariant::Custom( class ) => Some( class.clone() ),
     }
   }

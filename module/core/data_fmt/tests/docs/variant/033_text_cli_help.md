@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output uses automatic alignment spacing | ⏳ |
-| VT-2 | sections separated by blank lines | ⏳ |
-| VT-3 | multi-section option groups rendered | ⏳ |
-| VT-4 | empty table produces no CLI help output | ⏳ |
+| VT-1 | output uses automatic alignment spacing | ✅ |
+| VT-2 | sections separated by blank lines | ✅ |
+| VT-3 | multi-section option groups rendered | ✅ |
+| VT-4 | empty table produces no CLI help output | ✅ |
 
 ---
 

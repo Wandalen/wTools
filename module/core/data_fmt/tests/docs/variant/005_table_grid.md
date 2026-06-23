@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | pipe column separators on every line | ⏳ |
-| VT-2 | horizontal rules between all rows | ⏳ |
-| VT-3 | grid intersections use + characters | ⏳ |
-| VT-4 | empty table produces grid header only | ⏳ |
+| VT-1 | pipe column separators on every line | ✅ |
+| VT-2 | horizontal rules between all rows | ✅ |
+| VT-3 | grid intersections use + characters | ✅ |
+| VT-4 | empty table produces grid header only | ✅ |
 
 ---
 

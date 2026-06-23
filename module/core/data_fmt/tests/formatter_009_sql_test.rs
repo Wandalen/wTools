@@ -107,7 +107,10 @@ fn formatter_009_fm_44_format_trait_dispatch_returns_well_formed_string()
   assert!( output.contains( "VALUES" ), "should contain VALUES" );
 }
 
-/// FM-45: empty data produces INSERT with VALUES but no rows
+/// FM-45: empty data (zero rows) produces empty string
+///
+/// Fix(BUG-020): previously emitted `INSERT INTO ... VALUES;` which is invalid SQL.
+/// Correct behavior: return empty string when no data rows exist.
 // test_kind: spec_case(FM-45)
 #[ test ]
 fn formatter_009_fm_45_empty_data_produces_insert_with_no_value_rows()
@@ -118,12 +121,10 @@ fn formatter_009_fm_45_empty_data_produces_insert_with_no_value_rows()
   let formatter = SqlFormatter::new( "t" );
   let output = Format::format( &formatter, &view ).unwrap();
 
-  // With zero data rows, there should be no parenthesized value tuples
-  let values_pos = output.find( "VALUES" ).expect( "should contain VALUES keyword" );
-  let after_values = &output[ values_pos + 6.. ];
+  // Zero data rows → empty string (not invalid SQL like `VALUES;`)
   assert!(
-    !after_values.contains( '(' ),
-    "empty data should have no value tuples after VALUES, got: '{output}'",
+    output.is_empty(),
+    "zero-row SQL output must be empty string, got: '{output}'",
   );
 }
 

@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | fields separated by commas within record | ⏳ |
-| VT-2 | minimal output overhead | ⏳ |
-| VT-3 | multiple rows produce separate lines | ⏳ |
-| VT-4 | empty table produces no output | ⏳ |
+| VT-1 | fields separated by commas within record | ✅ |
+| VT-2 | minimal output overhead | ✅ |
+| VT-3 | multiple rows produce separate lines | ✅ |
+| VT-4 | empty table produces no output | ✅ |
 
 ---
 

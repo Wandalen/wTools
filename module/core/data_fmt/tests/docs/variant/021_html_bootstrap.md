@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output contains Bootstrap CSS classes | ⏳ |
-| VT-2 | valid HTML table structure | ⏳ |
-| VT-3 | table element has Bootstrap class attribute | ⏳ |
-| VT-4 | empty table produces valid Bootstrap HTML | ⏳ |
+| VT-1 | output contains Bootstrap CSS classes | ✅ |
+| VT-2 | valid HTML table structure | ✅ |
+| VT-3 | table element has Bootstrap class attribute | ✅ |
+| VT-4 | empty table produces valid Bootstrap HTML | ✅ |
 
 ---
 

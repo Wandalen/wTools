@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | custom CSS class applied to table element | ⏳ |
-| VT-2 | valid HTML table structure | ⏳ |
-| VT-3 | user-provided class string appears verbatim | ⏳ |
-| VT-4 | empty table produces valid HTML with custom class | ⏳ |
+| VT-1 | custom CSS class applied to table element | ✅ |
+| VT-2 | valid HTML table structure | ✅ |
+| VT-3 | user-provided class string appears verbatim | ✅ |
+| VT-4 | empty table produces valid HTML with custom class | ✅ |
 
 ---
 

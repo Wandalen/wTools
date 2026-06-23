@@ -1,4 +1,4 @@
-//! Variant 031: Text KeyValue spec tests (VT-1..VT-4)
+//! Variant 031: Text `KeyValue` spec tests (VT-1..VT-4)
 
 #![ cfg( feature = "enabled" ) ]
 

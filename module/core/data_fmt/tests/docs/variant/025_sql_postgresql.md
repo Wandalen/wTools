@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output uses PostgreSQL quoting conventions | ⏳ |
-| VT-2 | column identifiers are double-quoted | ⏳ |
-| VT-3 | valid PostgreSQL INSERT syntax | ⏳ |
-| VT-4 | empty table produces no INSERT statements | ⏳ |
+| VT-1 | output uses PostgreSQL quoting conventions | ✅ |
+| VT-2 | column identifiers are double-quoted | ✅ |
+| VT-3 | valid PostgreSQL INSERT syntax | ✅ |
+| VT-4 | empty table produces no INSERT statements | ✅ |
 
 ---
 

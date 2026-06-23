@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | columns aligned across all leaf nodes | ⏳ |
-| VT-2 | space-based column separation | ⏳ |
-| VT-3 | directory nodes show no column data | ⏳ |
-| VT-4 | single-leaf tree produces aligned output | ⏳ |
+| VT-1 | columns aligned across all leaf nodes | ✅ |
+| VT-2 | space-based column separation | ✅ |
+| VT-3 | directory nodes show no column data | ✅ |
+| VT-4 | single-leaf tree produces aligned output | ✅ |
 
 ---
 

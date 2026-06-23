@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | each row has sequential number prefix | ⏳ |
-| VT-2 | numbering starts at 1 | ⏳ |
-| VT-3 | multi-column rows include all fields | ⏳ |
-| VT-4 | empty table produces no numbered items | ⏳ |
+| VT-1 | each row has sequential number prefix | ✅ |
+| VT-2 | numbering starts at 1 | ✅ |
+| VT-3 | multi-column rows include all fields | ✅ |
+| VT-4 | empty table produces no numbered items | ✅ |
 
 ---
 

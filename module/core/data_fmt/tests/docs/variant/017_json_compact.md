@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output is valid parseable JSON | ⏳ |
-| VT-2 | output is single-line with minimal whitespace | ⏳ |
-| VT-3 | compact and pretty produce equivalent data | ⏳ |
-| VT-4 | empty table produces valid compact JSON | ⏳ |
+| VT-1 | output is valid parseable JSON | ✅ |
+| VT-2 | output is single-line with minimal whitespace | ✅ |
+| VT-3 | compact and pretty produce equivalent data | ✅ |
+| VT-4 | empty table produces valid compact JSON | ✅ |
 
 ---
 

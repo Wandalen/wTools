@@ -261,8 +261,17 @@ fn format_key_value( data : &TableView ) -> String
 {
   let mut output = String::new();
 
-  for row in &data.rows
+  // Fix(BUG-018): only add blank line separator *between* records, not after last.
+  // Root cause: unconditional `push('\n')` after every record produced a trailing
+  // blank line (e.g. single record → `"k: v\n\n"` instead of `"k: v\n"`).
+  // Pitfall: loop-and-append patterns should use "separator between" logic, not
+  // "terminator after each".
+  for ( row_idx, row ) in data.rows.iter().enumerate()
   {
+    if row_idx > 0
+    {
+      output.push( '\n' );
+    }
     for ( col_idx, cell ) in row.iter().enumerate()
     {
       if col_idx < data.metadata.column_names.len()
@@ -274,7 +283,6 @@ fn format_key_value( data : &TableView ) -> String
         ) );
       }
     }
-    output.push( '\n' );
   }
 
   output

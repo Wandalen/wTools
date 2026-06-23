@@ -1,10 +1,10 @@
-//! Variant 026: SQL MySQL spec tests (VT-1..VT-4)
+//! Variant 026: SQL `MySQL` spec tests (VT-1..VT-4)
 
 #![ cfg( feature = "enabled" ) ]
 
 use data_fmt::{ RowBuilder, SqlFormatter, SqlVariant, Format };
 
-/// VT-1: output uses MySQL backtick quoting
+/// VT-1: output uses `MySQL` backtick quoting
 // test_kind: spec_case(VT-1)
 #[ test ]
 fn variant_026_vt_01_mysql_backtick_quoting()
@@ -41,7 +41,7 @@ fn variant_026_vt_02_backtick_identifiers()
   );
 }
 
-/// VT-3: valid MySQL INSERT syntax
+/// VT-3: valid `MySQL` INSERT syntax
 // test_kind: spec_case(VT-3)
 #[ test ]
 fn variant_026_vt_03_valid_insert_syntax()

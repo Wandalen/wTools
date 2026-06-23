@@ -11,9 +11,9 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| PT-1 | Layer 1 data types are public | ⏳ |
-| PT-2 | Layer 2 builders produce Layer 1 types | ⏳ |
-| PT-3 | Layer 3 formatters consume Layer 1/2 output | ⏳ |
+| PT-1 | Layer 1 data types are public | ✅ |
+| PT-2 | Layer 2 builders produce Layer 1 types | ✅ |
+| PT-3 | Layer 3 formatters consume Layer 1/2 output | ✅ |
 
 ---
 

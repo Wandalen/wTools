@@ -11,10 +11,10 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| VT-1 | output uses SQLite quoting conventions | ⏳ |
-| VT-2 | valid SQLite INSERT syntax | ⏳ |
-| VT-3 | string values are single-quote escaped | ⏳ |
-| VT-4 | empty table produces no INSERT statements | ⏳ |
+| VT-1 | output uses SQLite quoting conventions | ✅ |
+| VT-2 | valid SQLite INSERT syntax | ✅ |
+| VT-3 | string values are single-quote escaped | ✅ |
+| VT-4 | empty table produces no INSERT statements | ✅ |
 
 ---
 

@@ -175,6 +175,15 @@ impl Format for SqlFormatter
 {
   fn format( &self, data : &TableView ) -> Result< String, FormatError >
   {
+    // Fix(BUG-020): return empty string when no data rows exist.
+    // Root cause: the code always emitted `VALUES` + `;` even with zero rows,
+    // producing `INSERT INTO "t" ("c") VALUES;` — invalid SQL in all dialects.
+    // Pitfall: guard on rows, not columns — a headers-only table has nothing to insert.
+    if data.rows.is_empty()
+    {
+      return Ok( String::new() );
+    }
+
     let mut output = String::new();
 
     // INSERT INTO table_name
