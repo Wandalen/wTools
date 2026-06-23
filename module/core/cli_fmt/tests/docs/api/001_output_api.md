@@ -49,6 +49,12 @@
 - **When:** `has_processing()` called on each
 - **Then:** both return `true` — tail and width configurations activate processing state just as head does
 
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| `../../../docs/api/001_output_api.md` | Authoritative API contract for this spec |
+
 ### Sources
 
 | File | Relationship |
@@ -60,9 +66,3 @@
 | File | Relationship |
 |------|-------------|
 | `../../../tests/output.rs` | AP-1: `select_streams_both_empty`; AP-2: `output_config_default_is_no_processing`, `output_config_with_head_has_processing`; AP-3: `select_streams_stdout_only`, `select_streams_stderr_only`, `select_streams_both`; AP-4: `combined_head_and_width`; AP-5: `merge_streams_ordering`; AP-6: `output_config_new_matches_default`; AP-7: `output_config_with_tail_has_processing`, `output_config_with_width_has_processing` |
-
-### APIs
-
-| File | Relationship |
-|------|-------------|
-| `../../../docs/api/001_output_api.md` | Authoritative API contract for this spec |

@@ -120,6 +120,7 @@ fn output_config_with_width_has_processing()
 // StreamFilter / stream selection tests
 // ============================================================================
 
+// test_kind: bug_reproducer(BUG-006)
 #[ test ]
 fn select_streams_both()
 {
@@ -433,6 +434,29 @@ fn combined_streams_head_width()
   assert_eq!( lines.len(), 3 ); // head = 3
 }
 
+/// ## Critical Bug Fix: Stderr Stream Ordering (BUG-006)
+///
+/// # Root Cause
+/// `merge_streams` concatenated stdout before stderr, following alphabetical
+/// parameter order rather than CLI convention (errors visible first).
+///
+/// # Why Not Caught
+/// No test asserted the relative order of stderr vs stdout in merged output.
+/// Existing tests checked content presence but not stream position.
+///
+/// # Fix Applied
+/// Reversed concatenation order in `merge_streams` `Both` arm — stderr is
+/// now appended first, stdout second.
+///
+/// # Prevention
+/// Any function merging stdout and stderr must place stderr before stdout.
+/// Add ordering assertions, not just content-presence checks.
+///
+/// # Pitfall
+/// Stream ordering is easy to overlook in tests. Always assert not just
+/// "is content present" but "is content in correct order".
+// BUG-006 task/bug/closed/006_stderr_stream_ordering.md — stdout was placed before stderr
+// test_kind: bug_reproducer(BUG-006)
 #[ test ]
 fn merge_streams_ordering()
 {

@@ -175,6 +175,12 @@
 - **When:** `CliHelpTemplate::new(style, data).render()`
 - **Then:** the position of `"Arguments:"` in the output string is less than the position of the first group header — Arguments section renders between the `Commands:` label and the first command group
 
+### Features
+
+| File | Relationship |
+|------|-------------|
+| `../../../docs/feature/002_cli_help_template.md` | Authoritative behavioral requirements for this spec |
+
 ### Sources
 
 | File | Relationship |
@@ -187,9 +193,3 @@
 |------|-------------|
 | `../../../tests/help.rs` | FT-1: `test_column_alignment`; FT-2: `test_no_ansi_codes`, `test_explicit_tty_detect_false`; FT-3: `test_no_options_section`, `test_no_examples_section`; FT-4: `test_example_desc_rendered`; FT-5: `test_name_not_truncated`; FT-6: `test_style_color_defaults`; FT-7: `test_empty_groups`; FT-8: `test_opt_name_not_truncated`; FT-9: `test_single_group_binary_name`; FT-10: `test_tty_detect_true_suppresses_ansi_in_non_tty`; FT-11: `test_no_data_fmt_dependency`; FT-12/FT-13: `test_usage_lines` (T-A01); FT-14/FT-15: `test_arguments_section` (T-A02); FT-16: `test_option_groups_render` (T-A03); FT-17: `test_option_groups_empty_backward_compat` (T-A04); FT-18: `test_option_groups_suppresses_options` (T-A05); FT-19: `test_option_groups_independent_padding` (T-A06); FT-20: `test_cli_help_data_default` (T-A07); T-A08: compile_fail doctest in `src/help.rs`; T-A09: `test_examples_compile` (construction pattern under `#[non_exhaustive]`); FT-21: `test_multiple_usage_lines` (T-B01); FT-22: `test_arguments_multi_entry_padding` (T-B02); FT-23: `test_command_group_empty_entries` (T-B03); FT-24: `test_render_empty_data_infallible` (T-B04); FT-25: `test_example_empty_desc_some_renders_marker` (T-B05); FT-26: `test_option_group_empty_entries_skipped` (T-B06); FT-27: `test_empty_option_group_suppresses_legacy_options` (T-B07); FT-28: `test_arguments_before_groups_in_output` (T-B08) |
 | `../../../examples/basic_usage.rs` | T-A09: `cargo test --examples` compiles and runs the example using `CliHelpData::default()` + field assignment |
-
-### Features
-
-| File | Relationship |
-|------|-------------|
-| `../../../docs/feature/002_cli_help_template.md` | Authoritative behavioral requirements for this spec |

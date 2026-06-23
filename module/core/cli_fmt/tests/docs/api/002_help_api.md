@@ -55,6 +55,12 @@
 - **When:** each field is inspected
 - **Then:** `usage_lines.is_empty()`; `arguments.is_empty()`; `option_groups.is_empty()`; `groups.is_empty()`; `options.is_empty()`; `examples.is_empty()`; `binary` is an empty string; `tagline` is an empty string; no panic
 
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| `../../../docs/api/002_help_api.md` | Authoritative API contract for this spec |
+
 ### Sources
 
 | File | Relationship |
@@ -67,9 +73,3 @@
 |------|-------------|
 | `../../../tests/help.rs` | AP-1: `test_single_group_binary_name`; AP-2: `test_style_default_fields`; AP-3: `test_name_not_truncated`; AP-4: `test_no_options_section`, `test_no_examples_section`; AP-5: `test_example_desc_rendered`; AP-6: `test_style_color_defaults`; AP-7: `test_option_groups_render` (T-A03); AP-8: `test_cli_help_data_default` (T-A07) |
 | `../../../src/help.rs` | AC-10 (compile_fail doctest — T-A08): exhaustive external `CliHelpData` literal rejected by `#[non_exhaustive]` |
-
-### APIs
-
-| File | Relationship |
-|------|-------------|
-| `../../../docs/api/002_help_api.md` | Authoritative API contract for this spec |

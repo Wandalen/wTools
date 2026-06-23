@@ -9,7 +9,7 @@
 
 ### Overview Table
 
-| Name | Purpose | Status |
-|------|---------|--------|
-| `001_output_api.md` | API test spec for Output API | ✅ |
-| `002_help_api.md` | API test spec for Help Template API | ✅ |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Output API](001_output_api.md) | API test spec for Output API | ✅ |
+| 002 | [Help Template API](002_help_api.md) | API test spec for Help Template API | ✅ |

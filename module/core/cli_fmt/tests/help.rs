@@ -270,6 +270,8 @@ fn test_style_default_fields()
 /// # Pitfall
 /// Forgetting to test `Some` paths on `Option` fields in renderers leads to
 /// documented-but-broken API contracts that only surface during manual testing.
+// BUG-007 task/bug/closed/007_example_desc_silent_drop.md — desc field ignored in emit_examples
+// test_kind: bug_reproducer(BUG-007)
 #[ test ]
 fn test_example_desc_rendered()
 {

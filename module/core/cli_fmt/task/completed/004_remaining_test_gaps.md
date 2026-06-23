@@ -116,6 +116,10 @@ Desired answer for every question is YES.
 - [x] I1 — full test suite: `w3 .test level::3` → 0 failures
 - [x] I2 — compiler clean: `RUSTFLAGS="-D warnings" cargo check --all-features` → 0 warnings
 
+## Outcomes
+
+4 new test functions added: is_default_tail, is_default_width (output.rs); test_tty_detect_true_suppresses_ansi_in_non_tty, test_no_data_fmt_dependency (help.rs). FT-24/FT-25 spec markers updated. FT-10/FT-11 mapped to test function names. feature/readme.md Status set to done. Level 3 PASS: 58/58 nextest, 4 doc, 0 clippy. Zero remaining ⏳ markers in cli_fmt spec files.
+
 ## Related Documentation
 
 - `tests/docs/feature/001_output_processing.md` — output feature test spec; FT-24 and FT-25 are the ⏳ gaps

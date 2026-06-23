@@ -19,6 +19,12 @@
 - **When:** source is searched for CLI-policy symbols from both modules: output-module (`StreamFilter`, `OutputConfig`, `ProcessedOutput`, `process_output`) and help-module (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, `OptionGroup`, `CommandGroup`, `CommandEntry`, `OptionEntry`, `ExampleEntry`)
 - **Then:** no such symbols are defined in `strs_tools` — they exist exclusively in `cli_fmt`
 
+### Invariants
+
+| File | Relationship |
+|------|-------------|
+| `../../../docs/invariant/001_architectural_boundary.md` | Authoritative invariant statement for this spec |
+
 ### Sources
 
 | File | Relationship |
@@ -33,9 +39,3 @@
 |------|-------------|
 | `../../../tests/output.rs` | Compilation + test success confirms CLI-specific output types (`StreamFilter`, `OutputConfig`, `ProcessedOutput`) remain in `cli_fmt`, not `strs_tools` |
 | `../../../tests/help.rs` | Compilation + test success confirms CLI-specific help types (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, etc.) remain in `cli_fmt`, not `strs_tools` or `data_fmt` |
-
-### Invariants
-
-| File | Relationship |
-|------|-------------|
-| `../../../docs/invariant/001_architectural_boundary.md` | Authoritative invariant statement for this spec |

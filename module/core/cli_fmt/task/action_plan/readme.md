@@ -6,4 +6,4 @@ Per-actor action plans for the cli_fmt task system.
 
 | Order | Actor | Format | Last Updated |
 |-------|-------|--------|--------------|
-| 1 | dev | 4-table | 2026-05-17 |
+| 1 | dev | 4-table | 2026-06-23 |

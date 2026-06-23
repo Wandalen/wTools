@@ -4,9 +4,9 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Master index for all API doc instances in this crate. | [api/readme.md](api/readme.md) | 2 |
-| `feature/` | Master index for all feature doc instances in this crate. | [feature/readme.md](feature/readme.md) | 2 |
-| `invariant/` | Master index for all invariant doc instances in this crate. | [invariant/readme.md](invariant/readme.md) | 1 |
+| `api/` | Public interface contracts — types, functions, and processing entry points. | [api/readme.md](api/readme.md) | 2 |
+| `feature/` | Behavioral capabilities — what the crate does and why. | [feature/readme.md](feature/readme.md) | 2 |
+| `invariant/` | Architectural contracts that must always hold. | [invariant/readme.md](invariant/readme.md) | 1 |
 | `tests/docs/api/` | Test specs for API doc instances. | [tests/docs/api/readme.md](../tests/docs/api/readme.md) | 2 |
 | `tests/docs/feature/` | Test specs for feature doc instances. | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 2 |
 | `tests/docs/invariant/` | Test specs for invariant doc instances. | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 1 |

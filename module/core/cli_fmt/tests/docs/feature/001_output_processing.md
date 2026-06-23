@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the behavioral requirements documented in `docs/feature/001_output_processing.md`.
 - **Responsibility**: Test spec for stream ordering, head/tail line filtering, width truncation, width=0 disable, truncation suffix, ANSI width exclusion, StreamFilter variants, and lines_omitted accuracy.
-- **In Scope**: Stream Both ordering (FT-1), head() direct (FT-2), well-below-width non-truncation (FT-3), ANSI width exclusion (FT-4), tail via process_output (FT-5), head+tail union (FT-6), truncation suffix (FT-7), width=0 disable (FT-8), Stdout-only filter (FT-9), Stderr-only filter (FT-10), exact-width boundary (FT-11), process_output lines_omitted accuracy (FT-12), unicode_aware=true code path (FT-13), stderr trailing-newline no double-newline (FT-14), head(0) empty boundary (FT-15), tail(0) empty boundary (FT-16), width=1 extreme boundary (FT-17), is_default() stream_filter/suffix/unicode_aware discriminants (FT-18), head+tail overlap shows all (FT-19), Both mode empty-stdout (FT-20), Both mode empty-stderr (FT-21), head exceeds total (FT-22), ANSI preserved during truncation (FT-23), is_default() tail discriminant (FT-24), is_default() width discriminant (FT-25), head exact total (FT-26), head on empty input (FT-27), tail exceeds total (FT-28), tail exact total (FT-29), tail on empty input (FT-30), head+tail sum equals total (FT-31), custom suffix in output (FT-32), combined streams+head+width (FT-33), both-streams both trailing-newline no double-newline (FT-34), stdout trailing-newline with stderr no trailing-newline separator (FT-35).
+- **In Scope**: Stream Both ordering (FT-1), head() direct (FT-2), well-below-width non-truncation (FT-3), ANSI width exclusion (FT-4), tail via process_output (FT-5), head+tail union (FT-6), truncation suffix (FT-7), width=0 disable (FT-8), Stdout-only filter (FT-9), Stderr-only filter (FT-10), exact-width boundary (FT-11), process_output lines_omitted accuracy (FT-12), unicode_aware=true code path (FT-13), stderr trailing-newline no double-newline (FT-14), head(0) empty boundary (FT-15), tail(0) empty boundary (FT-16), width=1 extreme boundary (FT-17), is_default() stream_filter/suffix/unicode_aware discriminants (FT-18), head+tail overlap shows all (FT-19), Both mode empty-stdout (FT-20), Both mode empty-stderr (FT-21), head exceeds total (FT-22), ANSI preserved during truncation (FT-23), is_default() tail discriminant (FT-24), is_default() width discriminant (FT-25), head exact total (FT-26), head on empty input (FT-27), tail exceeds total (FT-28), tail exact total (FT-29), tail on empty input (FT-30), head+tail sum equals total (FT-31), custom suffix in output (FT-32), combined streams+head+width (FT-33), both-streams both trailing-newline no double-newline (FT-34), stdout trailing-newline with stderr no trailing-newline separator (FT-35), CJK double-width character truncation (FT-36), head(0)+tail(N) combined window (FT-37), head(N)+tail(0) combined window (FT-38), width=1 with ANSI-colored input (FT-39), mixed truncation across lines (FT-40).
 - **Out of Scope**: strs_tools internals; architectural boundary enforcement — see `tests/docs/invariant/001_architectural_boundary.md`.
 
 ### FT-1: Stderr precedes stdout in Both mode
@@ -217,6 +217,12 @@
 - **When:** `merge_streams("out\n", "err", &StreamFilter::Both)`
 - **Then:** result equals `"err\nout\n"` — exactly one `'\n'` added between streams; no content lost
 
+### Features
+
+| File | Relationship |
+|------|-------------|
+| `../../../docs/feature/001_output_processing.md` | Authoritative behavioral requirements for this spec |
+
 ### Sources
 
 | File | Relationship |
@@ -228,9 +234,3 @@
 | File | Relationship |
 |------|-------------|
 | `../../../tests/output.rs` | FT-1: `select_streams_both`, `merge_streams_ordering`; FT-2: `head_basic`; FT-3: `width_no_truncation_needed`; FT-4: `ansi_preserved_when_no_truncation`; FT-5: `combined_tail_and_width`; FT-6: `head_tail_combined_no_overlap`; FT-7: `width_truncation_with_arrow`; FT-8: `width_zero_disables`; FT-9: `select_streams_stdout_only`; FT-10: `select_streams_stderr_only`; FT-11: `width_exact_boundary`; FT-12: `process_output_head_lines_omitted`; FT-13: `unicode_aware_truncation`; FT-14: `merge_streams_stderr_trailing_newline`; FT-15: `head_zero_produces_empty`; FT-16: `tail_zero_produces_empty`; FT-17: `width_one_truncates`; FT-18: `is_default_stream_filter`, `is_default_width_suffix`, `is_default_unicode_aware`; FT-19: `head_tail_overlap_shows_all`; FT-20: `select_streams_empty_stdout`; FT-21: `select_streams_empty_stderr`; FT-22: `head_exceeds_total`; FT-23: `ansi_preserved_with_truncation`; FT-24: `is_default_tail`; FT-25: `is_default_width`; FT-26: `head_exact`; FT-27: `head_empty`; FT-28: `tail_exceeds_total`; FT-29: `tail_exact`; FT-30: `tail_empty`; FT-31: `head_tail_exact_fit`; FT-32: `width_custom_suffix`; FT-33: `combined_streams_head_width`; FT-34: `merge_streams_both_trailing_newlines_no_double_newline`; FT-35: `merge_streams_stdout_trailing_newline_separator` |
-
-### Features
-
-| File | Relationship |
-|------|-------------|
-| `../../../docs/feature/001_output_processing.md` | Authoritative behavioral requirements for this spec |

@@ -9,6 +9,6 @@
 
 ### Overview Table
 
-| Name | Purpose | Status |
-|------|---------|--------|
-| `001_architectural_boundary.md` | Invariant test spec for Architectural Boundary | ✅ |
+| ID | Name | Purpose | Status |
+|----|------|---------|--------|
+| 001 | [Architectural Boundary](001_architectural_boundary.md) | Invariant test spec for Architectural Boundary | ✅ |
