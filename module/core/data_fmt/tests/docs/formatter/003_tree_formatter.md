@@ -11,11 +11,11 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-9 | hierarchical render produces tree with box-drawing connectors | ⏳ |
-| FM-10 | aligned render produces column-aligned output | ⏳ |
-| FM-11 | ColumnData leaves render with alignment padding | ⏳ |
-| FM-12 | empty tree produces minimal or empty output | ⏳ |
-| FM-13 | nested children increase indentation depth | ⏳ |
+| FM-9 | hierarchical render produces tree with box-drawing connectors | ✅ |
+| FM-10 | aligned render produces column-aligned output | ✅ |
+| FM-11 | ColumnData leaves render with alignment padding | ✅ |
+| FM-12 | empty tree produces minimal or empty output | ✅ |
+| FM-13 | nested children increase indentation depth | ✅ |
 
 ---
 

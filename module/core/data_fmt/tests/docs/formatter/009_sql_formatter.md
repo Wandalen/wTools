@@ -11,14 +11,14 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-39 | ansi variant produces double-quoted identifiers | ⏳ |
-| FM-40 | mysql variant produces backtick-quoted identifiers | ⏳ |
-| FM-41 | postgresql variant produces double-quoted identifiers | ⏳ |
-| FM-42 | sqlite variant produces double-quoted identifiers | ⏳ |
-| FM-43 | custom table name appears in INSERT statement | ⏳ |
-| FM-44 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-45 | empty data produces no INSERT statements | ⏳ |
-| FM-46 | values with single quotes are escaped | ⏳ |
+| FM-39 | ansi variant produces double-quoted identifiers | ✅ |
+| FM-40 | mysql variant produces backtick-quoted identifiers | ✅ |
+| FM-41 | postgresql variant produces double-quoted identifiers | ✅ |
+| FM-42 | sqlite variant produces double-quoted identifiers | ✅ |
+| FM-43 | custom table name appears in INSERT statement | ✅ |
+| FM-44 | Format trait dispatch returns well-formed string | ✅ |
+| FM-45 | empty data produces no INSERT statements | ✅ |
+| FM-46 | values with single quotes are escaped | ✅ |
 
 ---
 

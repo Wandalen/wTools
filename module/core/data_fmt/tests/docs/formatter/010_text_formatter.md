@@ -11,14 +11,14 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-47 | bullets variant produces bullet-prefixed lines | ⏳ |
-| FM-48 | numbered variant produces numbered lines | ⏳ |
-| FM-49 | sections variant produces section-headed blocks | ⏳ |
-| FM-50 | keyvalue variant produces key-value pair lines | ⏳ |
-| FM-51 | compact variant produces minimal whitespace output | ⏳ |
-| FM-52 | cli_help variant produces CLI help formatted output | ⏳ |
-| FM-53 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-54 | empty data produces minimal or empty output | ⏳ |
+| FM-47 | bullets variant produces bullet-prefixed lines | ✅ |
+| FM-48 | numbered variant produces numbered lines | ✅ |
+| FM-49 | sections variant produces section-headed blocks | ✅ |
+| FM-50 | keyvalue variant produces key-value pair lines | ✅ |
+| FM-51 | compact variant produces minimal whitespace output | ✅ |
+| FM-52 | cli_help variant produces CLI help formatted output | ✅ |
+| FM-53 | Format trait dispatch returns well-formed string | ✅ |
+| FM-54 | empty data produces minimal or empty output | ✅ |
 
 ---
 

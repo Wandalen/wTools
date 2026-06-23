@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Drive test coverage for the table heading feature.
-- **Responsibility**: Documents test cases for `Heading` and `TableConfig::with_heading()` as specified in `docs/feature/007_table_caption.md`.
+- **Responsibility**: Documents test cases for `Heading` and `TableConfig::with_heading()` as specified in `docs/feature/007_table_heading.md`.
 - **In Scope**: Heading rendering with title only, heading fields, table-width filling, width-ceiling clamping, no-heading regression, style interaction, title-exceeds-width edge case, empty-title edge case.
 - **Out of Scope**: Auto-fit width algorithm (see `feature/005`); ANSI coloring (see `feature/004`); cell rendering (see `feature/001`).
 
@@ -43,7 +43,7 @@
 
 - **Given:** A `TableConfig::plain()` with `.with_heading(Heading::new("T").with_field("F"))` applied to a table whose rendered display width is known (e.g., two columns with plain style — compute the actual `table_width` via `compute_total_row_width(primary_widths)`).
 - **When:** The table is formatted.
-- **Then:** The first output line (the caption line) has exactly `table_width` display columns, i.e., `line.chars().count() == table_width` — use `.chars().count()`, not `.len()`, since the rule character `─` (U+2500) is 3 UTF-8 bytes.
+- **Then:** The first output line (the heading line) has exactly `table_width` display columns, i.e., `line.chars().count() == table_width` — use `.chars().count()`, not `.len()`, since the rule character `─` (U+2500) is 3 UTF-8 bytes.
 - **Note:** The `terminal_width` setting does not control heading line width; it only affects the auto-fit column budget. Heading fills to actual rendered table width.
 
 ---
@@ -55,8 +55,8 @@
 - **Then:** No trailing rule characters are appended; the heading line is exactly the
   content string with no additional `─` chars; the total line visual width equals `table_width`;
   the content is not truncated; no panic occurs.
-- **Note:** Enforces the Width Ceiling invariant from `docs/invariant/005_caption.md`
-  (Invariant 2) and the Clamp-at-zero property from `docs/algorithm/007_caption_rendering.md`.
+- **Note:** Enforces the Width Ceiling invariant from `docs/invariant/005_heading.md`
+  (Invariant 2) and the Clamp-at-zero property from `docs/algorithm/007_heading_rendering.md`.
   `trail_width = saturating_sub(table_width, content_len)` — when `content_len == table_width`,
   `trail_width` is 0 and the trailing rule loop produces no output.
 
@@ -120,12 +120,12 @@
 
 | File | Relationship |
 |------|-------------|
-| [`docs/feature/007_table_caption.md`](../../../docs/feature/007_table_caption.md) | Source feature spec — Heading builder, rendering contract, style interaction |
+| [`docs/feature/007_table_heading.md`](../../../docs/feature/007_table_heading.md) | Source feature spec — Heading builder, rendering contract, style interaction |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
-| [`tests/table_caption_test.rs`](../../table_caption_test.rs) | Heading rendering test implementation (FT-1..FT-8) |
+| [`tests/table_heading_test.rs`](../../table_heading_test.rs) | Heading rendering test implementation (FT-1..FT-8) |
 | `examples/heading_basic.rs` | Heading example binary (FT-9) |
 | `examples/heading_styles.rs` | Heading multi-style example binary (FT-9) |

@@ -13,7 +13,7 @@
 |------|-------------|
 | [`src/config/table_config.rs`](../../src/config/table_config.rs) | `TableConfig` struct, presets, and all builder setters |
 | [`src/config/table_enums.rs`](../../src/config/table_enums.rs) | `BorderVariant`, `HeaderSeparatorVariant`, `ColumnSeparator`, `ColumnFlex`, `FoldStyle` |
-| [`src/config/table_caption.rs`](../../src/config/table_caption.rs) | `Heading` struct and builder |
+| [`src/config/table_heading.rs`](../../src/config/table_heading.rs) | `Heading` struct and builder |
 | [`src/config/expanded_config.rs`](../../src/config/expanded_config.rs) | `ExpandedConfig` struct and builder setters |
 | [`src/config/tree_config.rs`](../../src/config/tree_config.rs) | `TreeConfig` struct and builder setters |
 | [`src/config/mod.rs`](../../src/config/mod.rs) | Public re-exports for all config types |
@@ -56,7 +56,7 @@ Controls how overflow columns are formatted in continuation lines. `Labeled` (de
 
 #### Heading
 
-Builder type for the titled-rule line rendered above a table. Two fields: `title` (primary label text) and `fields` (zero or more metadata strings appended with the field separator). Construct with `Heading::new(title: impl Into<String>)` and chain zero or more `.with_field(f: impl Into<String>)` calls to append heading fields. The resulting value is attached to `TableConfig` via `.with_heading(Heading::new("..."))`. The heading renders as `─── Title · Field1 · Field2 ─────` filling the rendered table width. Three formatting constants are publicly exported: `CAPTION_FIELD_SEP` (`·`, U+00B7), `CAPTION_RULE_CHAR` (`─`, U+2500), and `CAPTION_LEAD_WIDTH` (`3`). When no heading is set (the default `None`), table output is byte-identical to the pre-heading baseline.
+Builder type for the titled-rule line rendered above a table. Two fields: `title` (primary label text) and `fields` (zero or more metadata strings appended with the field separator). Construct with `Heading::new(title: impl Into<String>)` and chain zero or more `.with_field(f: impl Into<String>)` calls to append heading fields. The resulting value is attached to `TableConfig` via `.with_heading(Heading::new("..."))`. The heading renders as `─── Title · Field1 · Field2 ─────` filling the rendered table width. Three formatting constants are publicly exported: `HEADING_FIELD_SEP` (`·`, U+00B7), `HEADING_RULE_CHAR` (`─`, U+2500), and `HEADING_LEAD_WIDTH` (`3`). When no heading is set (the default `None`), table output is byte-identical to the pre-heading baseline.
 
 #### TableConfig
 

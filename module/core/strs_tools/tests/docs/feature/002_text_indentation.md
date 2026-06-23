@@ -5,8 +5,8 @@
 | ID | Short Name | Category | Status |
 |----|-----------|----------|--------|
 | FT-1 | Multi-line prefix | Happy path | ✅ |
-| FT-2 | Empty source string | Boundary | ⏳ |
-| FT-3 | Source with only newlines | Boundary | ⏳ |
+| FT-2 | Empty source string | Boundary | ✅ |
+| FT-3 | Source with only newlines | Boundary | ✅ |
 | FT-4 | Prefix and postfix applied | Happy path | ✅ |
 
 ## Cases
@@ -22,12 +22,14 @@
 - **Given:** Empty string `""`
 - **When:** Indentation with prefix `">"` is applied
 - **Then:** Returns empty string or single prefixed empty line
+- **Test:** `tests/inc/indentation_test.rs` — `basic` case "empty string"
 
 ### FT-3: Source with only newlines
 
 - **Given:** Input `"\n\n\n"` with prefix `"| "`
 - **When:** Indentation is applied
 - **Then:** Each line receives the prefix identically
+- **Test:** `tests/inc/indentation_test.rs` — `basic` cases "first empty", "last empty", "two empty string"
 
 ### FT-4: Prefix and postfix applied
 

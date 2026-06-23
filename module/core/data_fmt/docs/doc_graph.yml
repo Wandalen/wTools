@@ -32,8 +32,8 @@ nodes:
     label: CLI Help Alignment
     entity: algorithm
   - id: algorithm/007
-    file: algorithm/007_caption_rendering.md
-    label: Caption Rendering
+    file: algorithm/007_heading_rendering.md
+    label: Heading Rendering
     entity: algorithm
 
   # api (4)
@@ -96,8 +96,8 @@ nodes:
     label: API Cleanup v0.3.0
     entity: feature
   - id: feature/007
-    file: feature/007_table_caption.md
-    label: Table Caption
+    file: feature/007_table_heading.md
+    label: Table Heading
     entity: feature
 
   # formatter (10)
@@ -180,8 +180,8 @@ nodes:
     label: Column Fold Invariants
     entity: invariant
   - id: invariant/005
-    file: invariant/005_caption.md
-    label: Caption Rendering
+    file: invariant/005_heading.md
+    label: Heading Rendering
     entity: invariant
 
   # pattern (4)

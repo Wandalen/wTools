@@ -3,7 +3,7 @@
 ### Scope
 
 - **Purpose**: Drive test coverage for the heading rendering invariants.
-- **Responsibility**: Documents test cases for the three heading invariants (no-heading passthrough, width ceiling, single-line output) in `docs/invariant/005_caption.md`.
+- **Responsibility**: Documents test cases for the three heading invariants (no-heading passthrough, width ceiling, single-line output) in `docs/invariant/005_heading.md`.
 - **In Scope**: Absent heading behavior, table width ceiling enforcement, single output line guarantee.
 - **Out of Scope**: Heading content format (see `feature/007`), rendering algorithm steps (see `algorithm/007`).
 
@@ -22,7 +22,7 @@
 - **Given:** Two table formatters using `TableConfig::plain()`, neither with a heading attached; both receive the same table data.
 - **When:** Both formatters produce their output strings.
 - **Then:** The two output strings are byte-identical; neither string begins with a rule character (`─`); no heading path executes.
-- **Note:** Covered by FC-5 (`no_caption_output_unchanged_fc5`) in `tests/table_caption_test.rs`.
+- **Note:** Covered by FC-5 (`no_caption_output_unchanged_fc5`) in `tests/table_heading_test.rs`.
 
 ---
 
@@ -48,10 +48,10 @@
 
 | File | Relationship |
 |------|-------------|
-| [`docs/invariant/005_caption.md`](../../../docs/invariant/005_caption.md) | Source invariant spec — no-heading passthrough, width ceiling, single-line output |
+| [`docs/invariant/005_heading.md`](../../../docs/invariant/005_heading.md) | Source invariant spec — no-heading passthrough, width ceiling, single-line output |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
-| [`tests/table_caption_test.rs`](../../table_caption_test.rs) | Heading invariant test implementation (FC-1, FC-3, FC-4, FC-5, FC-6, FT-4, FT-7, FT-8, heading_line_never_exceeds_table_width_in2) |
+| [`tests/table_heading_test.rs`](../../table_heading_test.rs) | Heading invariant test implementation (FC-1, FC-3, FC-4, FC-5, FC-6, FT-4, FT-7, FT-8, heading_line_never_exceeds_table_width_in2) |

@@ -11,12 +11,12 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| TR-1 | format method returns Ok on valid input | ⏳ |
-| TR-2 | FormatError::InvalidData carries message | ⏳ |
-| TR-3 | FormatError::Serialization cfg-gated construction | ⏳ |
-| TR-4 | format dispatches through trait object | ⏳ |
-| TR-5 | FormatError::UnsupportedOperation carries message | ⏳ |
-| TR-6 | format on empty table returns Ok | ⏳ |
+| TR-1 | format method returns Ok on valid input | ✅ |
+| TR-2 | FormatError::InvalidData carries message | ✅ |
+| TR-3 | FormatError::Serialization cfg-gated construction | ✅ |
+| TR-4 | format dispatches through trait object | ✅ |
+| TR-5 | FormatError::UnsupportedOperation carries message | ✅ |
+| TR-6 | format on empty table returns Ok | ✅ |
 
 ---
 

@@ -11,11 +11,11 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-5 | postgres style renders record header and fields | ⏳ |
-| FM-6 | property style renders dotted key-value lines | ⏳ |
-| FM-7 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-8 | empty data produces no records | ⏳ |
-| FM-9 | multi-row input produces numbered record separators | ⏳ |
+| FM-5 | postgres style renders record header and fields | ✅ |
+| FM-6 | property style renders dotted key-value lines | ✅ |
+| FM-7 | Format trait dispatch returns well-formed string | ✅ |
+| FM-8 | empty data produces no records | ✅ |
+| FM-9 | multi-row input produces numbered record separators | ✅ |
 
 ---
 

@@ -11,14 +11,14 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| BL-9 | basic single-leaf tree | ⏳ |
-| BL-10 | nested children via multi-segment path | ⏳ |
-| BL-11 | intermediate nodes created automatically | ⏳ |
-| BL-12 | batch construction via from_items | ⏳ |
-| BL-13 | empty path components are filtered out | ⏳ |
-| BL-14 | single-element path creates direct child | ⏳ |
-| BL-15 | multiple siblings under same parent | ⏳ |
-| BL-16 | batch equivalence with manual inserts | ⏳ |
+| BL-9 | basic single-leaf tree | ✅ |
+| BL-10 | nested children via multi-segment path | ✅ |
+| BL-11 | intermediate nodes created automatically | ✅ |
+| BL-12 | batch construction via from_items | ✅ |
+| BL-13 | empty path components are filtered out | ✅ |
+| BL-14 | single-element path creates direct child | ✅ |
+| BL-15 | multiple siblings under same parent | ✅ |
+| BL-16 | batch equivalence with manual inserts | ✅ |
 
 ---
 

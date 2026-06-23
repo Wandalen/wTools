@@ -47,3 +47,45 @@ fn basic()
   }
 
 }
+
+/// Integer parsing via the generic parse function.
+#[ test ]
+fn integer_basic()
+{
+  let result = crate::the_module::string::number::parse::< i32, _ >( "42" );
+  assert_eq!( result, Ok( 42i32 ), "basic integer parse failed" );
+}
+
+/// Scientific notation parsed as f64.
+#[ test ]
+fn scientific_notation()
+{
+  let result = crate::the_module::string::number::parse::< f64, _ >( "1.5e10" );
+  assert_eq!( result, Ok( 1.5e10f64 ), "scientific notation parse failed" );
+}
+
+/// Non-numeric input returns an error.
+#[ test ]
+fn invalid_input()
+{
+  let result = crate::the_module::string::number::parse::< i32, _ >( "not_a_number" );
+  assert!( result.is_err(), "expected Err for non-numeric input, got {:?}", result );
+}
+
+/// Overflowing integer returns an error.
+#[ test ]
+fn overflow_i32()
+{
+  let result = crate::the_module::string::number::parse::< i32, _ >( "99999999999999999999" );
+  assert!( result.is_err(), "expected Err for overflow, got {:?}", result );
+}
+
+/// f64 boundary value at MAX parses successfully.
+#[ test ]
+fn f64_boundary()
+{
+  let result = crate::the_module::string::number::parse::< f64, _ >( "1.7976931348623157e+308" );
+  assert!( result.is_ok(), "f64::MAX should parse, got {:?}", result );
+  let val = result.unwrap();
+  assert!( ( val - f64::MAX ).abs() < 1e292, "parsed value should be close to f64::MAX" );
+}

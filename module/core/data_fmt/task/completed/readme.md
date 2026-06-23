@@ -18,4 +18,6 @@ Archive of completed tasks for data_fmt.
 | `008_fix_caption_width.md` | Fix caption trailing rule to fill rendered table width instead of terminal width |
 | `009_api_consistency_with_prefix.md` | Add with_ prefix to 39 builder setters and rename TableCaption to Heading |
 | `010_heading_examples.md` | Add heading_basic and heading_styles example binaries |
+| `011_format_aligned_display_width_mismatch.md` | Fix format_aligned to use display-width-aware functions for emoji/CJK alignment |
 | `012_create_test_surface_specs.md` | Create 43 test surface specs for 6 uncovered entity types |
+| `013_implement_builder_formatter_trait_tests.md` | Implement 88 test functions for builder, formatter, and trait spec cases |

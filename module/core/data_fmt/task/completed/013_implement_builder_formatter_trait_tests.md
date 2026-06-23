@@ -109,22 +109,22 @@ Note: FM-N IDs overlap across specs 001-005 (each spec was authored independentl
 Desired answer for every question is YES.
 
 **Completeness**
-- [ ] Does each of the 88 spec cases have a corresponding test function?
-- [ ] Do all 14 spec files show `✅` for every case in their Case Index?
-- [ ] Does `cargo nextest run --all-features` pass?
+- [x] Does each of the 88 spec cases have a corresponding test function?
+- [x] Do all 14 spec files show `✅` for every case in their Case Index?
+- [x] Does `cargo nextest run --all-features` pass?
 
 **Traceability**
-- [ ] Does every new test function contain a `// test_kind: spec_case(XX-N)` marker?
-- [ ] Does the test function name include its case ID?
+- [x] Does every new test function contain a `// test_kind: spec_case(XX-N)` marker?
+- [x] Does the test function name include its case ID?
 
 **No side effects**
-- [ ] Are no files under `src/` modified?
-- [ ] Are no files under `docs/` modified (except `tests/docs/` status updates)?
-- [ ] Are no mocks used anywhere?
+- [x] Are no files under `src/` modified?
+- [x] Are no files under `docs/` modified (except `tests/docs/` status updates)?
+- [x] Are no mocks used anywhere?
 
 **Feature gating**
-- [ ] Are serde-dependent formatter tests gated on `#[cfg(feature = "serde_support")]` or the specific format feature?
-- [ ] Do all tests compile with `--all-features` and fail gracefully without?
+- [x] Are serde-dependent formatter tests gated on `#[cfg(feature = "serde_support")]` or the specific format feature?
+- [x] Do all tests compile with `--all-features` and fail gracefully without?
 
 ### Measurements
 
@@ -146,9 +146,9 @@ Expected: empty.
 
 ### Invariants
 
-- [ ] I1 — spec parity: every `⏳` in the 14 spec files has exactly one test function
-- [ ] I2 — decisions: `task/decisions.md` exists
-- [ ] I3 — no mocks: `grep -r 'mock\|Mock\|#\[mock\]' tests/ | grep -v '// ' | wc -l` returns 0
+- [x] I1 — spec parity: every `⏳` in the 14 spec files has exactly one test function
+- [x] I2 — decisions: `task/decisions.md` exists
+- [x] I3 — no mocks: `grep -r 'mock\|Mock\|#\[mock\]' tests/ | grep -v '// ' | wc -l` returns 0
 
 ### Anti-faking checks
 
@@ -178,7 +178,7 @@ Expected: empty.
 
 ## Execution State
 
-- **State:** 🎯 (Verified)
+- **State:** ✅ (Done)
 - **ID:** 013
 - **Slug:** implement_builder_formatter_trait_tests
 - **Executor:** any
@@ -194,6 +194,7 @@ Expected: empty.
 
 - **[2026-06-23]** `CREATED` — 14 test spec files (builder/2, formatter/10, trait/2) created during docs normalization session define 88 test cases with zero backing Rust code; this task implements all 88.
 - **[2026-06-23]** `SUBMITTED` — MAAV Verification Gate passed (4/4 dimensions).
+- **[2026-06-23]** `DONE` — All 88 tests implemented across 14 test files; Level 3 PASS 722+74+0; M1=88, M2=0, I3=0.
 
 ## Verification Record
 

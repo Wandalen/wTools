@@ -11,7 +11,7 @@
 | IN-1 | ✅ | Split segments borrow from source |
 | IN-2 | ✅ | Isolation slices borrow from source |
 | IN-3 | ⏳ | Stripping breaks zero-copy — returns owned |
-| IN-4 | ⏳ | Number parsing breaks zero-copy — returns numeric value |
+| IN-4 | ✅ | Number parsing breaks zero-copy — returns numeric value |
 
 ### IN-1 — Split segments borrow from source
 
@@ -39,4 +39,4 @@
 - **Given:** A string containing numeric text like `"42"`
 - **When:** Number parsing converts the string to a numeric type
 - **Then:** The returned value is a numeric value, not a string slice — zero-copy invariant intentionally broken
-- **Test:** ⏳
+- **Test:** `tests/inc/number_test.rs` — `integer_basic` (returns `Ok(42i32)`, not a slice)

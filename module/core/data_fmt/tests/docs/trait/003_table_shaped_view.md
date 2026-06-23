@@ -11,12 +11,12 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| TR-7 | extract_headers returns column names from first row | ⏳ |
-| TR-8 | is_table_shaped returns true for uniform structure | ⏳ |
-| TR-9 | to_rows returns cell values as string matrix | ⏳ |
-| TR-10 | trait object dispatch through dyn TableShapedView | ⏳ |
-| TR-11 | extract_headers returns None on empty tree | ⏳ |
-| TR-12 | is_table_shaped returns false on mismatched columns | ⏳ |
+| TR-7 | extract_headers returns column names from first row | ✅ |
+| TR-8 | is_table_shaped returns true for uniform structure | ✅ |
+| TR-9 | to_rows returns cell values as string matrix | ✅ |
+| TR-10 | trait object dispatch through dyn TableShapedView | ✅ |
+| TR-11 | extract_headers returns None on empty tree | ✅ |
+| TR-12 | is_table_shaped returns false on mismatched columns | ✅ |
 
 ---
 

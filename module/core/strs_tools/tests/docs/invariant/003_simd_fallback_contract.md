@@ -8,16 +8,16 @@
 
 | # | Status | Case |
 |---|--------|------|
-| IN-1 | ⏳ | SIMD and scalar produce identical segments |
+| IN-1 | ✅ | SIMD and scalar produce identical segments |
 | IN-2 | ⏳ | SIMD degrades to scalar on unsupported platforms |
-| IN-3 | ⏳ | Byte-for-byte output identity across paths |
+| IN-3 | ✅ | Byte-for-byte output identity across paths |
 
 ### IN-1 — SIMD and scalar produce identical segments
 
 - **Given:** An input string and a delimiter configuration
 - **When:** Split is executed via SIMD path and separately via scalar path
 - **Then:** The segment sequences are identical in count, boundaries, and content
-- **Test:** ⏳
+- **Test:** `tests/simd_tests.rs` — `simd_scalar_equivalence_single_delimiter`, `simd_scalar_equivalence_multi_delimiter`
 
 ### IN-2 — SIMD degrades to scalar on unsupported platforms
 
@@ -31,4 +31,4 @@
 - **Given:** A complex input with mixed delimiters and Unicode content
 - **When:** Segments are collected from both SIMD-enabled and scalar-only builds
 - **Then:** The collected segments are byte-for-byte identical
-- **Test:** ⏳
+- **Test:** `tests/simd_tests.rs` — `simd_scalar_equivalence_multi_delimiter`

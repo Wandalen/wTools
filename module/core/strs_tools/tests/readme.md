@@ -11,6 +11,7 @@ Comprehensive test suite for the strs_tools core crate.
 | `issue_002_example_feature_guards.rs` | Feature guard correctness for the `enabled` feature |
 | `namespace_verification_test.rs` | Namespace pattern verification tests |
 | `parser_integration_comprehensive_test.rs` | Comprehensive parser integration functionality tests |
+| `simd_tests.rs` | SIMD-vs-scalar equivalence and pattern caching tests |
 | `smoke_test.rs` | Basic package smoke tests |
 | `strs_tools_tests.rs` | Main test suite entry point importing all submodules |
 | `inc/` | Test submodules (indentation, isolate, parse, split, etc.) |

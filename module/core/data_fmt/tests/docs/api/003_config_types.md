@@ -7,9 +7,9 @@
   (`TableConfig`, `ExpandedConfig`, `TreeConfig`, `Heading`) and the `with_` prefix convention.
 - **In Scope**: `Heading::new()` constructor, `Heading::with_field()` chain, `TableConfig::with_heading()`
   builder and accessor, `TableConfig::with_border_color()` builder, default-None invariant for heading
-  and border_color across all nine presets, `CAPTION_*` public constants, `with_` prefix convention
+  and border_color across all nine presets, `HEADING_*` public constants, `with_` prefix convention
   on all consuming builder setters across all four config types.
-- **Out of Scope**: Caption rendering behavior (see `feature/007_table_caption.md`); border-color
+- **Out of Scope**: Heading rendering behavior (see `feature/007_table_heading.md`); border-color
   rendering (see `feature/004_color_themes.md`); auto-fit terminal-width API (see `feature/005`).
 
 ### Case Index
@@ -21,7 +21,7 @@
 | AP-3 | TableConfig::with_heading attaches heading; heading_ref retrieves it | ✅ |
 | AP-4 | TableConfig::with_border_color stores color string | ✅ |
 | AP-5 | all nine preset constructors default heading to None | ✅ |
-| AP-6 | CAPTION_FIELD_SEP CAPTION_RULE_CHAR CAPTION_LEAD_WIDTH have expected values | ✅ |
+| AP-6 | HEADING_FIELD_SEP HEADING_RULE_CHAR HEADING_LEAD_WIDTH have expected values | ✅ |
 | AP-7 | all consuming builder setters across four config types use with_ prefix | ✅ |
 | AP-8 | Heading type replaces TableCaption in public re-exports | ✅ |
 
@@ -72,13 +72,13 @@
 
 ---
 
-### AP-6: CAPTION_FIELD_SEP CAPTION_RULE_CHAR CAPTION_LEAD_WIDTH have expected values
+### AP-6: HEADING_FIELD_SEP HEADING_RULE_CHAR HEADING_LEAD_WIDTH have expected values
 
-- **Given:** The public constants `CAPTION_FIELD_SEP`, `CAPTION_RULE_CHAR`, `CAPTION_LEAD_WIDTH`
+- **Given:** The public constants `HEADING_FIELD_SEP`, `HEADING_RULE_CHAR`, `HEADING_LEAD_WIDTH`
   exported from `data_fmt`.
 - **When:** Their values are compared at compile time.
-- **Then:** `CAPTION_FIELD_SEP == '·'` (U+00B7 MIDDLE DOT); `CAPTION_RULE_CHAR == '─'`
-  (U+2500 BOX DRAWINGS LIGHT HORIZONTAL); `CAPTION_LEAD_WIDTH == 3`.
+- **Then:** `HEADING_FIELD_SEP == '·'` (U+00B7 MIDDLE DOT); `HEADING_RULE_CHAR == '─'`
+  (U+2500 BOX DRAWINGS LIGHT HORIZONTAL); `HEADING_LEAD_WIDTH == 3`.
 
 ---
 
@@ -94,7 +94,7 @@
 
 - **Given:** The public API surface of `data_fmt::config` module.
 - **When:** The re-exports in `src/config/mod.rs` are inspected.
-- **Then:** `Heading` is publicly exported; `TableCaption` does not appear anywhere in `src/`; the constants `CAPTION_FIELD_SEP`, `CAPTION_RULE_CHAR`, `CAPTION_LEAD_WIDTH` remain unchanged (they describe formatting, not the type name).
+- **Then:** `Heading` is publicly exported; `TableCaption` does not appear anywhere in `src/`; the constants `HEADING_FIELD_SEP`, `HEADING_RULE_CHAR`, `HEADING_LEAD_WIDTH` remain unchanged (they describe formatting, not the type name).
 
 ---
 
@@ -108,5 +108,5 @@
 
 | File | Relationship |
 |------|-------------|
-| [`tests/table_caption_test.rs`](../../table_caption_test.rs) | Heading rendering tests (see `tests/docs/feature/007_table_caption.md` FT-1..FT-8) |
+| [`tests/table_heading_test.rs`](../../table_heading_test.rs) | Heading rendering tests (see `tests/docs/feature/007_table_heading.md` FT-1..FT-8) |
 | [`tests/table_config_validation_test.rs`](../../table_config_validation_test.rs) | Config builder and preset validation (AP-1..AP-8) |

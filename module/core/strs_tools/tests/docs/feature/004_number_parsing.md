@@ -6,9 +6,9 @@
 |----|-----------|----------|--------|
 | FT-1 | Integer parse | Happy path | ✅ |
 | FT-2 | Float parse | Happy path | ✅ |
-| FT-3 | Scientific notation | Boundary | ⏳ |
-| FT-4 | Invalid input | Error | ⏳ |
-| FT-5 | Integer overflow | Boundary | ⏳ |
+| FT-3 | Scientific notation | Boundary | ✅ |
+| FT-4 | Invalid input | Error | ✅ |
+| FT-5 | Integer overflow | Boundary | ✅ |
 
 ## Cases
 

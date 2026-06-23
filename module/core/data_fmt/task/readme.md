@@ -17,7 +17,6 @@
 | `backlog/` | Candidate tasks not yet prioritized |
 | `cancelled/` | Abandoned tasks with cancellation rationale |
 | `completed/` | Finished tasks with completion evidence |
-| `013_implement_builder_formatter_trait_tests.md` | Implement 88 test functions from builder/formatter/trait specs |
 | `decisions.md` | Decision log for data_fmt |
 
 ## Tasks Index
@@ -34,6 +33,7 @@
 | 8 | 008 | 0 | 8 | 6 | 9 | 0 | ✅ (Completed) | dev | [Fix caption width: fill to rendered table width](completed/008_fix_caption_width.md) | render_caption_if_present must fill to compute_total_row_width(primary_widths), not resolve_terminal_width() |
 | 9 | 009 | 0 | 7 | 5 | 8 | 0 | ✅ (Completed) | dev | [API consistency: with_ prefix sweep + rename Heading](completed/009_api_consistency_with_prefix.md) | add with_ prefix to all 39 config builder setters; rename TableCaption → Heading |
 | 10 | 010 | 0 | 5 | 8 | 9 | 0 | ✅ (Completed) | dev | [Add Heading feature examples](completed/010_heading_examples.md) | add heading_basic.rs and heading_styles.rs example binaries (E criterion) |
-| 11 | 011 | 1458 | 6 | 9 | 9 | 3 | ❓ (Unverified) | any | [format_aligned display width mismatch](unverified/011_format_aligned_display_width_mismatch.md) | format_aligned uses char-count visual_len for pass 1 but display-width pad_to_width for pass 2 — emoji/CJK columns misalign |
+| 11 | 011 | 1458 | 6 | 9 | 9 | 3 | ✅ (Completed) | any | [format_aligned display width mismatch](completed/011_format_aligned_display_width_mismatch.md) | format_aligned uses char-count visual_len for pass 1 but display-width pad_to_width for pass 2 — emoji/CJK columns misalign |
 | 12 | 012 | 2205 | 7 | 7 | 9 | 5 | ✅ (Completed) | any | [Create test surface specs for 6 uncovered entity types](completed/012_create_test_surface_specs.md) | Create 43 test spec files to bring tests/docs/ coverage from 37/80 to 80/80 |
-| 13 | 013 | 1728 | 8 | 6 | 9 | 4 | 🎯 (Verified) | any | [Implement test code for builder, formatter, and trait specs](013_implement_builder_formatter_trait_tests.md) | Implement 88 Rust test functions from 14 test spec files (builder/2, formatter/10, trait/2) |
+| 13 | 013 | 1728 | 8 | 6 | 9 | 4 | ✅ (Completed) | any | [Implement test code for builder, formatter, and trait specs](completed/013_implement_builder_formatter_trait_tests.md) | Implement 88 Rust test functions from 14 test spec files (builder/2, formatter/10, trait/2) |
+| 14 | 014 | 1440 | 8 | 5 | 9 | 4 | ❓ (Unverified) | any | [Implement remaining 168 spec tests](unverified/014_implement_remaining_spec_tests.md) | Implement 168 test functions from 43 spec files (data_structure/1, input_model/2, input_type/2, pattern/4, trait/1, variant/33) |

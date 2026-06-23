@@ -11,13 +11,13 @@ Fix `TreeFormatter::format_aligned()` to use display-width measurement consisten
 
 ## Acceptance Criteria
 
-- [ ] `aligned.rs` uses `unicode_visual_len` for pass 1 width calculation (not char-count `visual_len`)
-- [ ] `aligned.rs` uses `pad_unicode_width` for pass 2 padding (not char-count `pad_to_width`)
-- [ ] Both functions use the same `UnicodeWidthChar::width()` metric
-- [ ] New test: tree with emoji column cells verifies column alignment correctness
-- [ ] Existing aligned tree tests continue to pass
-- [ ] `visual_len`/`pad_to_width` from `strs_tools::ansi` are no longer imported in `aligned.rs`
-- [ ] Zero clippy warnings
+- [x] `aligned.rs` uses `unicode_visual_len` for pass 1 width calculation (not char-count `visual_len`)
+- [x] `aligned.rs` uses `pad_unicode_width` for pass 2 padding (not char-count `pad_to_width`)
+- [x] Both functions use the same `UnicodeWidthChar::width()` metric
+- [x] New test: tree with emoji column cells verifies column alignment correctness
+- [x] Existing aligned tree tests continue to pass
+- [x] `visual_len`/`pad_to_width` from `strs_tools::ansi` are no longer imported in `aligned.rs`
+- [x] Zero clippy warnings
 
 ## In Scope
 
@@ -40,7 +40,7 @@ Fix `TreeFormatter::format_aligned()` to use display-width measurement consisten
 
 ## Execution State
 
-- **State:** ❓ (Unverified)
+- **State:** ✅ (Done)
 - **ID:** 011
 - **Slug:** format_aligned_display_width_mismatch
 - **Executor:** any
@@ -56,3 +56,4 @@ Fix `TreeFormatter::format_aligned()` to use display-width measurement consisten
 
 - **[2026-06-23]** `CREATED` — Filed from willbe CLI integration need; self-contained fix in aligned.rs
 - **[2026-06-23]** `UPDATED` — Normalized to tsk.rulebook.md v5.11 format (was ad-hoc format)
+- **[2026-06-23]** `DONE` — All 7 ACs met; `aligned.rs` uses `unicode_visual_len`/`pad_unicode_width`; new test `test_aligned_tree_emoji_cjk_column_alignment_correctness` in `aligned_tree_edge_cases.rs`; Level 3 PASS 634+74+0

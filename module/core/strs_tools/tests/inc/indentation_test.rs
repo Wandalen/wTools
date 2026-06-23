@@ -60,3 +60,36 @@ fn basic()
   assert_eq!(got, exp);
  }
 }
+
+/// Multiple consecutive newlines produce one prefixed empty line per newline boundary.
+#[ cfg(feature = "std") ]
+#[ test ]
+fn multiple_newlines_only()
+{
+  use the_module::string::indentation;
+
+  let src = "\n\n\n";
+  let got = indentation( ">>", src, "" );
+  let lines : Vec< &str > = got.split( '\n' ).collect();
+  assert_eq!( lines.len(), 4, "3 newlines split into 4 lines, got {}", lines.len() );
+  for ( i, line ) in lines.iter().enumerate()
+  {
+    assert_eq!( *line, ">>", "line {} should be just the prefix, got '{}'", i, line );
+  }
+}
+
+/// Long prefix that exceeds typical terminal width still applies correctly.
+#[ cfg(feature = "std") ]
+#[ test ]
+fn long_prefix_boundary()
+{
+  use the_module::string::indentation;
+
+  let long_prefix = "X".repeat( 200 );
+  let src = "a\nb";
+  let got = indentation( &long_prefix, src, "" );
+  let lines : Vec< &str > = got.split( '\n' ).collect();
+  assert_eq!( lines.len(), 2, "two source lines, got {}", lines.len() );
+  assert_eq!( lines[ 0 ], format!( "{}a", long_prefix ), "first line with long prefix" );
+  assert_eq!( lines[ 1 ], format!( "{}b", long_prefix ), "second line with long prefix" );
+}

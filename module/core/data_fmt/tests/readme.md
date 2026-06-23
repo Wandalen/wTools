@@ -25,6 +25,8 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `aligned_tree_configuration.rs` | Test aligned tree configuration options |
 | `aligned_tree_edge_cases.rs` | Test aligned tree edge cases |
 | `builder.rs` | Test TreeBuilder path-based construction |
+| `builder_row_test.rs` | Spec tests for RowBuilder API (BL-1..BL-8) |
+| `builder_tree_test.rs` | Spec tests for TreeBuilder API (BL-9..BL-16) |
 | `column_data.rs` | Test column data handling |
 | `column_truncation.rs` | Test column width truncation |
 | `data.rs` | Test core data structures |
@@ -32,6 +34,16 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `decorated_cells_test.rs` | Test per-cell DecoratedText coloring and per-line ANSI reset invariant |
 | `flatten_config.rs` | Test FlattenConfig customization |
 | `fluent_api.rs` | Test fluent RowBuilder API |
+| `formatter_001_table_test.rs` | Spec tests for TableFormatter (FM-1..FM-7) |
+| `formatter_002_expanded_test.rs` | Spec tests for ExpandedFormatter (FM-5..FM-9) |
+| `formatter_003_tree_test.rs` | Spec tests for TreeFormatter (FM-9..FM-13) |
+| `formatter_004_logfmt_test.rs` | Spec tests for LogfmtFormatter (FM-13..FM-17) |
+| `formatter_005_json_test.rs` | Spec tests for JsonFormatter (FM-17..FM-21) |
+| `formatter_006_yaml_test.rs` | Spec tests for YamlFormatter (FM-22..FM-26) |
+| `formatter_007_toml_test.rs` | Spec tests for TomlFormatter (FM-27..FM-31) |
+| `formatter_008_html_test.rs` | Spec tests for HtmlFormatter (FM-32..FM-38) |
+| `formatter_009_sql_test.rs` | Spec tests for SqlFormatter (FM-39..FM-46) |
+| `formatter_010_text_test.rs` | Spec tests for TextFormatter (FM-47..FM-54) |
 | `formatters.rs` | Test ExpandedFormatter key-value rendering and generic TableView support via Format trait |
 | `html.rs` | Test HTML output format |
 | `logfmt.rs` | Test logfmt output format |
@@ -50,6 +62,8 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `table_styles_presets.rs` | Test table style presets |
 | `text_cli_help.rs` | Test CLI help text formatting |
 | `themes.rs` | Test visual themes |
+| `trait_format_test.rs` | Spec tests for Format trait and FormatError (TR-1..TR-6) |
+| `trait_table_shaped_view_test.rs` | Spec tests for TableShapedView trait (TR-7..TR-12) |
 | `unicode_display_width_alignment.rs` | Bug reproducers for BUG-001: Cyrillic, CJK, emoji, mixed-width alignment |
 | `unicode_display_width_table.rs` | Task 015 display width fix: CJK/emoji table alignment and padding correctness |
 | `unified_format_trait.rs` | Test unified format trait |

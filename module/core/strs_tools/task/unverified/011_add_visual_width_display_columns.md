@@ -7,7 +7,7 @@
 - **Start Time:** null
 - **Prior State:** null
 - **Reopen Count:** 0
-- **State:** ❓ (Unverified)
+- **State:** 🎯 (Verified)
 - **Closes:** null
 - **Dir:** module/core/strs_tools
 - **Validated By:** null
@@ -15,10 +15,11 @@
 
 ## Goal
 
-Add a `visual_width()` function to `src/ansi/visual.rs` that strips ANSI escapes and measures terminal display columns using `UnicodeWidthChar::width()`, fixing the measurement mismatch between `visual_len()` (char count) and `pad_to_width()` (display width). This matters now because `data_fmt::TreeFormatter::format_aligned()` uses `visual_len` for column-width calculation but `pad_to_width` for padding, causing misaligned columns when cells contain emoji or CJK characters. Success: `cargo nextest run --all-features -E 'test(visual_width)'` passes with correct display-column counts for ASCII, emoji, CJK, and mixed ANSI input.
+Add a `visual_width()` function to `src/ansi/visual.rs` that strips ANSI escapes and measures terminal display columns using `UnicodeWidthChar::width()`, closing the API gap between `visual_len()` (char count) and `pad_to_width()` (display-column padding). Currently any caller needing to pre-measure display columns before padding must hand-roll their own width function (as `data_fmt` did with `unicode_visual_len`). Providing `visual_width` as a first-class API in strs_tools eliminates that duplication. Success: `cargo nextest run --all-features -E 'test(visual_width)'` passes with correct display-column counts for ASCII, emoji, CJK, and mixed ANSI input.
 
 ## In Scope
 
+- Migrate `unicode-width` from local `"0.1"` to `{ workspace = true }` (`^0.2`) — eliminates duplicate-dep binary
 - New `visual_width()` function in `src/ansi/visual.rs` using `UnicodeWidthChar::width()`
 - New `visual_width_unicode()` variant using grapheme clusters (Tier 2, `ansi_unicode` feature)
 - Unit tests covering: ASCII, emoji (2-column), CJK (2-column), zero-width combiners, ANSI escape sequences, mixed content
@@ -28,7 +29,6 @@ Add a `visual_width()` function to `src/ansi/visual.rs` that strips ANSI escapes
 
 - Deprecating or modifying existing `visual_len()` / `visual_len_unicode()` — consumers may rely on char/grapheme counts
 - Updating downstream consumers (`data_fmt`, `cli_fmt`) to call `visual_width()` — separate tasks per crate
-- Upgrading `unicode-width` from `0.1` to `0.2` — separate dependency task
 
 ## Requirements
 
@@ -100,7 +100,19 @@ Add a `visual_width()` function to `src/ansi/visual.rs` that strips ANSI escapes
 - [ ] AF1 — integration proof: `grep -r 'visual_width' src/ansi/mod.rs` shows re-export
 - [ ] AF2 — negative: `grep -c 'visual_len' src/ansi/visual.rs` count unchanged from baseline
 
+## Verification Record
+
+- **Date:** 2026-06-23
+- **Method:** MAAV (2 agents: feasibility explorer + adversarial reviewer)
+- **Feasibility verdict:** Feasible. Implementation site clear (`src/ansi/visual.rs`), dep available (`unicode-width`), namespace pattern established, no naming collisions.
+- **Adversarial verdict:** BLOCK with 2 corrections → both applied → PASS.
+- **Corrections applied:**
+  1. Goal motivation updated — `data_fmt::format_aligned` no longer uses `visual_len` (fixed by data_fmt TSK-011 internally). Task value is general-purpose API gap closure.
+  2. `unicode-width` migration moved In Scope — strs_tools is sole holdout on `"0.1"`; workspace standardized on `^0.2`; leaving it produces duplicate-dep binary.
+- **Non-blocking notes:** T07 (`"e\u{0301}"`) returns 1 for both `visual_width` and `visual_width_unicode` — weak as a discriminating test for the unicode variant. Consider adding a test with a multi-codepoint grapheme that has different char-width vs grapheme-width behavior (e.g., flag emoji `🇺🇸` = 2 codepoints, 1 grapheme, 2 display columns).
+
 ## History
 
 - **[2025-11-22]** `CREATED` — Task filed. Goal: add display-column measurement function to fix visual_len/pad_to_width mismatch.
 - **[2026-06-23]** `UPDATED` — Normalized to tsk.rulebook.md v5.11 template. Preserved all original content; added Execution State, Scope, Delivery Requirements, Test Matrix, Validation sections.
+- **[2026-06-23]** `VERIFIED` — MAAV verification (2 agents: feasibility + adversarial). 2 corrections applied: (1) Goal text updated — data_fmt TSK-011 already fixed format_aligned internally; task value is general-purpose API, not downstream fix; (2) unicode-width 0.1→0.2 migration moved from Out of Scope to In Scope — workspace already standardized on ^0.2, strs_tools is sole holdout, leaving it creates duplicate-dep binary. T07 noted as weak discriminator (combining accent returns 1 for both variants) but non-blocking.

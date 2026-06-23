@@ -39,7 +39,7 @@
 | algorithm | 004 | Budget Allocation | [algorithm/004_budget_allocation.md](algorithm/004_budget_allocation.md) |
 | algorithm | 005 | Column Fold Detection | [algorithm/005_column_fold_detection.md](algorithm/005_column_fold_detection.md) |
 | algorithm | 006 | CLI Help Alignment | [algorithm/006_cli_help_alignment.md](algorithm/006_cli_help_alignment.md) |
-| algorithm | 007 | Caption Rendering | [algorithm/007_caption_rendering.md](algorithm/007_caption_rendering.md) |
+| algorithm | 007 | Heading Rendering | [algorithm/007_heading_rendering.md](algorithm/007_heading_rendering.md) |
 | api | 001 | Data Types | [api/001_data_types.md](api/001_data_types.md) |
 | api | 002 | Builders | [api/002_builders.md](api/002_builders.md) |
 | api | 003 | Config Types | [api/003_config_types.md](api/003_config_types.md) |
@@ -53,7 +53,7 @@
 | feature | 004 | Color Themes | [feature/004_color_themes.md](feature/004_color_themes.md) |
 | feature | 005 | Auto-Fit | [feature/005_auto_fit.md](feature/005_auto_fit.md) |
 | feature | 006 | API Cleanup v0.3.0 | [feature/006_api_cleanup_v030.md](feature/006_api_cleanup_v030.md) |
-| feature | 007 | Table Caption | [feature/007_table_caption.md](feature/007_table_caption.md) |
+| feature | 007 | Table Heading | [feature/007_table_heading.md](feature/007_table_heading.md) |
 | formatter | 001 | TableFormatter | [formatter/001_table_formatter.md](formatter/001_table_formatter.md) |
 | formatter | 002 | ExpandedFormatter | [formatter/002_expanded_formatter.md](formatter/002_expanded_formatter.md) |
 | formatter | 003 | TreeFormatter | [formatter/003_tree_formatter.md](formatter/003_tree_formatter.md) |
@@ -72,7 +72,7 @@
 | invariant | 002 | ANSI and Unicode | [invariant/002_ansi_unicode.md](invariant/002_ansi_unicode.md) |
 | invariant | 003 | Auto-Wrap Backward Compatibility | [invariant/003_auto_wrap_backward_compat.md](invariant/003_auto_wrap_backward_compat.md) |
 | invariant | 004 | Column Fold Invariants | [invariant/004_column_fold_invariants.md](invariant/004_column_fold_invariants.md) |
-| invariant | 005 | Caption Rendering | [invariant/005_caption.md](invariant/005_caption.md) |
+| invariant | 005 | Heading Rendering | [invariant/005_heading.md](invariant/005_heading.md) |
 | pattern | 001 | Three-Layer Architecture | [pattern/001_three_layer_architecture.md](pattern/001_three_layer_architecture.md) |
 | pattern | 002 | Design Principles | [pattern/002_design_principles.md](pattern/002_design_principles.md) |
 | pattern | 003 | Formatter Design | [pattern/003_formatter_design.md](pattern/003_formatter_design.md) |
@@ -118,7 +118,7 @@
 | tests/docs/algorithm | 004 | Budget Allocation | [tests/docs/algorithm/004_budget_allocation.md](../tests/docs/algorithm/004_budget_allocation.md) |
 | tests/docs/algorithm | 005 | Column Fold Detection | [tests/docs/algorithm/005_column_fold_detection.md](../tests/docs/algorithm/005_column_fold_detection.md) |
 | tests/docs/algorithm | 006 | CLI Help Alignment | [tests/docs/algorithm/006_cli_help_alignment.md](../tests/docs/algorithm/006_cli_help_alignment.md) |
-| tests/docs/algorithm | 007 | Caption Rendering | [tests/docs/algorithm/007_caption_rendering.md](../tests/docs/algorithm/007_caption_rendering.md) |
+| tests/docs/algorithm | 007 | Heading Rendering | [tests/docs/algorithm/007_heading_rendering.md](../tests/docs/algorithm/007_heading_rendering.md) |
 | tests/docs/api | 001 | Data Types | [tests/docs/api/001_data_types.md](../tests/docs/api/001_data_types.md) |
 | tests/docs/api | 002 | Builders | [tests/docs/api/002_builders.md](../tests/docs/api/002_builders.md) |
 | tests/docs/api | 003 | Config Types | [tests/docs/api/003_config_types.md](../tests/docs/api/003_config_types.md) |
@@ -141,12 +141,12 @@
 | tests/docs/feature | 004 | Color Themes | [tests/docs/feature/004_color_themes.md](../tests/docs/feature/004_color_themes.md) |
 | tests/docs/feature | 005 | Auto-Fit | [tests/docs/feature/005_auto_fit.md](../tests/docs/feature/005_auto_fit.md) |
 | tests/docs/feature | 006 | API Cleanup v0.3.0 | [tests/docs/feature/006_api_cleanup_v030.md](../tests/docs/feature/006_api_cleanup_v030.md) |
-| tests/docs/feature | 007 | Table Caption | [tests/docs/feature/007_table_caption.md](../tests/docs/feature/007_table_caption.md) |
+| tests/docs/feature | 007 | Table Heading | [tests/docs/feature/007_table_heading.md](../tests/docs/feature/007_table_heading.md) |
 | tests/docs/invariant | 001 | Data Model | [tests/docs/invariant/001_data_model.md](../tests/docs/invariant/001_data_model.md) |
 | tests/docs/invariant | 002 | ANSI and Unicode | [tests/docs/invariant/002_ansi_unicode.md](../tests/docs/invariant/002_ansi_unicode.md) |
 | tests/docs/invariant | 003 | Auto-Wrap Backward Compatibility | [tests/docs/invariant/003_auto_wrap_backward_compat.md](../tests/docs/invariant/003_auto_wrap_backward_compat.md) |
 | tests/docs/invariant | 004 | Column Fold Invariants | [tests/docs/invariant/004_column_fold_invariants.md](../tests/docs/invariant/004_column_fold_invariants.md) |
-| tests/docs/invariant | 005 | Caption Rendering | [tests/docs/invariant/005_caption.md](../tests/docs/invariant/005_caption.md) |
+| tests/docs/invariant | 005 | Heading Rendering | [tests/docs/invariant/005_heading.md](../tests/docs/invariant/005_heading.md) |
 | tests/docs/trait | 001 | Format | [tests/docs/trait/001_format.md](../tests/docs/trait/001_format.md) |
 | tests/docs/trait | 003 | TableShapedView | [tests/docs/trait/003_table_shaped_view.md](../tests/docs/trait/003_table_shaped_view.md) |
 | tests/docs/data_structure | 001 | Variant Attributes | [tests/docs/data_structure/001_variant_attributes.md](../tests/docs/data_structure/001_variant_attributes.md) |

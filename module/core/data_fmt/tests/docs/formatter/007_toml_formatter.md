@@ -11,11 +11,11 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-27 | standard output produces TOML array of inline tables | ⏳ |
-| FM-28 | special characters are TOML-escaped | ⏳ |
-| FM-29 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-30 | empty data produces empty TOML array | ⏳ |
-| FM-31 | multi-row input produces one inline table per row | ⏳ |
+| FM-27 | standard output produces TOML array of inline tables | ✅ |
+| FM-28 | special characters are TOML-escaped | ✅ |
+| FM-29 | Format trait dispatch returns well-formed string | ✅ |
+| FM-30 | empty data produces empty TOML array | ✅ |
+| FM-31 | multi-row input produces one inline table per row | ✅ |
 
 ---
 

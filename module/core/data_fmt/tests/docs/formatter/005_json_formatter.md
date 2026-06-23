@@ -11,11 +11,11 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-17 | pretty print produces indented JSON array | ⏳ |
-| FM-18 | compact mode produces single-line JSON | ⏳ |
-| FM-19 | special characters are JSON-escaped | ⏳ |
-| FM-20 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-21 | empty data produces empty JSON array | ⏳ |
+| FM-17 | pretty print produces indented JSON array | ✅ |
+| FM-18 | compact mode produces single-line JSON | ✅ |
+| FM-19 | special characters are JSON-escaped | ✅ |
+| FM-20 | Format trait dispatch returns well-formed string | ✅ |
+| FM-21 | empty data produces empty JSON array | ✅ |
 
 ---
 

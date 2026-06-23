@@ -11,11 +11,11 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-22 | standard output produces YAML sequence of mappings | ⏳ |
-| FM-23 | special characters are YAML-safe | ⏳ |
-| FM-24 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-25 | empty data produces empty YAML sequence | ⏳ |
-| FM-26 | multi-row input produces one mapping per row | ⏳ |
+| FM-22 | standard output produces YAML sequence of mappings | ✅ |
+| FM-23 | special characters are YAML-safe | ✅ |
+| FM-24 | Format trait dispatch returns well-formed string | ✅ |
+| FM-25 | empty data produces empty YAML sequence | ✅ |
+| FM-26 | multi-row input produces one mapping per row | ✅ |
 
 ---
 

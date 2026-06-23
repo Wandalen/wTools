@@ -11,13 +11,13 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-1 | plain config produces unbordered output | ⏳ |
-| FM-2 | bordered config produces box-drawing characters | ⏳ |
-| FM-3 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-4 | empty table produces header-only output | ⏳ |
-| FM-5 | markdown config produces pipe-delimited rows | ⏳ |
-| FM-6 | csv config produces comma-separated values | ⏳ |
-| FM-7 | with_config applies the given TableConfig preset | ⏳ |
+| FM-1 | plain config produces unbordered output | ✅ |
+| FM-2 | bordered config produces box-drawing characters | ✅ |
+| FM-3 | Format trait dispatch returns well-formed string | ✅ |
+| FM-4 | empty table produces header-only output | ✅ |
+| FM-5 | markdown config produces pipe-delimited rows | ✅ |
+| FM-6 | csv config produces comma-separated values | ✅ |
+| FM-7 | with_config applies the given TableConfig preset | ✅ |
 
 ---
 

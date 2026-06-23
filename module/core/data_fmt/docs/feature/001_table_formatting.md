@@ -18,7 +18,7 @@
 | File | Relationship |
 |------|-------------|
 | [005_auto_fit.md](005_auto_fit.md) | Terminal-aware auto-wrapping and column folding |
-| [007_table_caption.md](007_table_caption.md) | Caption line rendered above the table |
+| [007_table_heading.md](007_table_heading.md) | Heading line rendered above the table |
 
 ### Sources
 

@@ -11,11 +11,11 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-13 | basic key-value pairs on single line | ⏳ |
-| FM-14 | special characters in values are quoted | ⏳ |
-| FM-15 | empty values produce key with empty quotes | ⏳ |
-| FM-16 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-17 | multi-row input produces one logfmt line per row | ⏳ |
+| FM-13 | basic key-value pairs on single line | ✅ |
+| FM-14 | special characters in values are quoted | ✅ |
+| FM-15 | empty values produce key with empty quotes | ✅ |
+| FM-16 | Format trait dispatch returns well-formed string | ✅ |
+| FM-17 | multi-row input produces one logfmt line per row | ✅ |
 
 ---
 

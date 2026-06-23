@@ -11,13 +11,13 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| FM-32 | minimal variant produces bare HTML table | ⏳ |
-| FM-33 | bootstrap variant adds Bootstrap CSS classes | ⏳ |
-| FM-34 | tailwind variant adds Tailwind CSS classes | ⏳ |
-| FM-35 | custom variant injects user-provided CSS classes | ⏳ |
-| FM-36 | Format trait dispatch returns well-formed string | ⏳ |
-| FM-37 | empty data produces header-only HTML table | ⏳ |
-| FM-38 | HTML special characters are entity-escaped | ⏳ |
+| FM-32 | minimal variant produces bare HTML table | ✅ |
+| FM-33 | bootstrap variant adds Bootstrap CSS classes | ✅ |
+| FM-34 | tailwind variant adds Tailwind CSS classes | ✅ |
+| FM-35 | custom variant injects user-provided CSS classes | ✅ |
+| FM-36 | Format trait dispatch returns well-formed string | ✅ |
+| FM-37 | empty data produces header-only HTML table | ✅ |
+| FM-38 | HTML special characters are entity-escaped | ✅ |
 
 ---
 

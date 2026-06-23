@@ -11,34 +11,34 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/config/table_caption.rs`](../../src/config/table_caption.rs) | `Heading` struct definition |
+| [`src/config/table_heading.rs`](../../src/config/table_heading.rs) | `Heading` struct definition |
 | [`src/config/table_config.rs`](../../src/config/table_config.rs) | `TableConfig::with_heading()` builder setter |
-| [`src/formatters/table/row_rendering.rs`](../../src/formatters/table/row_rendering.rs) | `render_caption_if_present()` — caption line assembly |
-| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | Call site in `format_internal()` where `primary_widths` is passed to caption renderer |
+| [`src/formatters/table/row_rendering.rs`](../../src/formatters/table/row_rendering.rs) | `render_heading_if_present()` — heading line assembly |
+| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | Call site in `format_internal()` where `primary_widths` is passed to heading renderer |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
-| [`tests/table_caption_test.rs`](../../tests/table_caption_test.rs) | Test implementation — FC-1 through FC-6 |
+| [`tests/table_heading_test.rs`](../../tests/table_heading_test.rs) | Test implementation — FC-1 through FC-6 |
 
 ### Features
 
 | File | Relationship |
 |------|-------------|
-| [001_table_formatting.md](001_table_formatting.md) | Feature extended by table caption |
+| [001_table_formatting.md](001_table_formatting.md) | Feature extended by table heading |
 
 ### Algorithms
 
 | File | Relationship |
 |------|-------------|
-| [007_caption_rendering.md](../algorithm/007_caption_rendering.md) | Algorithm implementing caption line assembly |
+| [007_heading_rendering.md](../algorithm/007_heading_rendering.md) | Algorithm implementing heading line assembly |
 
 ### Invariants
 
 | File | Relationship |
 |------|-------------|
-| [005_caption.md](../invariant/005_caption.md) | Behavioral guarantees for caption rendering |
+| [005_heading.md](../invariant/005_heading.md) | Behavioral guarantees for heading rendering |
 
 ### APIs
 
@@ -64,7 +64,7 @@ The line carries the title `"Needs Review"` and two heading fields `"28 PRs"` an
 #### Construction
 
 ```rust
-// Type definition (src/config/table_caption.rs)
+// Type definition (src/config/table_heading.rs)
 pub struct Heading {
     title  : String,
     fields : Vec<String>,
@@ -105,20 +105,20 @@ let config = TableConfig::plain()
 
 #### Rendering Algorithm
 
-The caption is rendered immediately before the table top border (or header row when no top border exists). The rendering steps are:
+The heading is rendered immediately before the table top border (or header row when no top border exists). The rendering steps are:
 
-1. Build the content string: sanitize line breaks in title and each field (replace `\r\n`, `\r`, `\n` with space), then concatenate `title` followed by `" {field_sep} {field}"` for each caption field.
+1. Build the content string: sanitize line breaks in title and each field (replace `\r\n`, `\r`, `\n` with space), then concatenate `title` followed by `" {field_sep} {field}"` for each heading field.
 2. Build the lead: `rule_char` × `lead_width` + ` ` (e.g., `"─── "`).
 3. Build the trailing rule: compute `trail_width = table_width - lead_width - 1 - unicode_visual_len(&content) - 1` where `table_width` is the actual rendered display width of the table (computed by `compute_total_row_width(primary_widths)`, accounting for column widths, separators, per-column padding, and border pipes). Use `unicode_visual_len` (display column count), not `.len()` or `.chars().count()` — CJK characters are 1 char but 2 display columns; `·` (U+00B7) and `─` (U+2500) are multi-byte in UTF-8. Clamp `trail_width` to 0 if negative.
 4. Emit: `lead + content + " " + rule_char × trail_width + "\n"`.
 
-The trailing rule fills to the rendered table width — not the terminal width. This ensures the caption rule aligns with the right edge of the table regardless of how wide the terminal is.
+The trailing rule fills to the rendered table width — not the terminal width. This ensures the heading rule aligns with the right edge of the table regardless of how wide the terminal is.
 
 #### Interaction with Other Features
 
-- **auto_wrap / auto_fold**: Caption rendering is independent. The caption line is not subject to column folding or cell wrapping.
-- **ANSI coloring**: Caption text is emitted as plain text. ANSI decoration is not in scope for this feature.
+- **auto_wrap / auto_fold**: Heading rendering is independent. The heading line is not subject to column folding or cell wrapping.
+- **ANSI coloring**: Heading text is emitted as plain text. ANSI decoration is not in scope for this feature.
 - **All 9 table styles**: the heading is style-agnostic — it renders the same titled rule regardless of `BorderVariant`.
-- **`terminal_width` setting**: Continues to control auto-fit column budget allocation; does not affect caption line width. Caption width is determined by actual rendered table width.
+- **`terminal_width` setting**: Continues to control auto-fit column budget allocation; does not affect heading line width. Heading width is determined by actual rendered table width.
 
-See `invariant/005_caption.md` for no-caption passthrough, width ceiling, and single-line output guarantees.
+See `invariant/005_heading.md` for no-heading passthrough, width ceiling, and single-line output guarantees.

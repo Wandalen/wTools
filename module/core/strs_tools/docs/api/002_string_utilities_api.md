@@ -4,7 +4,7 @@
 
 - **Purpose**: Define the public operations and return types for text indentation, string isolation, number parsing, command parsing, and ANSI utility functions.
 - **Responsibility**: Contracts the observable behaviour callers depend on for all string utility features outside the split and parser integration APIs.
-- **In Scope**: Indentation, left/right isolation, number parsing, command parsing, ANSI detection, parsing, stripping, visual length, and truncation operations. Between isolation is a planned extension not yet implemented.
+- **In Scope**: Indentation, left/right isolation, number parsing, command parsing, ANSI detection, parsing, stripping, visual length (char count), visual width (display columns), and truncation operations. Between isolation is a planned extension not yet implemented.
 - **Out of Scope**: Split API (`api/001`); parser integration API (`api/003`); algorithm internals (`algorithm/`).
 
 ### Operations
@@ -23,7 +23,9 @@
 
 **ANSI stripping** accepts a string and returns an owned string with all ANSI sequences removed.
 
-**Visual length** accepts a string and returns the number of terminal display columns it occupies, accounting for multi-byte characters.
+**Visual length** accepts a string and returns the number of visible characters (Unicode codepoints) it contains after stripping ANSI escape sequences. This is a char count, not a display-column count. The grapheme-aware variant counts grapheme clusters instead of codepoints.
+
+**Visual width** accepts a string and returns the number of terminal display columns it occupies after stripping ANSI escape sequences. Wide characters (CJK, emoji) contribute 2 columns; combining marks contribute 0. The grapheme-aware variant processes grapheme clusters rather than individual codepoints. Requires the `ansi` feature; the grapheme-aware variant additionally requires `ansi_unicode`.
 
 **ANSI truncation** accepts a string and a target column width and returns the string trimmed to that width without splitting multi-byte characters or orphaning escape sequences.
 

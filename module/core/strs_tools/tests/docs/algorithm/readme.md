@@ -9,6 +9,6 @@
 
 | Name | Purpose | Status |
 |------|---------|--------|
-| `001_simd_delimiter_search.md` | algorithm spec for SIMD Delimiter Search | ⏳ 4 pending |
+| `001_simd_delimiter_search.md` | algorithm spec for SIMD Delimiter Search | ✅ |
 | `002_single_char_splitting.md` | algorithm spec for Single-Char Splitting | ✅ |
 | `003_boyer_moore_splitting.md` | algorithm spec for Boyer-Moore Splitting | ✅ |

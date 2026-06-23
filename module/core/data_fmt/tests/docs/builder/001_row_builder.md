@@ -11,14 +11,14 @@
 
 | ID | Name | Status |
 |----|------|--------|
-| BL-1 | basic single-row construction | ⏳ |
-| BL-2 | empty table with zero rows | ⏳ |
-| BL-3 | headers and multiple rows round-trip | ⏳ |
-| BL-4 | fluent chaining preserves insertion order | ⏳ |
-| BL-5 | add_row_mut in a loop | ⏳ |
-| BL-6 | row with detail annotation | ⏳ |
-| BL-7 | named rows via add_row_with_name | ⏳ |
-| BL-8 | mismatched row length panics | ⏳ |
+| BL-1 | basic single-row construction | ✅ |
+| BL-2 | empty table with zero rows | ✅ |
+| BL-3 | headers and multiple rows round-trip | ✅ |
+| BL-4 | fluent chaining preserves insertion order | ✅ |
+| BL-5 | add_row_mut in a loop | ✅ |
+| BL-6 | row with detail annotation | ✅ |
+| BL-7 | named rows via add_row_with_name | ✅ |
+| BL-8 | mismatched row length panics | ✅ |
 
 ---
 

@@ -3,7 +3,7 @@
 //! Two-pass algorithm: (1) traverse the tree to find maximum column widths,
 //! (2) render with alignment padding so all columns line up across rows.
 
-use crate::{ TreeNode, ColumnData, ansi_str::{ visual_len, pad_to_width } };
+use crate::{ TreeNode, ColumnData, ansi_str::{ unicode_visual_len, pad_unicode_width } };
 
 /// Output buffer capacity hint
 const INITIAL_CAPACITY : usize = 1024;
@@ -116,11 +116,11 @@ impl super::TreeFormatter
         let width = if i == 0
         {
           let prefix_len = self.calculate_prefix_len( depth );
-          visual_len( &col_rendered ) + prefix_len
+          unicode_visual_len( &col_rendered ) + prefix_len
         }
         else
         {
-          visual_len( &col_rendered )
+          unicode_visual_len( &col_rendered )
         };
 
         // Update max width for this column
@@ -153,7 +153,7 @@ impl super::TreeFormatter
     // Each level adds:
     // - indent_size spaces (4 by default)
     // - branch connector length (├── or └──) + 1 space after connector
-    let branch_connector_len = visual_len( self.symbols.branch ) + 1; // +1 for space
+    let branch_connector_len = unicode_visual_len( self.symbols.branch ) + 1; // +1 for space
 
     ( depth - 1 ) * self.config.indent_size + branch_connector_len
   }
@@ -212,7 +212,7 @@ impl super::TreeFormatter
           // Calculate padding needed for first column
           if !column_widths.is_empty()
           {
-            let current_len = visual_len( prefix ) + visual_len( connector ) + 1 + visual_len( &col_rendered ); // +1 for space after connector
+            let current_len = unicode_visual_len( prefix ) + unicode_visual_len( connector ) + 1 + unicode_visual_len( &col_rendered ); // +1 for space after connector
             let target_len = column_widths[ 0 ];
             if current_len < target_len
             {
@@ -227,7 +227,7 @@ impl super::TreeFormatter
 
           if i < column_widths.len()
           {
-            let padded = pad_to_width( &col_rendered, column_widths[ i ], false ); // Left-align
+            let padded = pad_unicode_width( &col_rendered, column_widths[ i ], false ); // Left-align
             output.push_str( &padded );
           }
           else
@@ -258,7 +258,7 @@ impl super::TreeFormatter
         }
         else
         {
-          format!( "{}{}", self.symbols.vertical, " ".repeat( self.config.indent_size - visual_len( self.symbols.vertical ) ) )
+          format!( "{}{}", self.symbols.vertical, " ".repeat( self.config.indent_size - unicode_visual_len( self.symbols.vertical ) ) )
         }
       );
 

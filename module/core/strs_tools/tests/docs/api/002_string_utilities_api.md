@@ -9,6 +9,8 @@
 | AP-3 | Number parsing returns result | Happy path | ✅ |
 | AP-4 | ANSI detection returns boolean | Happy path | ✅ |
 | AP-5 | ANSI stripping returns owned string | Happy path | ✅ |
+| AP-6 | Visual width returns display columns | Happy path | ⏳ |
+| AP-7 | Visual width unicode returns display columns | Happy path | ⏳ |
 
 ## Cases
 
@@ -43,3 +45,17 @@
 - **When:** `strip()` is called
 - **Then:** Returns owned String with all escape sequences removed
 - **Test:** `tests/inc/ansi_strip_test.rs` — `strip_simple_colored_text`, `strip_complex_formatting`
+
+### AP-6: Visual width returns display columns
+
+- **Given:** String potentially containing ANSI escape sequences and wide characters
+- **When:** `visual_width()` is called
+- **Then:** Returns `usize` — number of terminal display columns (wide chars = 2, combiners = 0, ANSI = 0)
+- **Test:** ⏳
+
+### AP-7: Visual width unicode returns display columns
+
+- **Given:** String potentially containing ANSI escape sequences, wide characters, and grapheme clusters
+- **When:** `visual_width_unicode()` is called (requires `ansi_unicode` feature)
+- **Then:** Returns `usize` — display columns using grapheme-cluster boundaries for accurate combining-mark handling
+- **Test:** ⏳

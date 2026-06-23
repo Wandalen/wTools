@@ -10,4 +10,4 @@
 
 | File | Responsibility |
 |------|----------------|
-| `011_format_aligned_display_width_mismatch.md` | Fix display-width mismatch in format_aligned two-pass algorithm |
+| `014_implement_remaining_spec_tests.md` | Implement 168 test functions for remaining 43 spec files |

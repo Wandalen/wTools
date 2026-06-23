@@ -32,6 +32,7 @@
 #![ cfg( feature = "enabled" ) ]
 
 use data_fmt::{ TreeNode, ColumnData, TreeFormatter };
+use unicode_width::UnicodeWidthChar;
 
 // =============================================================================
 // Edge Cases
@@ -86,6 +87,80 @@ fn test_aligned_tree_unicode_columns()
   assert!( output.contains( "日本語" ), "expected \"日本語\" in output:\n{output}" );
   assert!( output.contains( "emoji_😀" ), "expected \"emoji_😀\" in output:\n{output}" );
   assert!( output.contains( "Русский" ), "expected \"Русский\" in output:\n{output}" );
+}
+
+/// Verifies that `format_aligned` column alignment is display-width-correct for
+/// emoji and CJK content where display width differs from character count.
+///
+/// Three rows use first-column values with identical display width (4 columns)
+/// but different character counts: emoji (2 chars), CJK (2 chars), ASCII (4 chars).
+/// If pass 1 used char count, columns 1 and 2 would be measured as width 2 instead
+/// of 4, producing misaligned second-column positions.
+#[ test ]
+fn test_aligned_tree_emoji_cjk_column_alignment_correctness()
+{
+  let mut root = TreeNode::new( "root".to_string(), None );
+
+  // Row 1: emoji column (each emoji = 2 display columns, total = 4)
+  root.children.push( TreeNode::new(
+    "r1".to_string(),
+    Some( ColumnData::new( vec![
+      "🚀🎉".to_string(),
+      "val_a".to_string(),
+    ]))
+  ));
+
+  // Row 2: CJK column (each CJK char = 2 display columns, total = 4)
+  root.children.push( TreeNode::new(
+    "r2".to_string(),
+    Some( ColumnData::new( vec![
+      "日本".to_string(),
+      "val_b".to_string(),
+    ]))
+  ));
+
+  // Row 3: ASCII column (each char = 1 display column, total = 4)
+  root.children.push( TreeNode::new(
+    "r3".to_string(),
+    Some( ColumnData::new( vec![
+      "abcd".to_string(),
+      "val_c".to_string(),
+    ]))
+  ));
+
+  let formatter = TreeFormatter::new();
+  let output = formatter.format_aligned( &root );
+
+  // Measure visual position of second-column content for each data line
+  let lines : Vec< &str > = output.lines().collect();
+
+  let visual_positions : Vec< usize > = lines.iter()
+    .filter_map( | line |
+    {
+      let byte_pos = line.find( "val_" )?;
+      let before = &line[ ..byte_pos ];
+      let vpos : usize = before.chars()
+        .map( | c | c.width().unwrap_or( 1 ) )
+        .sum();
+      Some( vpos )
+    })
+    .collect();
+
+  assert!(
+    visual_positions.len() >= 3,
+    "expected at least 3 lines with 'val_' column; found {}; output:\n{output}",
+    visual_positions.len(),
+  );
+
+  let first = visual_positions[ 0 ];
+  for ( i, &pos ) in visual_positions.iter().enumerate()
+  {
+    assert_eq!(
+      pos, first,
+      "column 2 visual position mismatch: line {i} at {pos}, expected {first} (line 0)\n\
+       positions: {visual_positions:?}\nfull output:\n{output}",
+    );
+  }
 }
 
 #[ test ]

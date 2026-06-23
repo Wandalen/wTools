@@ -4,7 +4,7 @@
 
 - **Purpose**: Document what data_fmt capabilities do and how to use them.
 - **Responsibility**: Registry and overview of all feature doc instances.
-- **In Scope**: Table formatting, word wrap, unified format interface, color themes, auto-fit, API cleanup v0.3.0, table caption.
+- **In Scope**: Table formatting, word wrap, unified format interface, color themes, auto-fit, API cleanup v0.3.0, table heading.
 - **Out of Scope**: API signatures (see `api/`), variant output examples (see `variant/`).
 
 ### Overview Table
@@ -17,4 +17,4 @@
 | 004 | [Color Themes](004_color_themes.md) | Predefined color themes and custom theme creation | ✅ |
 | 005 | [Auto-Fit](005_auto_fit.md) | Terminal-aware auto-fit: cell wrapping (✅), column folding (✅) | ✅ |
 | 006 | [API Cleanup v0.3.0](006_api_cleanup_v030.md) | Remove deprecated paths, add ExpandedFormatter Format impl | ✅ |
-| 007 | [Table Caption](007_table_caption.md) | Titled rule line above table carrying title and caption fields | ✅ |
+| 007 | [Table Heading](007_table_heading.md) | Titled rule line above table carrying title and heading fields | ✅ |
