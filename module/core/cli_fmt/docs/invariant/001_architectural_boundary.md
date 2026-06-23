@@ -31,6 +31,13 @@ which would inherit CLI assumptions they do not need. Placing general text utili
 `cli_fmt` prevents their reuse outside CLI applications and increases coupling between
 the two crates.
 
+### APIs
+
+| File | Relationship |
+|------|-------------|
+| [`../api/001_output_api.md`](../api/001_output_api.md) | Output processing interface — types encode this boundary |
+| [`../api/002_help_api.md`](../api/002_help_api.md) | Help template interface — types encode this boundary |
+
 ### Features
 
 | File | Relationship |
@@ -38,12 +45,11 @@ the two crates.
 | [`../feature/001_output_processing.md`](../feature/001_output_processing.md) | CLI output processing — governed by this boundary |
 | [`../feature/002_cli_help_template.md`](../feature/002_cli_help_template.md) | CLI help template rendering — governed by this boundary |
 
-### APIs
+### Test Specs
 
 | File | Relationship |
 |------|-------------|
-| [`../api/001_output_api.md`](../api/001_output_api.md) | Output processing interface — types encode this boundary |
-| [`../api/002_help_api.md`](../api/002_help_api.md) | Help template interface — types encode this boundary |
+| [`../../tests/docs/invariant/001_architectural_boundary.md`](../../tests/docs/invariant/001_architectural_boundary.md) | Test specification verifying this invariant holds in the codebase |
 
 ### Sources
 

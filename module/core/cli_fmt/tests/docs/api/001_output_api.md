@@ -53,7 +53,7 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../docs/api/001_output_api.md` | Authoritative API contract for this spec |
+| [`../../../docs/api/001_output_api.md`](../../../docs/api/001_output_api.md) | Authoritative API contract for this spec |
 
 ### Sources
 

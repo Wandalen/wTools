@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the behavioral requirements documented in `docs/feature/001_output_processing.md`.
 - **Responsibility**: Test spec for stream ordering, head/tail line filtering, width truncation, width=0 disable, truncation suffix, ANSI width exclusion, StreamFilter variants, and lines_omitted accuracy.
-- **In Scope**: Stream Both ordering (FT-1), head() direct (FT-2), well-below-width non-truncation (FT-3), ANSI width exclusion (FT-4), tail via process_output (FT-5), head+tail union (FT-6), truncation suffix (FT-7), width=0 disable (FT-8), Stdout-only filter (FT-9), Stderr-only filter (FT-10), exact-width boundary (FT-11), process_output lines_omitted accuracy (FT-12), unicode_aware=true code path (FT-13), stderr trailing-newline no double-newline (FT-14), head(0) empty boundary (FT-15), tail(0) empty boundary (FT-16), width=1 extreme boundary (FT-17), is_default() stream_filter/suffix/unicode_aware discriminants (FT-18), head+tail overlap shows all (FT-19), Both mode empty-stdout (FT-20), Both mode empty-stderr (FT-21), head exceeds total (FT-22), ANSI preserved during truncation (FT-23), is_default() tail discriminant (FT-24), is_default() width discriminant (FT-25), head exact total (FT-26), head on empty input (FT-27), tail exceeds total (FT-28), tail exact total (FT-29), tail on empty input (FT-30), head+tail sum equals total (FT-31), custom suffix in output (FT-32), combined streams+head+width (FT-33), both-streams both trailing-newline no double-newline (FT-34), stdout trailing-newline with stderr no trailing-newline separator (FT-35), CJK double-width character truncation (FT-36), head(0)+tail(N) combined window (FT-37), head(N)+tail(0) combined window (FT-38), width=1 with ANSI-colored input (FT-39), mixed truncation across lines (FT-40).
+- **In Scope**: FT-1..FT-40 — stream selection ordering, head/tail line filtering, width truncation, ANSI code handling, StreamFilter variants, metadata accuracy, boundary conditions (head/tail/width zero, exact, overlap), combined configuration scenarios, stream-filter+head interaction, head+tail+width triple combination, empty width suffix, empty-stdout head filtering, and width=0+head interaction.
 - **Out of Scope**: strs_tools internals; architectural boundary enforcement — see `tests/docs/invariant/001_architectural_boundary.md`.
 
 ### FT-1: Stderr precedes stdout in Both mode
@@ -217,11 +217,41 @@
 - **When:** `merge_streams("out\n", "err", &StreamFilter::Both)`
 - **Then:** result equals `"err\nout\n"` — exactly one `'\n'` added between streams; no content lost
 
+### FT-36: StreamFilter::Stdout combined with head limit — stderr discarded, head applied to stdout-only stream
+
+- **Given:** stdout `"a\nb\nc"` (3 lines), stderr `"err"` (1 line), `OutputConfig::default().with_stream_filter(StreamFilter::Stdout).with_head(2)`
+- **When:** `process_output("a\nb\nc", "err", &config)`
+- **Then:** `result.content` contains `"a"` and `"b"` but not `"c"`; `"err"` is absent from content entirely; `result.lines_omitted == 1` — stderr discarded before head filtering; head applies to the stdout-only merged stream
+
+### FT-37: head+tail+width all three limits active simultaneously
+
+- **Given:** 6-line input where each line has ≥10 visible chars (e.g., `"abcdefghij\nklmnopqrst\nuvwxyzabcd\nefghijklmn\nopqrstuvwx\nyzabcdefgh"`), `OutputConfig::default().with_head(2).with_tail(2).with_width(8)`
+- **When:** `process_output(input, "", &config)`
+- **Then:** `result.lines_omitted == 2` — lines 3 and 4 are dropped (head window covers lines 1–2; tail window covers lines 5–6; no overlap); `result.width_truncated == true` — all retained lines exceed 8 visible chars; exactly 4 lines in `result.content`
+
+### FT-38: Empty width suffix — truncated line ends at max_width with no marker appended
+
+- **Given:** single-line input `"01234567890123456789"` (20 visible chars), `OutputConfig::default().with_width(10).with_suffix("")`
+- **When:** `process_output("01234567890123456789", "", &config)`
+- **Then:** `result.width_truncated == true`; content begins with `"0123456789"` (first 10 chars); no extra marker character appended after position 10 — the empty suffix produces clean truncation with no indicator
+
+### FT-39: Empty stdout with non-empty stderr and active head limit
+
+- **Given:** stdout `""`, stderr `"err1\nerr2\nerr3"` (3 lines), `OutputConfig::default().with_head(2)` (StreamFilter::Both)
+- **When:** `process_output("", "err1\nerr2\nerr3", &config)`
+- **Then:** `result.content` contains `"err1"` and `"err2"` but not `"err3"`; `result.lines_omitted == 1` — empty stdout contributes nothing; head(2) applies to the stderr-only merged stream
+
+### FT-40: width=0 combined with head — width passthrough when head filtering is active
+
+- **Given:** 3-line input where each line exceeds 8 visible chars (e.g., `"longline1\nlongline2\nlongline3"`), `OutputConfig::default().with_width(0).with_head(2)`
+- **When:** `process_output("longline1\nlongline2\nlongline3", "", &config)`
+- **Then:** `result.content` contains the first 2 lines intact (untruncated); `result.width_truncated == false` — width=0 disables truncation even when head filtering is active; `result.lines_omitted == 1`
+
 ### Features
 
 | File | Relationship |
 |------|-------------|
-| `../../../docs/feature/001_output_processing.md` | Authoritative behavioral requirements for this spec |
+| [`../../../docs/feature/001_output_processing.md`](../../../docs/feature/001_output_processing.md) | Authoritative behavioral requirements for this spec |
 
 ### Sources
 
@@ -233,4 +263,4 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../tests/output.rs` | FT-1: `select_streams_both`, `merge_streams_ordering`; FT-2: `head_basic`; FT-3: `width_no_truncation_needed`; FT-4: `ansi_preserved_when_no_truncation`; FT-5: `combined_tail_and_width`; FT-6: `head_tail_combined_no_overlap`; FT-7: `width_truncation_with_arrow`; FT-8: `width_zero_disables`; FT-9: `select_streams_stdout_only`; FT-10: `select_streams_stderr_only`; FT-11: `width_exact_boundary`; FT-12: `process_output_head_lines_omitted`; FT-13: `unicode_aware_truncation`; FT-14: `merge_streams_stderr_trailing_newline`; FT-15: `head_zero_produces_empty`; FT-16: `tail_zero_produces_empty`; FT-17: `width_one_truncates`; FT-18: `is_default_stream_filter`, `is_default_width_suffix`, `is_default_unicode_aware`; FT-19: `head_tail_overlap_shows_all`; FT-20: `select_streams_empty_stdout`; FT-21: `select_streams_empty_stderr`; FT-22: `head_exceeds_total`; FT-23: `ansi_preserved_with_truncation`; FT-24: `is_default_tail`; FT-25: `is_default_width`; FT-26: `head_exact`; FT-27: `head_empty`; FT-28: `tail_exceeds_total`; FT-29: `tail_exact`; FT-30: `tail_empty`; FT-31: `head_tail_exact_fit`; FT-32: `width_custom_suffix`; FT-33: `combined_streams_head_width`; FT-34: `merge_streams_both_trailing_newlines_no_double_newline`; FT-35: `merge_streams_stdout_trailing_newline_separator` |
+| `../../../tests/output.rs` | FT-1: `select_streams_both`, `merge_streams_ordering`; FT-2: `head_basic`; FT-3: `width_no_truncation_needed`; FT-4: `ansi_preserved_when_no_truncation`; FT-5: `combined_tail_and_width`; FT-6: `head_tail_combined_no_overlap`; FT-7: `width_truncation_with_arrow`; FT-8: `width_zero_disables`; FT-9: `select_streams_stdout_only`; FT-10: `select_streams_stderr_only`; FT-11: `width_exact_boundary`; FT-12: `process_output_head_lines_omitted`; FT-13: `unicode_aware_truncation`; FT-14: `merge_streams_stderr_trailing_newline`; FT-15: `head_zero_produces_empty`; FT-16: `tail_zero_produces_empty`; FT-17: `width_one_truncates`; FT-18: `is_default_stream_filter`, `is_default_width_suffix`, `is_default_unicode_aware`; FT-19: `head_tail_overlap_shows_all`; FT-20: `select_streams_empty_stdout`; FT-21: `select_streams_empty_stderr`; FT-22: `head_exceeds_total`; FT-23: `ansi_preserved_with_truncation`; FT-24: `is_default_tail`; FT-25: `is_default_width`; FT-26: `head_exact`; FT-27: `head_empty`; FT-28: `tail_exceeds_total`; FT-29: `tail_exact`; FT-30: `tail_empty`; FT-31: `head_tail_exact_fit`; FT-32: `width_custom_suffix`; FT-33: `combined_streams_head_width`; FT-34: `merge_streams_both_trailing_newlines_no_double_newline`; FT-35: `merge_streams_stdout_trailing_newline_separator`; FT-36: `stdout_filter_with_head`; FT-37: `head_tail_width_triple_combination`; FT-38: `width_empty_suffix_no_marker`; FT-39: `empty_stdout_stderr_with_head`; FT-40: `width_zero_with_head` |

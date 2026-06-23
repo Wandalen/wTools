@@ -679,3 +679,131 @@ fn output_config_new_matches_default()
     "OutputConfig::new() must satisfy is_default()"
   );
 }
+
+// ============================================================================
+// FT-36..FT-40 — combined and novel scenario tests
+// ============================================================================
+
+// FT-36: StreamFilter::Stdout combined with head — stderr discarded before head filtering
+#[ test ]
+fn stdout_filter_with_head()
+{
+  let config = OutputConfig::default()
+    .with_stream_filter( StreamFilter::Stdout )
+    .with_head( 2 );
+  let result = process_output( "a\nb\nc", "err", &config );
+  assert!(
+    result.content.contains( "a" ) && result.content.contains( "b" ),
+    "first 2 stdout lines must be retained, got:\n{:?}", result.content
+  );
+  assert!(
+    !result.content.contains( "c" ),
+    "3rd stdout line must be omitted by head(2), got:\n{:?}", result.content
+  );
+  assert!(
+    !result.content.contains( "err" ),
+    "stderr must be discarded entirely by StreamFilter::Stdout, got:\n{:?}", result.content
+  );
+  assert_eq!(
+    result.lines_omitted, 1,
+    "head(2) on 3-line stdout-only stream must omit 1 line"
+  );
+}
+
+// FT-37: head+tail+width all three limits active simultaneously
+#[ test ]
+fn head_tail_width_triple_combination()
+{
+  let input = "abcdefghij\nklmnopqrst\nuvwxyzabcd\nefghijklmn\nopqrstuvwx\nyzabcdefgh";
+  let config = OutputConfig::default()
+    .with_head( 2 )
+    .with_tail( 2 )
+    .with_width( 8 );
+  let result = process_output( input, "", &config );
+  assert_eq!(
+    result.lines_omitted, 2,
+    "head(2)+tail(2) on 6-line input must omit 2 middle lines"
+  );
+  assert!(
+    result.width_truncated,
+    "all retained lines exceed 8 chars — width_truncated must be true"
+  );
+  let lines : Vec< &str > = result.content.lines().collect();
+  assert_eq!(
+    lines.len(), 4,
+    "head(2)+tail(2) must retain exactly 4 lines, got {} lines:\n{:?}", lines.len(), result.content
+  );
+}
+
+// FT-38: Empty suffix — truncated line ends at max_width with no marker appended
+#[ test ]
+fn width_empty_suffix_no_marker()
+{
+  let config = OutputConfig::default()
+    .with_width( 10 )
+    .with_suffix( "" );
+  let result = process_output( "01234567890123456789", "", &config );
+  assert!(
+    result.width_truncated,
+    "20-char line with width=10 must trigger truncation"
+  );
+  assert!(
+    result.content.starts_with( "0123456789" ),
+    "truncated content must start with first 10 visible chars, got:\n{:?}", result.content
+  );
+  assert!(
+    !result.content.contains( '→' ),
+    "empty suffix must produce no truncation marker — '→' must not appear, got:\n{:?}", result.content
+  );
+}
+
+// FT-39: Empty stdout with non-empty stderr and active head limit
+#[ test ]
+fn empty_stdout_stderr_with_head()
+{
+  let config = OutputConfig::default().with_head( 2 );
+  let result = process_output( "", "err1\nerr2\nerr3", &config );
+  assert!(
+    result.content.contains( "err1" ) && result.content.contains( "err2" ),
+    "first 2 stderr lines must be retained, got:\n{:?}", result.content
+  );
+  assert!(
+    !result.content.contains( "err3" ),
+    "3rd stderr line must be omitted by head(2), got:\n{:?}", result.content
+  );
+  assert_eq!(
+    result.lines_omitted, 1,
+    "head(2) on 3-line stderr-only merged stream must omit 1 line"
+  );
+}
+
+// FT-40: width=0 disables truncation even when head filtering is active
+#[ test ]
+fn width_zero_with_head()
+{
+  let config = OutputConfig::default()
+    .with_width( 0 )
+    .with_head( 2 );
+  let result = process_output( "longline1\nlongline2\nlongline3", "", &config );
+  let lines : Vec< &str > = result.content.lines().collect();
+  assert_eq!(
+    lines.len(), 2,
+    "head(2) must retain first 2 lines, got {} lines:\n{:?}", lines.len(), result.content
+  );
+  assert_eq!(
+    lines[ 0 ], "longline1",
+    "first line must be intact (no truncation), got:\n{:?}", lines[ 0 ]
+  );
+  assert_eq!(
+    lines[ 1 ], "longline2",
+    "second line must be intact (no truncation), got:\n{:?}", lines[ 1 ]
+  );
+  assert!(
+    !result.width_truncated,
+    "width=0 must disable truncation even when head is active"
+  );
+  assert_eq!(
+    result.lines_omitted, 1,
+    "head(2) on 3-line input must omit 1 line"
+  );
+}

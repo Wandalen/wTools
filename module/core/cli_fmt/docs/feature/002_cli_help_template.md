@@ -35,19 +35,6 @@
 
 For complete type definitions, field defaults, and the rendering procedure, see [`api/002_help_api.md`](../api/002_help_api.md).
 
-### Acceptance Criteria
-
-- **AC-1**: `CliHelpStyle::default()` produces identical column widths and indents to the hardcoded `print_usage()` in `claude_profile/src/lib.rs` (cmd_indent=4, cmd_name_width=20, grp_indent=2, opt_indent=2, opt_name_width=18, col_gap=2, example_indent=2, same ANSI color codes).
-- **AC-2**: `CliHelpTemplate::render()` with `CliHelpData` built from the same data as `print_usage()` produces byte-identical output (TTY mode; colors active).
-- **AC-3**: When `tty_detect = true` and stdout is a pipe, `render()` returns plain text with no ANSI escape sequences.
-- **AC-4**: `cli_fmt` has no dependency on `data_fmt`; grep for `data_fmt` in `cli_fmt/Cargo.toml` returns empty.
-- **AC-5**: After `claude_profile` replaces `print_usage()` with `CliHelpTemplate::render()`, all help output integration tests (IT-1..IT-12 from task 128) pass without modification.
-- **AC-6**: `cli_fmt` compiles with `RUSTFLAGS="-D warnings" cargo check` and zero warnings.
-- **AC-7**: `usage_lines: vec!["clr <command>".into()]` → render output contains `"  clr <command>"`; empty `usage_lines` → output contains `"Usage: "` followed by the binary name (default behavior preserved).
-- **AC-8**: `arguments: vec![OptionEntry { name: "<MSG>".into(), desc: "Message to send".into() }]` → output contains `"  <MSG>  Message to send"`; empty `arguments` → `"Arguments:"` does not appear in output.
-- **AC-9**: `option_groups: vec![OptionGroup { name: "RUNNER OPTIONS".into(), entries: vec![...] }]` → output contains `"RUNNER OPTIONS:"`; two groups with differing name lengths → each group pads names to its own `max(name.len())` independently of the other.
-- **AC-10**: An exhaustive external struct literal on `CliHelpData` listing all fields fails to compile (`#[non_exhaustive]` enforced); struct update syntax also fails to compile from outside the crate (E0639); callers construct instances via `CliHelpData::default()` followed by field assignment.
-
 ### APIs
 
 | File | Relationship |
@@ -60,14 +47,20 @@ For complete type definitions, field defaults, and the rendering procedure, see 
 |------|-------------|
 | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle placing CLI rendering in cli_fmt, not strs_tools |
 
+### Test Specs
+
+| File | Relationship |
+|------|-------------|
+| [`../../tests/docs/feature/002_cli_help_template.md`](../../tests/docs/feature/002_cli_help_template.md) | Test specification verifying the behavioral cases defined here |
+
 ### Sources
 
 | File | Relationship |
 |------|-------------|
-| `src/help.rs` | Implementation of CliHelpStyle, CliHelpData, and CliHelpTemplate |
+| `src/help.rs` | Implementation of the style configuration, content structure, and help template renderer |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
-| `tests/help.rs` | T01–T14, T-A01–T-A09: column alignment, TTY detection, section omission, desc annotation, color defaults, edge cases, data_fmt absence, usage_lines, arguments, option_groups, backward compat, per-group padding, CliHelpData::default() |
+| `tests/help.rs` | Column alignment, TTY detection, conditional section rendering, backward compatibility, option groups, and edge cases |

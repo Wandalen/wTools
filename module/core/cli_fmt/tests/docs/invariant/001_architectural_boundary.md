@@ -23,7 +23,7 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../docs/invariant/001_architectural_boundary.md` | Authoritative invariant statement for this spec |
+| [`../../../docs/invariant/001_architectural_boundary.md`](../../../docs/invariant/001_architectural_boundary.md) | Authoritative invariant statement for this spec |
 
 ### Sources
 

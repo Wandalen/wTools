@@ -63,6 +63,12 @@ The function signatures, configuration fields, and result structure are stable a
 |------|-------------|
 | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle this API implements |
 
+### Test Specs
+
+| File | Relationship |
+|------|-------------|
+| [`../../tests/docs/api/001_output_api.md`](../../tests/docs/api/001_output_api.md) | Test specification verifying the API contracts defined here |
+
 ### Sources
 
 | File | Relationship |

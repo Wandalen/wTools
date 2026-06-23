@@ -42,6 +42,12 @@ a flag indicating whether any line was truncated by the width limit.
 |------|-------------|
 | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle governing which logic belongs here |
 
+### Test Specs
+
+| File | Relationship |
+|------|-------------|
+| [`../../tests/docs/feature/001_output_processing.md`](../../tests/docs/feature/001_output_processing.md) | Test specification verifying the behavioral cases defined here |
+
 ### Sources
 
 | File | Relationship |
@@ -52,4 +58,4 @@ a flag indicating whether any line was truncated by the width limit.
 
 | File | Relationship |
 |------|-------------|
-| `tests/output.rs` | Pipeline correctness across filtering, truncation, and stream ordering (44 tests) |
+| `tests/output.rs` | Pipeline correctness across filtering, truncation, and stream ordering |

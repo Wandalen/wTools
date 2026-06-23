@@ -117,13 +117,19 @@ All public struct fields and the `new` / `render` signatures are stable across p
 
 | File | Relationship |
 |------|-------------|
-| [`../feature/002_cli_help_template.md`](../feature/002_cli_help_template.md) | Behavioral rationale, design decisions, and acceptance criteria |
+| [`../feature/002_cli_help_template.md`](../feature/002_cli_help_template.md) | Behavioral rationale and design decisions for the CLI help template |
 
 ### Invariants
 
 | File | Relationship |
 |------|-------------|
 | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle placing CLI rendering in cli_fmt, not strs_tools |
+
+### Test Specs
+
+| File | Relationship |
+|------|-------------|
+| [`../../tests/docs/api/002_help_api.md`](../../tests/docs/api/002_help_api.md) | Test specification verifying the API contracts defined here |
 
 ### Sources
 
@@ -135,4 +141,4 @@ All public struct fields and the `new` / `render` signatures are stable across p
 
 | File | Relationship |
 |------|-------------|
-| `tests/help.rs` | T01–T14, T-A01–T-A09: column alignment, TTY detection, section omission, desc annotation, color defaults, edge cases, data_fmt absence, usage_lines override, arguments section, option_groups named sections, backward compat, per-group padding, CliHelpData::default() |
+| `tests/help.rs` | API contract verification — render infallibility, layout defaults, column padding, section omission, annotation rendering, and OptionGroup construction |

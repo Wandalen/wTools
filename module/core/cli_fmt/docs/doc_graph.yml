@@ -1,4 +1,4 @@
-last_updated: 2026_06_06
+last_updated: 2026_06_23
 
 nodes:
   - id: api/001
@@ -11,6 +11,16 @@ nodes:
     file: feature/002_cli_help_template.md
   - id: invariant/001
     file: invariant/001_architectural_boundary.md
+  - id: tests/docs/api/001
+    file: ../tests/docs/api/001_output_api.md
+  - id: tests/docs/api/002
+    file: ../tests/docs/api/002_help_api.md
+  - id: tests/docs/feature/001
+    file: ../tests/docs/feature/001_output_processing.md
+  - id: tests/docs/feature/002
+    file: ../tests/docs/feature/002_cli_help_template.md
+  - id: tests/docs/invariant/001
+    file: ../tests/docs/invariant/001_architectural_boundary.md
 
 edges:
   - from: feature/001
@@ -19,11 +29,17 @@ edges:
   - from: feature/001
     to: invariant/001
     via: typed_reference
+  - from: feature/001
+    to: tests/docs/feature/001
+    via: typed_reference
   - from: feature/002
     to: api/002
     via: typed_reference
   - from: feature/002
     to: invariant/001
+    via: typed_reference
+  - from: feature/002
+    to: tests/docs/feature/002
     via: typed_reference
   - from: api/001
     to: feature/001
@@ -31,11 +47,17 @@ edges:
   - from: api/001
     to: invariant/001
     via: typed_reference
+  - from: api/001
+    to: tests/docs/api/001
+    via: typed_reference
   - from: api/002
     to: feature/002
     via: typed_reference
   - from: api/002
     to: invariant/001
+    via: typed_reference
+  - from: api/002
+    to: tests/docs/api/002
     via: typed_reference
   - from: invariant/001
     to: feature/001
@@ -48,4 +70,22 @@ edges:
     via: typed_reference
   - from: invariant/001
     to: api/002
+    via: typed_reference
+  - from: invariant/001
+    to: tests/docs/invariant/001
+    via: typed_reference
+  - from: tests/docs/feature/001
+    to: feature/001
+    via: typed_reference
+  - from: tests/docs/feature/002
+    to: feature/002
+    via: typed_reference
+  - from: tests/docs/api/001
+    to: api/001
+    via: typed_reference
+  - from: tests/docs/api/002
+    to: api/002
+    via: typed_reference
+  - from: tests/docs/invariant/001
+    to: invariant/001
     via: typed_reference

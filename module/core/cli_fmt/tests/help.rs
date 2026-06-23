@@ -836,3 +836,55 @@ fn test_examples_compile()
   let out = CliHelpTemplate::new( no_tty_style(), data ).render();
   assert!( !out.is_empty(), "example construction pattern must produce non-empty output" );
 }
+
+// ── T-B09 ─ examples render in declaration order ─────────────────────────────
+
+/// T-B09 (FT-29): When `examples` contains multiple entries, the rendered output
+/// preserves declaration order — the first declared example appears at a lower
+/// byte offset than the second.
+#[ test ]
+fn test_examples_declaration_order()
+{
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.examples = vec!
+  [
+    ExampleEntry { invocation : "app cmd-a".into(), desc : None },
+    ExampleEntry { invocation : "app cmd-b".into(), desc : None },
+  ];
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  let pos_a = out.find( "app cmd-a" ).expect( "first example must appear in output" );
+  let pos_b = out.find( "app cmd-b" ).expect( "second example must appear in output" );
+  assert!(
+    pos_a < pos_b,
+    "first declared example must appear before second in rendered output (pos_a={pos_a}, pos_b={pos_b})"
+  );
+}
+
+// ── T-B10 ─ tagline separated from usage line by blank line ──────────────────
+
+/// T-B10 (FT-30): The tagline appears after the usage line, with a blank line
+/// (`"\n\n"`) as the structural separator between them.
+#[ test ]
+fn test_tagline_blank_line_separator()
+{
+  let mut data = CliHelpData::default();
+  data.binary  = "myapp".into();
+  data.tagline = "My helpful tool".into();
+  let out = CliHelpTemplate::new( no_tty_style(), data ).render();
+  assert!(
+    out.contains( "My helpful tool" ),
+    "tagline must appear in rendered output, got:\n{out}"
+  );
+  assert!(
+    out.contains( "\n\n" ),
+    "a blank line must separate usage line from tagline, got:\n{out:?}"
+  );
+  let pos_usage   = out.find( "Usage: myapp" ).expect( "Usage: header must appear in output" );
+  let pos_tagline = out.find( "My helpful tool" ).expect( "tagline must appear in output" );
+  assert!(
+    pos_usage < pos_tagline,
+    "usage line must appear before tagline (pos_usage={pos_usage}, pos_tagline={pos_tagline})"
+  );
+}

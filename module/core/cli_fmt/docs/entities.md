@@ -4,12 +4,12 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `api/` | Public interface contracts — types, functions, and processing entry points. | [api/readme.md](api/readme.md) | 2 |
-| `feature/` | Behavioral capabilities — what the crate does and why. | [feature/readme.md](feature/readme.md) | 2 |
-| `invariant/` | Architectural contracts that must always hold. | [invariant/readme.md](invariant/readme.md) | 1 |
-| `tests/docs/api/` | Test specs for API doc instances. | [tests/docs/api/readme.md](../tests/docs/api/readme.md) | 2 |
-| `tests/docs/feature/` | Test specs for feature doc instances. | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 2 |
-| `tests/docs/invariant/` | Test specs for invariant doc instances. | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 1 |
+| `api/` | Interface contracts for the output processing pipeline and CLI help template renderer. | [api/readme.md](api/readme.md) | 2 |
+| `feature/` | Behavioral capabilities — output filtering, truncation, stream merging, and CLI help template rendering. | [feature/readme.md](feature/readme.md) | 2 |
+| `invariant/` | Architectural boundary enforcement between cli_fmt (CLI-specific) and strs_tools (general-purpose). | [invariant/readme.md](invariant/readme.md) | 1 |
+| `tests/docs/api/` | Test specifications verifying API contracts for output processing and CLI help rendering. | [tests/docs/api/readme.md](../tests/docs/api/readme.md) | 2 |
+| `tests/docs/feature/` | Test specifications verifying behavioral requirements for output processing and CLI help template rendering. | [tests/docs/feature/readme.md](../tests/docs/feature/readme.md) | 2 |
+| `tests/docs/invariant/` | Test specification verifying the cli_fmt/strs_tools architectural boundary invariant. | [tests/docs/invariant/readme.md](../tests/docs/invariant/readme.md) | 1 |
 
 ## Master Doc Instances Table
 
