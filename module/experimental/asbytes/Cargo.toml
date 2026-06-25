@@ -52,6 +52,14 @@ const_zeroed = [ "bytemuck?/const_zeroed" ]  # Use ? syntax
 # Features like 'derive', 'extern_crate_alloc' are enabled via this crate's features
 bytemuck = { workspace = true, optional = true }
 
+[[example]]
+name = "asbytes_as_bytes_trivial"
+required-features = [ "as_bytes", "derive" ]
+
+[[example]]
+name = "asbytes_into_bytes_trivial"
+required-features = [ "into_bytes", "derive" ]
+
 [dev-dependencies]
 # Make sure features needed for tests are enabled here
 bytemuck = { workspace = true, features = [ "derive", "extern_crate_alloc" ] }

@@ -3,8 +3,8 @@
   html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico"
 )]
 #![doc(html_root_url = "https://docs.rs/asbytes/latest/asbytes/")]
-#![ cfg_attr( doc, doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
-#![ cfg_attr( not( doc ), doc = "Byte conversion utilities" ) ]
+#![ cfg_attr( all( doc, feature = "as_bytes", feature = "derive" ), doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "readme.md" ) ) ) ]
+#![ cfg_attr( not( all( doc, feature = "as_bytes", feature = "derive" ) ), doc = "Byte conversion utilities" ) ]
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
