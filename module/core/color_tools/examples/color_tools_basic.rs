@@ -4,7 +4,7 @@
 //! binary self-validates when run — not just a visual demo.
 //!
 //! ```bash
-//! cargo run --example basic --features enabled
+//! cargo run --example color_tools_basic --features enabled
 //! ```
 
 #[ cfg( not( feature = "enabled" ) ) ]

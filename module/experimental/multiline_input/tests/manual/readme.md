@@ -43,7 +43,7 @@ Test on multiple terminal emulators:
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Manual Steps**:
@@ -68,7 +68,7 @@ Test on multiple terminal emulators:
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Manual Steps**:
@@ -97,7 +97,7 @@ Test on multiple terminal emulators:
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Manual Steps**:
@@ -139,7 +139,7 @@ Line 2 end
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Manual Steps**:
@@ -180,7 +180,7 @@ Line 2 END
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Test Backspace**:
@@ -220,7 +220,7 @@ Line 2 END
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Test ESC**:
@@ -254,7 +254,7 @@ Line 2 END
 **Execute**:
 ```bash
 ./target/release/examples/with_config
-# (or modify basic_usage to enable line numbers)
+# (or modify multiline_input_basic_usage to enable line numbers)
 ```
 
 **Manual Steps**:
@@ -466,7 +466,7 @@ Task 3
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Manual Steps**:
@@ -493,7 +493,7 @@ Task 3
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Test Cases**:
@@ -520,7 +520,7 @@ Task 3
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Manual Steps**:
@@ -546,7 +546,7 @@ Task 3
 
 **Execute**:
 ```bash
-./target/release/examples/basic_usage
+./target/release/examples/multiline_input_basic_usage
 ```
 
 **Test Empty**:
@@ -658,7 +658,7 @@ When reporting issues from manual testing:
 
 2. **Include example used**:
    ```bash
-   ./target/release/examples/basic_usage
+   ./target/release/examples/multiline_input_basic_usage
    ```
 
 3. **Describe exact key sequence**:

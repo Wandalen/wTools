@@ -161,14 +161,14 @@ match editor.collect() {
 
 See [examples/](examples/) directory for more usage examples:
 
-- `basic_usage.rs` - Simple input collection
+- `multiline_input_basic_usage.rs` - Simple input collection
 - `with_validation.rs` - Custom validation
 - `with_config.rs` - Full configuration demo
 - `pre_filled.rs` - Edit existing text
 
 Run examples:
 ```bash
-cargo run --example basic_usage
+cargo run --example multiline_input_basic_usage
 ```
 
 ## How It Works
