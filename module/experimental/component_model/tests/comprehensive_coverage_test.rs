@@ -12,6 +12,8 @@
 //!
 //! Note: Generic structs, lifetimes, and complex where clauses are not yet supported
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use component_model ::ComponentModel;
 use std ::collections ::HashMap;
 

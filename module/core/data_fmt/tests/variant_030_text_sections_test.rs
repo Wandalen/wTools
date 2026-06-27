@@ -1,6 +1,6 @@
 //! Variant 030: Text Sections spec tests (VT-1..VT-4)
 
-#![ cfg( feature = "enabled" ) ]
+#![ cfg( feature = "format_text" ) ]
 
 use data_fmt::{ RowBuilder, TextFormatter, TextVariant, Format };
 

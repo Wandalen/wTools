@@ -19,6 +19,8 @@
 //! | TCM04 | Multiple    | Basic mixed     | Debug      | None           | Direct           | Debug output + assignment works |
 //!
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 /// Test module alias for aggregating crate
 #[ allow(unused_imports) ]
 use component_model as the_module;

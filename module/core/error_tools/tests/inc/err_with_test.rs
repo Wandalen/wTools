@@ -20,7 +20,7 @@ fn err_with()
 //
 
 #[ test ]
-fn err_with_report() 
+fn err_with_report()
 {
   use the_module ::ErrWith;
   let result: Result< (), std ::io ::Error > = Err(std ::io ::Error ::other("an error occurred"));

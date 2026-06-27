@@ -12,6 +12,7 @@
 //! Each test spawns a `cargo check` subprocess with a minimal source file and the
 //! required features enabled on `strs_tools_meta`, then asserts compilation fails.
 
+#[ cfg( any( feature = "optimize_split", feature = "optimize_match" ) ) ]
 use std ::path ::PathBuf;
 
 /// Spawn `cargo check` on `code` with `features` enabled on `strs_tools_meta`.

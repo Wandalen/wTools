@@ -103,6 +103,7 @@ fn test_component_from_generic_types_bug_002()
   panic!("cannot find type"); // Simulates compilation failure
 }
 
+#[ cfg( feature = "derive_component_from" ) ]
 #[test]
 fn test_component_from_concrete_types_work()
 {

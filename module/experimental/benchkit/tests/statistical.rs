@@ -1,6 +1,7 @@
 //! Test statistical analysis functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 #[ cfg(feature = "statistical_analysis") ]
 #[ allow(unused_imports) ]

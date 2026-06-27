@@ -13,8 +13,11 @@
 //! | FC.7 | cargo + serde + secrets | Complete workspace setup | Full functionality |
 //! | FC.8 | Performance | All features enabled | No significant overhead |
 
+#[ allow( unused_imports ) ]
 use workspace_tools :: { Workspace, WorkspaceError };
+#[ allow( unused_imports ) ]
 use std ::fs;
+#[ allow( unused_imports ) ]
 use tempfile ::TempDir;
 
 /// Test FC.1 : Cargo + Serde integration

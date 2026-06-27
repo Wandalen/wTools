@@ -4,6 +4,7 @@
 //! It includes comprehensive corner case testing for all derive macros.
 
 #![ allow( missing_docs ) ]
+#![ cfg( all( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
 
 use component_model_meta::*;
 use component_model_types::*;

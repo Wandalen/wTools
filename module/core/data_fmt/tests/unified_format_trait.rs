@@ -5,6 +5,7 @@
 
 #![ cfg( feature = "enabled" ) ]
 
+#[ allow( unused_imports ) ]
 use data_fmt::{ RowBuilder, TableView, TableMetadata, Format, FormatError };
 
 // =============================================================================
@@ -381,6 +382,7 @@ mod text_format_tests
 // Cross-Format Consistency Tests
 // =============================================================================
 
+#[ allow( unused_variables ) ]
 #[ test ]
 fn test_same_data_all_formats()
 {
@@ -423,6 +425,7 @@ fn test_same_data_all_formats()
   }
 }
 
+#[ allow( unused_variables ) ]
 #[ test ]
 fn test_empty_table_all_formats()
 {

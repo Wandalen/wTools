@@ -37,6 +37,7 @@ use data_fmt::{ RowBuilder, Format };
 ///
 /// Loop-and-append patterns should use separator-between logic, not terminator-after-each.
 // test_kind: bug_reproducer(BUG-018)
+#[ cfg( feature = "format_text" ) ]
 #[ test ]
 fn bug_018_keyvalue_trailing_blank_line()
 {
@@ -97,6 +98,7 @@ fn bug_018_keyvalue_trailing_blank_line()
 ///
 /// Always check for empty custom strings before emitting HTML attributes.
 // test_kind: bug_reproducer(BUG-019)
+#[ cfg( any( feature = "html_minimal", feature = "html_bootstrap", feature = "html_tailwind", feature = "html_custom" ) ) ]
 #[ test ]
 fn bug_019_html_empty_custom_class()
 {
@@ -149,6 +151,7 @@ fn bug_019_html_empty_custom_class()
 ///
 /// Guard on rows, not columns — a headers-only table has nothing to insert.
 // test_kind: bug_reproducer(BUG-020)
+#[ cfg( feature = "format_sql" ) ]
 #[ test ]
 fn bug_020_sql_zero_rows_invalid_sql()
 {

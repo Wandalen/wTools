@@ -1,6 +1,6 @@
 //! Variant 027: SQL `SQLite` spec tests (VT-1..VT-4)
 
-#![ cfg( feature = "enabled" ) ]
+#![ cfg( all( feature = "enabled", feature = "sql_sqlite" ) ) ]
 
 use data_fmt::{ RowBuilder, SqlFormatter, SqlVariant, Format };
 

@@ -7,6 +7,8 @@
 //! | T4.1 | Debug attribute present        | Debug output generated              |
 //! | T4.2 | Debug output format            | Well-structured debug information   |
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use component_model ::ComponentModel;
 
 /// Test debug attribute generates output

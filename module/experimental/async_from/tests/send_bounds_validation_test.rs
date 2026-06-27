@@ -16,6 +16,8 @@
 //! These tests ensure Send bounds work correctly by spawning tasks on multi-threaded
 //! runtime and moving conversions between threads.
 
+#![ cfg( all( feature = "async_from", feature = "async_try_from" ) ) ]
+
 use async_from::{ async_trait, AsyncFrom, AsyncInto, AsyncTryFrom, AsyncTryInto };
 
 // =========================================================================

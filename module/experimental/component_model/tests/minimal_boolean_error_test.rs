@@ -1,5 +1,7 @@
 //! Minimal test case to demonstrate boolean assignment error
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use component_model ::ComponentModel;
 use component_model_types ::Assign;
 

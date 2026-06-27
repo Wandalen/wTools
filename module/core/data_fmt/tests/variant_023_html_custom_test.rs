@@ -1,6 +1,6 @@
 //! Variant 023: HTML Custom spec tests (VT-1..VT-4)
 
-#![ cfg( feature = "enabled" ) ]
+#![ cfg( all( feature = "enabled", feature = "html_custom" ) ) ]
 
 use data_fmt::{ RowBuilder, HtmlFormatter, HtmlVariant, Format };
 

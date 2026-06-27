@@ -19,6 +19,8 @@
 //! | TEH05 | Valid struct  | Named fields   | Debug attr     | Debug output produced |
 //!
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 /// Test module alias for aggregating crate
 #[ allow(unused_imports) ]
 use component_model as the_module;

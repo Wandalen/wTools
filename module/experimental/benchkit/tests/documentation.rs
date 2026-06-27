@@ -1,9 +1,9 @@
 //! Test documentation functionality
 
-#![allow(clippy ::std_instead_of_core)]
-#![allow(clippy ::writeln_empty_string)]
+#![ cfg( feature = "integration" ) ]
+#![ allow( clippy ::std_instead_of_core ) ]
+#![ allow( clippy ::writeln_empty_string ) ]
 
-#[ cfg(feature = "integration") ]
 use benchkit ::prelude :: *;
 #[ cfg(feature = "markdown_reports") ]
 #[ allow(unused_imports) ]

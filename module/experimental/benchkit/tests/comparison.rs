@@ -1,6 +1,7 @@
 //! Test comparison functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 use std ::collections ::HashMap;
 use core ::time ::Duration;

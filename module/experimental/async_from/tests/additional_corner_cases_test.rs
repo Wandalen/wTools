@@ -3,6 +3,8 @@
 //! This file tests all examples from readme.md and validates missing corner cases
 //! identified in the comprehensive corner case matrix.
 
+#![ cfg( all( feature = "async_from", feature = "async_try_from" ) ) ]
+
 use async_from::{ async_trait, AsyncFrom, AsyncInto, AsyncTryFrom, AsyncTryInto };
 
 // =========================================================================

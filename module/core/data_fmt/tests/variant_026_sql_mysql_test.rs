@@ -1,6 +1,6 @@
 //! Variant 026: SQL `MySQL` spec tests (VT-1..VT-4)
 
-#![ cfg( feature = "enabled" ) ]
+#![ cfg( all( feature = "enabled", feature = "sql_mysql" ) ) ]
 
 use data_fmt::{ RowBuilder, SqlFormatter, SqlVariant, Format };
 

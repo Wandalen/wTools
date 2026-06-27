@@ -1,6 +1,7 @@
 //! Test diff functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 #[ cfg(feature = "diff_analysis") ]
 #[ allow(unused_imports) ]

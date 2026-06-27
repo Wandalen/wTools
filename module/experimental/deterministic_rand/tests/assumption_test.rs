@@ -102,7 +102,7 @@ fn assumption_choose_weighted()
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
   {
-  use deterministic_rand ::seq ::SliceRandom;
+  use rand ::seq ::SliceRandom;
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let got = (1..1000)
@@ -129,7 +129,7 @@ fn assumption_choose_multiple_weighted()
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
   {
-  use deterministic_rand ::seq ::SliceRandom;
+  use rand ::seq ::SliceRandom;
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let got = (1..10)

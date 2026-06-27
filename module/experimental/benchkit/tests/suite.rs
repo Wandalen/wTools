@@ -1,6 +1,7 @@
 //! Test suite functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 use std ::thread;
 use core ::time ::Duration;

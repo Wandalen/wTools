@@ -1,3 +1,4 @@
+#![ cfg( feature = "standalone_build" ) ]
 //! Tests for standalone build mode functionality (Task 038)
 //!
 //! These tests verify that `standalone_build` mode removes circular dependencies 
@@ -58,7 +59,7 @@ mod standalone_build_tests
   {
    // Test that error tools are available through direct inclusion
    // This should work without depending on error_tools crate
-   let _error_msg = test_tools ::format!("Test error message");
+   let _error_msg = format!("Test error message");
    
    // Test that collection tools are available through direct inclusion  
    // This should work without depending on collection_tools crate

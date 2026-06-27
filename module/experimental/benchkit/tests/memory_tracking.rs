@@ -1,6 +1,7 @@
 //! Test memory tracking functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 #[ allow(unused_imports) ]
 use benchkit ::memory_tracking;

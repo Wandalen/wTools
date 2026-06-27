@@ -22,9 +22,11 @@ mod impls_index_test;
 mod try_build_test;
 
 /// Error tools.
-#[ allow( unused_imports ) ]
-#[ path = "../../../../core/error_tools/tests/inc/mod.rs" ]
-pub mod error_tests;
+/// Excluded: the standalone ErrWith in test_tools has a different signature
+/// (FnOnce() -> String) than the real error_tools ErrWith (generic ReportErr).
+/// error_tools tests run correctly in the error_tools crate directly.
+// #[ path = "../../../../core/error_tools/tests/inc/mod.rs" ]
+// pub mod error_tests;
 
 /// Collection tools.
 /// NOTE: collection_tools namespace_test uses vec! and into_heap!/into_vecd! which

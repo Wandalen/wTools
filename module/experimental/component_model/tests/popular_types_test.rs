@@ -22,6 +22,8 @@
 //! | TPT07 | Backward    | Basic types only      | Standard         | Default derivable| Backward compatibility preserved |
 //!
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use core ::time ::Duration;
 use core ::net ::SocketAddr;
 use std ::path ::PathBuf;

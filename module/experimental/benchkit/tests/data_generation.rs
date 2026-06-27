@@ -1,6 +1,7 @@
 //! Test data generation functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 
 #[ test ]

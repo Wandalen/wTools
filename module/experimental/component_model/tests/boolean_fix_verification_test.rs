@@ -10,6 +10,8 @@
 //! | T1.4 | Multiple bool fields handling      | Each field gets specific methods   |
 //! | T1.5 | Multiple bool fields fluent        | Fluent pattern with all bool fields|
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use component_model ::ComponentModel;
 use component_model_types ::Assign;
 

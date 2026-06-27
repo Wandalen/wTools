@@ -11,6 +11,8 @@
 //!
 //! Note: Unit structs and tuple structs are not supported (requires named fields)
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use component_model ::ComponentModel;
 
 // Note: Unit structs are not supported by ComponentModel (requires named fields)

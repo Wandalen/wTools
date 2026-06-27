@@ -12,6 +12,8 @@
 //! | T2.6 | Explicit type workaround           | Manual Assign trait usage works     |
 //! | T2.7 | Fluent with explicit types         | Fluent builder with explicit types  |
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use component_model ::ComponentModel;
 use component_model_types ::Assign;
 

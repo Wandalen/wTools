@@ -2,7 +2,8 @@
 //!
 //! Tests for comparative analysis and regression analysis
 
-#[ cfg( feature = "integration" ) ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 use std ::thread;
 use core ::time ::Duration;

@@ -5,7 +5,7 @@
 
 #![ cfg( feature = "enabled" ) ]
 
-use data_fmt::{ RowBuilder, TreeBuilder, TreeNode, ColumnData, TreeFormatter };
+use data_fmt::{ RowBuilder, TreeBuilder, TreeNode, TreeFormatter };
 
 // =============================================================================
 // input_model/001_tabular — IM-1..IM-4
@@ -207,6 +207,7 @@ fn input_model_002_im_04_three_specializations_consume_hierarchical()
   // (b) Multi-column tree with ColumnData — format_aligned()
   #[ cfg( feature = "tree_aligned" ) ]
   {
+    use data_fmt::ColumnData;
     let aligned_tree : TreeNode< ColumnData > = TreeBuilder::new( "root" )
       .insert(
         &[ "src", "main.rs" ],

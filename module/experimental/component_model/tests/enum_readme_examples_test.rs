@@ -10,6 +10,8 @@
 //! | ER2  | Enum with different types    | NetworkService works with enums     |
 //! | ER3  | Field-specific enum methods  | set/with methods work with enums    |
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use component_model ::ComponentModel;
 
 use std ::time ::Duration;

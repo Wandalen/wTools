@@ -19,6 +19,8 @@
 //! | TIC05 | Real-world | All types      | App config     | Custom Default   | Production-ready usage |
 //!
 
+#![ cfg( feature = "derive_component_model" ) ]
+
 use core ::time ::Duration;
 use core ::net ::SocketAddr;
 use std ::path ::PathBuf;

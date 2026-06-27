@@ -1,6 +1,6 @@
 //! Variant 017: JSON Compact spec tests (VT-1..VT-4)
 
-#![ cfg( feature = "enabled" ) ]
+#![ cfg( feature = "format_json" ) ]
 
 use data_fmt::{ RowBuilder, JsonFormatter, Format };
 

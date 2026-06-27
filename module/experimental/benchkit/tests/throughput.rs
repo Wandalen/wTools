@@ -1,6 +1,7 @@
 //! Test throughput functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 use core ::time ::Duration;
 use std ::collections ::HashMap;

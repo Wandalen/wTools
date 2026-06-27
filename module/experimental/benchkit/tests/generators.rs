@@ -1,6 +1,7 @@
 //! Test generators functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
 #[ cfg(feature = "data_generators") ]
 #[ allow(unused_imports) ]

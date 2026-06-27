@@ -1,6 +1,6 @@
 //! Variant 021: HTML Bootstrap spec tests (VT-1..VT-4)
 
-#![ cfg( feature = "enabled" ) ]
+#![ cfg( all( feature = "enabled", feature = "html_bootstrap" ) ) ]
 
 use data_fmt::{ RowBuilder, HtmlFormatter, HtmlVariant, Format };
 

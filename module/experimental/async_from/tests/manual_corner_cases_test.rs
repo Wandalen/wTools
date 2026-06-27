@@ -3,6 +3,8 @@
 //! This test file validates all corner cases identified in the corner case matrix.
 //! Tests are organized by category for systematic validation.
 
+#![ cfg( all( feature = "async_from", feature = "async_try_from" ) ) ]
+
 use async_from :: { async_trait, AsyncFrom, AsyncInto, AsyncTryFrom, AsyncTryInto };
 
 // =========================================================================

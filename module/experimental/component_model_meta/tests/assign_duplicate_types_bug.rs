@@ -99,6 +99,7 @@ fn test_assign_duplicate_types_bug_003()
   panic!("conflicting implementations"); // Simulates compilation failure
 }
 
+#[ cfg( feature = "derive_component_model" ) ]
 #[test]
 fn test_assign_duplicate_types_workaround()
 {

@@ -5,6 +5,7 @@
 
 #![ cfg( feature = "enabled" ) ]
 
+#[ allow( unused_imports ) ]
 use data_fmt::{
   RowBuilder, TableView, TableMetadata, DataType,
   TreeBuilder, TreeNode, ColumnData, TableShapedView,

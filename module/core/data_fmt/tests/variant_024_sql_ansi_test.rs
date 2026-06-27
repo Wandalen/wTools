@@ -1,6 +1,6 @@
 //! Variant 024: SQL ANSI spec tests (VT-1..VT-4)
 
-#![ cfg( feature = "enabled" ) ]
+#![ cfg( all( feature = "enabled", feature = "sql_ansi" ) ) ]
 
 use data_fmt::{ RowBuilder, SqlFormatter, SqlVariant, Format };
 

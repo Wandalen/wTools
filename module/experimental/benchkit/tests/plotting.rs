@@ -1,8 +1,8 @@
 //! Test plotting functionality
 
-#![allow(clippy ::float_cmp)]
+#![ cfg( feature = "integration" ) ]
+#![ allow( clippy ::float_cmp ) ]
 
-#[ cfg(feature = "integration") ]
 use benchkit ::prelude :: *;
 #[ cfg(feature = "visualization") ]
 #[ allow(unused_imports) ]

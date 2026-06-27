@@ -1,8 +1,8 @@
 //! Test measurement functionality
 
-#[ cfg(feature = "integration") ]
+#![ cfg( feature = "integration" ) ]
+
 use benchkit ::prelude :: *;
-#[ cfg(feature = "integration") ]
 use benchkit ::bench_block;
 use std ::thread;
 use core ::time ::Duration;

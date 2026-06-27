@@ -77,6 +77,7 @@ fn test_component_model_tuple_struct_limitation_004()
   panic!( "ComponentModel requires named fields" ); // Simulates compilation failure
 }
 
+#[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
 #[ test ]
 fn test_component_model_tuple_struct_workaround()
 {
