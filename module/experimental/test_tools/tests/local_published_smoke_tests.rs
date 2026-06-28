@@ -13,6 +13,13 @@ mod local_published_smoke_tests
 {
   use test_tools::{SmokeModuleTest, smoke_test_for_local_run, smoke_test_for_published_run, smoke_tests_run};
   use std::env;
+  use std::sync::Mutex;
+
+  // Fix(BUG): env::set_var / env::remove_var are process-global.
+  // cargo test runs tests as parallel threads in the same process.
+  // Root cause: two tests mutate WITH_SMOKE without synchronization, causing races.
+  // Pitfall: nextest (per-process isolation) hides this bug — only cargo test exposes it.
+  static ENV_MUTEX : Mutex< () > = Mutex::new( () );
 
   /// Test that local smoke testing correctly uses path-based dependencies
   /// This test verifies US-3 requirement for local smoke testing
@@ -80,6 +87,7 @@ mod local_published_smoke_tests
   #[test]
   fn test_automated_dual_execution_workflow()
   {
+    let _lock = ENV_MUTEX.lock().unwrap();
     // Save original environment state
     let original_with_smoke = env::var("WITH_SMOKE").ok();
     
@@ -276,6 +284,7 @@ mod local_published_smoke_tests
   #[test]
   fn test_local_published_api_integration()
   {
+    let _lock = ENV_MUTEX.lock().unwrap();
     // Test that local and published smoke testing integrate seamlessly
     
     // Verify that smoke test functions are accessible

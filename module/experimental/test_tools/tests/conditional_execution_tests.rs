@@ -12,6 +12,13 @@ mod conditional_execution_tests
 {
   use test_tools::process::environment;
   use std::env;
+  use std::sync::Mutex;
+
+  // Fix: env::set_var / env::remove_var are process-global.
+  // cargo test runs tests as parallel threads in the same process.
+  // Root cause: multiple tests mutate CI env vars without synchronization.
+  // Pitfall: nextest hides this bug — only cargo test exposes it.
+  static ENV_MUTEX : Mutex< () > = Mutex::new( () );
 
   // Helper function to simulate conditional execution logic that should be implemented
   // This represents the expected behavior for Task 027
@@ -114,6 +121,7 @@ mod conditional_execution_tests
   #[test]
   fn test_cicd_environment_detection_variants()
   {
+    let _lock = ENV_MUTEX.lock().unwrap();
     // Remove all CI variables first
     let ci_vars = ["CI", "GITHUB_ACTIONS", "GITLAB_CI", "TRAVIS", "CIRCLECI", "JENKINS_URL"];
     for var in &ci_vars {
@@ -205,6 +213,7 @@ mod conditional_execution_tests
   #[test]
   fn test_real_environment_conditional_execution()
   {
+    let _lock = ENV_MUTEX.lock().unwrap();
     // Save original environment state
     let original_with_smoke = env::var("WITH_SMOKE").ok();
     let ci_vars = ["CI", "GITHUB_ACTIONS", "GITLAB_CI", "TRAVIS", "CIRCLECI", "JENKINS_URL"];

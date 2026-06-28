@@ -35,8 +35,9 @@ fn create_test_workspace_at( path: &std ::path ::Path ) -> Workspace
 #[ test ]
 fn test_validate_file_instead_of_directory()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_file = NamedTempFile ::new().unwrap();
-  
+
   // For this test, we need to create a workspace that points to a file
   // We'll use resolve directly with invalid environment setup
   let original = env ::var( "WORKSPACE_PATH" ).ok();
@@ -85,9 +86,10 @@ fn test_validate_existing_directory_success()
 #[ test ]
 fn test_validate_nonexistent_directory()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   let nonexistent = temp_dir.path().join( "nonexistent" );
-  
+
   // Set invalid path and attempt to resolve
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   env ::set_var( "WORKSPACE_PATH", &nonexistent );
@@ -218,6 +220,7 @@ fn test_workspace_creation_empty_path()
 #[ test ]
 fn test_workspace_creation_root_directory()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
 
@@ -250,8 +253,9 @@ fn test_workspace_creation_root_directory()
 #[ test ]
 fn test_workspace_creation_relative_path()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
-  
+
   // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   let original_cwd = env ::current_dir().unwrap();

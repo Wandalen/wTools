@@ -4,7 +4,13 @@
 //! to remove redundant components like trailing `/.` and `/./`
 
 use workspace_tools ::{ Workspace, WorkspaceError };
-use std ::{ env, path ::PathBuf };
+use std ::{ env, path ::PathBuf, sync ::Mutex };
+
+// Fix: env::set_current_dir and env::set_var are process-global.
+// cargo test runs tests as parallel threads in the same process.
+// Root cause: three tests mutate cwd + WORKSPACE_PATH without synchronization.
+// Pitfall: nextest hides this bug — only cargo test exposes it.
+static CWD_ENV_MUTEX : Mutex< () > = Mutex::new( () );
 
 #[ test ]
 fn test_normalize_trailing_dot()
@@ -54,6 +60,7 @@ fn test_normalize_parent_dir()
 #[ test ]
 fn test_workspace_root_normalized_from_env() -> Result< (), WorkspaceError >
 {
+  let _lock = CWD_ENV_MUTEX.lock().unwrap();
   let temp_dir = tempfile ::tempdir().unwrap();
   let original_dir = env ::current_dir().unwrap();
 
@@ -105,6 +112,7 @@ fn test_workspace_new_normalizes()
 #[ cfg( feature = "secrets" ) ]
 fn test_joined_paths_remain_clean() -> Result< (), WorkspaceError >
 {
+  let _lock = CWD_ENV_MUTEX.lock().unwrap();
   let temp_dir = tempfile ::tempdir().unwrap();
   let original_dir = env ::current_dir().unwrap();
 
@@ -149,6 +157,7 @@ fn test_multiple_dot_components()
 #[ test ]
 fn test_relative_workspace_path_normalized() -> Result< (), WorkspaceError >
 {
+  let _lock = CWD_ENV_MUTEX.lock().unwrap();
   let temp_dir = tempfile ::tempdir().unwrap();
   let original_dir = env ::current_dir().unwrap();
 
@@ -257,6 +266,7 @@ fn test_cargo_workspace_normalized()
 #[ test ]
 fn test_from_current_dir_normalized() -> Result< (), WorkspaceError >
 {
+  let _lock = CWD_ENV_MUTEX.lock().unwrap();
   let ws = Workspace ::from_current_dir()?;
   let root_str = ws.root().to_string_lossy();
 
