@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/sql.rs`](../../sql.rs) | SQL formatter test implementation |
+| [`tests/variant_026_sql_mysql_test.rs`](../../variant_026_sql_mysql_test.rs) | Spec tests for VT-1..VT-4 — sql_mysql variant |

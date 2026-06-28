@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/table_styles_presets.rs`](../../table_styles_presets.rs) | Preset configuration and output tests |
+| [`tests/variant_005_table_grid_test.rs`](../../variant_005_table_grid_test.rs) | Spec tests for VT-1..VT-4 — grid variant |

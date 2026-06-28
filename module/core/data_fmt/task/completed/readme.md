@@ -21,3 +21,4 @@ Archive of completed tasks for data_fmt.
 | `011_format_aligned_display_width_mismatch.md` | Fix format_aligned to use display-width-aware functions for emoji/CJK alignment |
 | `012_create_test_surface_specs.md` | Create 43 test surface specs for 6 uncovered entity types |
 | `013_implement_builder_formatter_trait_tests.md` | Implement 88 test functions for builder, formatter, and trait spec cases |
+| `014_implement_remaining_spec_tests.md` | Implement 168 test functions for remaining 43 spec files |

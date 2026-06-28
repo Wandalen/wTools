@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/table_styles_presets.rs`](../../table_styles_presets.rs) | Preset configuration and output tests |
+| [`tests/variant_009_table_compact_test.rs`](../../variant_009_table_compact_test.rs) | Spec tests for VT-1..VT-4 — compact variant |

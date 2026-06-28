@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/aligned_tree_basic.rs`](../../aligned_tree_basic.rs) | Tree alignment and rendering tests |
+| [`tests/variant_013_tree_aligned_test.rs`](../../variant_013_tree_aligned_test.rs) | Spec tests for VT-1..VT-4 — tree_aligned variant |

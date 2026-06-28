@@ -16,8 +16,11 @@
 //! | EC.10 | Symlink handling | Workspace root is symlink | Correct resolution |
 
 use workspace_tools :: { Workspace, WorkspaceError, workspace };
-use std :: { env, fs, thread, sync ::Arc };
+use std :: { env, fs, thread, sync :: { Arc, Mutex } };
 use tempfile ::TempDir;
+
+// Serialize tests that mutate process-global cwd — cargo test runs threads in parallel.
+static CWD_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
 
 /// Helper function to create a test workspace with proper cleanup
 fn create_test_workspace_at( path: &std ::path ::Path ) -> Workspace
@@ -38,6 +41,7 @@ fn create_test_workspace_at( path: &std ::path ::Path ) -> Workspace
 #[ test ]
 fn test_from_git_root_in_repository()
 {
+  let _lock = CWD_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   
   // Create a fake git repository structure
@@ -68,8 +72,9 @@ fn test_from_git_root_in_repository()
 #[ test ]
 fn test_from_git_root_not_in_repository()
 {
+  let _lock = CWD_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
-  
+
   let original_cwd = env ::current_dir().unwrap();
   env ::set_current_dir( temp_dir.path() ).unwrap();
   
@@ -90,8 +95,9 @@ fn test_from_git_root_not_in_repository()
 #[ test ]
 fn test_from_git_root_nested_repositories()
 {
+  let _lock = CWD_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
-  
+
   // Create outer git repository
   let outer_git = temp_dir.path().join( ".git" );
   fs ::create_dir_all( &outer_git ).unwrap();

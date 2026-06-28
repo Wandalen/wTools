@@ -50,6 +50,14 @@
 
 ---
 
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/data_structure_test.rs`](../../data_structure_test.rs) | Spec tests for DS-1..DS-4 — variant attributes data structure |
+
+---
+
 ### Sources
 
 | File | Relationship |

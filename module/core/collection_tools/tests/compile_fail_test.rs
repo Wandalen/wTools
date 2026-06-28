@@ -6,7 +6,7 @@
 //! Each `.rs` file in `tests/compile_fail/` must fail to compile. The companion `.stderr`
 //! file records the expected compiler error and is generated automatically on the first run.
 
-#[ cfg( feature = "collection_into_constructors" ) ]
+#[ cfg( feature = "full" ) ]
 #[ test ]
 fn compile_fail()
 {

@@ -20,24 +20,28 @@
 //! | PO.14 | Path operations | Very long paths | Correct handling |
 
 use workspace_tools ::Workspace;
-use std :: { env, path ::PathBuf };
+use std :: { env, path ::PathBuf, sync ::Mutex };
 use tempfile ::TempDir;
+
+// Serialize helpers that mutate WORKSPACE_PATH — cargo test runs threads in parallel.
+static ENV_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
 
 /// Helper function to create a test workspace with proper cleanup
 fn create_test_workspace_at( path: &std ::path ::Path ) -> Workspace
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   env ::set_var( "WORKSPACE_PATH", path );
-  
+
   let workspace = Workspace ::resolve().unwrap();
-  
+
   // Restore state
   match original
   {
   Some( value ) => env ::set_var( "WORKSPACE_PATH", value ),
   None => env ::remove_var( "WORKSPACE_PATH" ),
  }
-  
+
   workspace
 }
 

@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/html.rs`](../../html.rs) | HTML formatter test implementation |
+| [`tests/variant_022_html_tailwind_test.rs`](../../variant_022_html_tailwind_test.rs) | Spec tests for VT-1..VT-4 — html_tailwind variant |

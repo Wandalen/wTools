@@ -130,22 +130,22 @@ Note: Variant tests are highly repetitive — each config variant tests 4 standa
 Desired answer for every question is YES.
 
 **Completeness**
-- [ ] Does each of the 168 spec cases have a corresponding test function?
-- [ ] Do all 43 spec files show `✅` for every case in their Case Index?
-- [ ] Does `cargo nextest run --all-features` pass?
+- [x] Does each of the 168 spec cases have a corresponding test function?
+- [x] Do all 43 spec files show `✅` for every case in their Case Index?
+- [x] Does `cargo nextest run --all-features` pass?
 
 **Traceability**
-- [ ] Does every new test function contain a `// test_kind: spec_case(XX-N)` marker?
-- [ ] Does the test function name include its case ID?
+- [x] Does every new test function contain a `// test_kind: spec_case(XX-N)` marker?
+- [x] Does the test function name include its case ID?
 
 **No side effects**
-- [ ] Are no files under `src/` modified?
-- [ ] Are no files under `docs/` modified (except `tests/docs/` status updates)?
-- [ ] Are no mocks used anywhere?
+- [x] Are no files under `src/` modified?
+- [x] Are no files under `docs/` modified (except `tests/docs/` status updates)?
+- [x] Are no mocks used anywhere?
 
 **Feature gating**
-- [ ] Are serde-dependent formatter tests gated on the specific format feature?
-- [ ] Do all tests compile with `--all-features` and fail gracefully without?
+- [x] Are serde-dependent formatter tests gated on the specific format feature?
+- [x] Do all tests compile with `--all-features` and fail gracefully without?
 
 ### Measurements
 
@@ -167,8 +167,8 @@ Expected: empty (beyond prior task changes).
 
 ### Invariants
 
-- [ ] I1 — spec parity: every `⏳` in the 43 spec files has exactly one test function
-- [ ] I2 — no mocks: `grep -r 'mock\|Mock\|#\[mock\]' tests/ | grep -v '// ' | wc -l` returns 0
+- [x] I1 — spec parity: every `⏳` in the 43 spec files has exactly one test function
+- [x] I2 — no mocks: `grep -r 'mock\|Mock\|#\[mock\]' tests/ | grep -v '// ' | wc -l` returns 0
 
 ### Anti-faking checks
 
@@ -184,7 +184,7 @@ Expected: empty (beyond prior task changes).
 
 ## Execution State
 
-- **State:** ❓ (Unverified)
+- **State:** ✅ (Done)
 - **ID:** 014
 - **Slug:** implement_remaining_spec_tests
 - **Executor:** any
@@ -200,4 +200,16 @@ Expected: empty (beyond prior task changes).
 
 - **[2026-06-23]** `CREATED` — 43 spec files (data_structure/1, input_model/2, input_type/2, pattern/4, trait/1, variant/33) define 168 test cases with zero backing Rust code; this task implements all 168.
 - **[2026-06-23]** `PARTIAL` — Plan `001_implement_remaining_spec_tests` implemented 66/168 cases (input_model/8, input_type/8, trait/002/4, pattern/003+004/6, 10 representative variants/40). 102 cases deferred to backlog per MAAV scope revision (data_structure/4, pattern/001+002/6, 23 remaining variants/92 — low value-density). 15 test files created, 154 total spec_case markers, Level 3 PASS (788+74+0).
-- **[2026-06-23]** `COMPLETE` — All 102 deferred cases implemented: data_structure/4 (DS-1..DS-4), pattern/001+002/6 (PT-1..PT-3 each), 23 variant files/92 (VT-1..VT-4 each). 26 new test files created, 256 total spec_case markers. All 43 spec files show ✅ for every case. Level 3 PASS (890+74+0).
+- **[2026-06-23]** `COMPLETE` — All 102 deferred cases implemented: data_structure/4 (DS-1..DS-4), pattern/001+002/6 (PT-1..PT-3 each), 23 variant files/92 (VT-1..VT-4 each). 26 new test files created, 256 total spec_case markers. All 43 spec files show ✅ for every case. Level 3 PASS (898+74+0).
+- **[2026-06-27]** `DONE` — MAAV Verification Gate passed (4 dimensions). M1=256, M2=0, M3=898+74+0, M4=clean. One doc-hygiene finding: 23/33 variant spec `### Tests` sections missing cross-ref to their `variant_NNN_*_test.rs` — filed as separate cleanup item.
+
+## Verification Record
+
+| Dimension | Result | Agent |
+|-----------|--------|-------|
+| AC-001/AC-004 Completeness (168 spec_case = 168 ✅) | PASS | MAAV-A (sonnet) |
+| AC-001 Adversarial (try to disprove completion) | PASS | MAAV-B adversarial (sonnet) |
+| AC-005/AC-006 No-src-changes + no-mocks | PASS | MAAV-C (sonnet) |
+| Background test suite (898 nextest, 0 fail) | PASS | cargo nextest |
+
+MAAV-B finding (doc-only, non-blocking): 23/33 variant spec files and 3 non-variant spec files (`data_structure/001`, `pattern/001`, `pattern/002`) are missing `### Tests` section entries pointing to their specific test files. The test functions exist and are correctly marked — this is a cross-reference documentation omission only.

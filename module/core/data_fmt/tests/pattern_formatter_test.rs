@@ -6,15 +6,18 @@
 #![ cfg( feature = "enabled" ) ]
 
 use data_fmt::{
-  RowBuilder, TableFormatter, ExpandedFormatter, TreeNode, TableShapedView,
+  RowBuilder, TableFormatter, TreeNode, TableShapedView,
   Format, TableConfig,
 };
+#[ cfg( feature = "full" ) ]
+use data_fmt::ExpandedFormatter;
 
 /// PT-1: Format trait implemented by 9 formatters
 ///
 /// All 9 non-tree formatters accept `&TableView` via `Format::format`.
 /// `TreeFormatter` does not implement `Format`.
 // test_kind: spec_case(PT-1)
+#[ cfg( feature = "full" ) ]
 #[ test ]
 fn pattern_003_pt_01_format_trait_implemented_by_nine()
 {

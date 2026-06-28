@@ -134,3 +134,7 @@ required-features = [ "enabled" ]
 [[example]]
 name = "heading_styles"
 required-features = [ "enabled" ]
+
+[[example]]
+name = "unified_formats"
+required-features = [ "full" ]

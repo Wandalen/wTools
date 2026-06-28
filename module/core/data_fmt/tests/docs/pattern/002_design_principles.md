@@ -41,6 +41,14 @@
 
 ---
 
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/pattern_design_test.rs`](../../pattern_design_test.rs) | Spec tests for PT-1..PT-3 — design principles pattern |
+
+---
+
 ### Sources
 
 | File | Relationship |

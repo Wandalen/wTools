@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/text_cli_help.rs`](../../text_cli_help.rs) | CLI Help text formatter test implementation |
+| [`tests/variant_033_text_cli_help_test.rs`](../../variant_033_text_cli_help_test.rs) | Spec tests for VT-1..VT-4 — text_cli_help variant |

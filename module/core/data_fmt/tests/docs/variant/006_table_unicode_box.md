@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/table_styles_presets.rs`](../../table_styles_presets.rs) | Preset configuration and output tests |
+| [`tests/variant_006_table_unicode_box_test.rs`](../../variant_006_table_unicode_box_test.rs) | Spec tests for VT-1..VT-4 — unicode_box variant |

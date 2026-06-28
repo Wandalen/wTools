@@ -94,3 +94,47 @@ tempfile = { workspace = true }
 uuid = { workspace = true, features = [ "v4" ] }
 
 # Examples will be added as implementation progresses
+
+[[example]]
+name = "advanced_usage_patterns"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "cargo_bench_integration"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "cicd_regression_detection"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "error_handling_patterns"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "historical_data_management"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "integration_workflows"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "regression_analysis_comprehensive"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "templates_comprehensive"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "update_chain_comprehensive"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "enhanced_features_demo"
+required-features = [ "markdown_reports" ]
+
+[[example]]
+name = "validation_comprehensive"
+required-features = [ "markdown_reports" ]

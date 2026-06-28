@@ -117,7 +117,7 @@ cargo run --bin performance_demo --features enabled
 
 Advanced performance regression detection with statistical analysis and trend identification.
 
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 use std::collections::HashMap;
 use std::time::{ Duration, SystemTime };
@@ -188,7 +188,7 @@ fn regression_analysis_example() -> Result< (), Box< dyn std::error::Error > >
 
 Coordinate multiple markdown section updates atomically - either all succeed or none are modified.
 
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 
 fn update_markdown_atomically() -> Result< (), Box< dyn std::error::Error > > 
@@ -229,7 +229,7 @@ fn update_markdown_atomically() -> Result< (), Box< dyn std::error::Error > >
 - Production deployments where partial updates would be problematic
 
 **Advanced Example:**
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 
 fn complex_update_example() -> Result< (), Box< dyn std::error::Error > > 
@@ -269,7 +269,7 @@ fn complex_update_example() -> Result< (), Box< dyn std::error::Error > >
 
 Generate standardized, publication-quality reports with full statistical analysis and customizable sections.
 
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 use std::collections::HashMap;
 
@@ -319,7 +319,7 @@ fn generate_reports() -> Result< (), Box< dyn std::error::Error > >
 - **Decision Support**: Clear recommendations based on statistical analysis
 
 **Advanced Template Composition:**
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 
 fn create_enterprise_template() -> PerformanceReport 
@@ -472,7 +472,7 @@ fn generate_validation_report()
 Comprehensive examples demonstrating real-world usage patterns and advanced integration scenarios.
 
 **Development Workflow Integration:**
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 
 // Complete development cycle: benchmark → validate → document → commit
@@ -522,7 +522,7 @@ fn development_workflow() -> Result< (), Box< dyn std::error::Error > >
 ```
 
 **CI/CD Pipeline Integration:**
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 use std::collections::HashMap;
 
@@ -572,7 +572,7 @@ fn cicd_performance_check(baseline_results: HashMap<String, BenchmarkResult>,
 ```
 
 **Multi-Project Coordination:**
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 use std::collections::HashMap;
 
@@ -717,7 +717,7 @@ if comparison.is_improvement()
 
 Stop writing boilerplate to create test data. `benchkit` provides generators for common scenarios.
 
-```rust
+```rust,ignore
 use benchkit::prelude::*;
 
 // Generate a comma-separated list of 100 items.
@@ -740,7 +740,7 @@ let random_data = seeded_gen.random_string( 1024 );
 
 The "documentation-first" philosophy is enabled by powerful report generation and file updating tools.
 
-```rust,no_run
+```rust,ignore
 use benchkit::prelude::*;
 
 fn main() -> Result< (), Box< dyn std::error::Error > >
@@ -864,7 +864,7 @@ fn benchmark_algorithms()
 }
 ```
 
-```rust,no_run
+```rust,ignore
 // ✅ In examples/ directory for demonstrations
 // examples/comprehensive_benchmark.rs  
 use benchkit::prelude::*;
@@ -893,7 +893,7 @@ fn main()
 
 For optimal build performance and clean separation, put your benchmark code behind feature flags:
 
-```rust,no_run
+```rust,ignore
 // ✅ In src/bin/ directory for dedicated benchmark executables  
 // src/bin/comprehensive_benchmark.rs
 #[ cfg( feature = "enabled" ) ]

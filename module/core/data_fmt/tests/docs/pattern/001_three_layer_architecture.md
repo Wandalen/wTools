@@ -41,6 +41,14 @@
 
 ---
 
+### Tests
+
+| File | Relationship |
+|------|-------------|
+| [`tests/pattern_architecture_test.rs`](../../pattern_architecture_test.rs) | Spec tests for PT-1..PT-3 — three-layer architecture pattern |
+
+---
+
 ### Sources
 
 | File | Relationship |

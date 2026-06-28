@@ -61,3 +61,39 @@ component_model_types = { workspace = true, optional = true }
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
+
+[[example]]
+name = "component_model_trivial"
+required-features = [ "full" ]
+
+[[example]]
+name = "000_basic_assignment"
+required-features = [ "full" ]
+
+[[example]]
+name = "001_fluent_builder"
+required-features = [ "full" ]
+
+[[example]]
+name = "002_multiple_components"
+required-features = [ "full" ]
+
+[[example]]
+name = "003_component_from"
+required-features = [ "full" ]
+
+[[example]]
+name = "004_working_example"
+required-features = [ "full" ]
+
+[[example]]
+name = "boolean_ambiguity_solution"
+required-features = [ "full" ]
+
+[[example]]
+name = "boolean_assignment_error"
+required-features = [ "full" ]
+
+[[example]]
+name = "debug_macro_output"
+required-features = [ "full" ]

@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/json.rs`](../../json.rs) | JSON formatter test implementation |
+| [`tests/variant_017_json_compact_test.rs`](../../variant_017_json_compact_test.rs) | Spec tests for VT-1..VT-4 — json_compact variant |

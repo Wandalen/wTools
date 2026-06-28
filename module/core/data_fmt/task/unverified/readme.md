@@ -10,4 +10,4 @@
 
 | File | Responsibility |
 |------|----------------|
-| `014_implement_remaining_spec_tests.md` | Implement 168 test functions for remaining 43 spec files |
+| `015_add_heading_render_method.md` | Expose standalone heading render API for external callers |

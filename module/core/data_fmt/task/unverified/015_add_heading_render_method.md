@@ -47,3 +47,24 @@ Add a public standalone render method to `Heading` so external callers can emit 
 | `Heading::new("Title").with_field("5").render(40)` | With field | `unicode_visual_len(result) == 40`, field visible |
 | `Heading::new("Title").render(0)` | Edge: width 0 | No fill; no panic |
 | `Heading::new("Title").render(3)` | Edge: equals HEADING_LEAD_WIDTH | Only lead prefix; no fill |
+
+## MAAV Gate Result
+
+**Date:** 2026-06-27
+**Verdict: FAIL — 4 blocking issues must be resolved before moving to Verified**
+
+| Dimension | Result | Key Finding |
+|-----------|--------|-------------|
+| Scope Coherence | FAIL | Observable clause names `unicode_visual_len` (a `pub(crate)` function) as the measurement tool for external callers — it is not accessible externally |
+| MOST Goal Quality | FAIL | (a) Observable outcome is not externally verifiable; (b) `render(0)` Work Procedure mandates `"───"` (3 chars) but Testable permits "empty string" — direct contradiction |
+| Value / YAGNI | FAIL | No concrete external consumer of `Heading::render()` exists or is blocked; `Heading` is used only inside `data_fmt` and its own examples; this is speculative convenience API |
+| Implementation Feasibility | PARTIAL PASS | Internal access path works; arithmetic is sound. One defect: `render(0)` per Work Procedure returns `"───"` but Testable says "empty string or no fill" — contradictory |
+
+**Required fixes before re-verification:**
+
+1. **YAGNI (BLOCKING):** Identify a concrete external consumer currently blocked by the missing method, or remove this task. A hypothetical future caller is not sufficient. Consider: is there a crate in the workspace that needs standalone heading rendering today?
+2. **Observable clause:** Replace `measured via unicode_visual_len` with an externally-usable measurement (e.g., `unicode_width::UnicodeWidthStr::width()` — which IS a public dep). Alternatively, for ASCII-only test inputs, `result.chars().count()` suffices and requires no note.
+3. **render(0) contradiction:** Choose one behavior and make Work Procedure and Testable clause agree:
+   - Option A: `render(0)` returns `"───"` (Work Procedure literal) — remove "empty string" from Testable
+   - Option B: `render(0)` returns `""` — add guard `if width == 0 { return String::new(); }` before the HEADING_LEAD_WIDTH guard
+4. **Content-drop documentation:** Document that `render(width <= HEADING_LEAD_WIDTH)` silently drops title and fields, and note the divergence from `render_heading_if_present` (which always emits content).

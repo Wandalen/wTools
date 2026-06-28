@@ -123,7 +123,6 @@ fn test_local_configs_use_dot_prefix()
     .expect( "Should write config" );
 
   // Change to temp dir
-  let _old_dir = std::env::current_dir().expect( "Should get current dir" );
   std::env::set_current_dir( temp_dir.path() ).expect( "Should change to temp dir" );
 
   // Discover configs
@@ -139,6 +138,10 @@ fn test_local_configs_use_dot_prefix()
     assert!( contains_with_separator( &path_str, "/.testapp/" ), "Local path must use .testapp (got: {path_str})" );
     assert!( !contains_with_separator( &path_str, "/testapp/" ), "Local path must not use testapp without dot (got: {path_str})" );
   }
+
+  // Restore cwd before TempDir drops — otherwise cwd points to a deleted directory
+  // and any concurrent test calling current_dir() gets "No such file or directory".
+  std::env::set_current_dir( "/tmp" ).expect( "Should restore cwd" );
 }
 
 #[ test ]
@@ -254,6 +257,7 @@ fn test_backslash_in_app_name_rejected()
 // Do not widen the rejection set beyond the documented forbidden characters.
 // Over-validation rejects valid names and breaks legitimate use cases.
 #[ test ]
+#[ serial ]
 fn test_valid_hyphen_underscore_name_accepted()
 {
   struct HyphenUnderscoreApp;

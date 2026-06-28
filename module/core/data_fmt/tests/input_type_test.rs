@@ -105,6 +105,7 @@ fn input_type_001_iv_03_row_details_parallels_rows()
 /// All formatters except `TreeFormatter` implement `Format` and
 /// return `Ok(String)` for a valid `TableView`.
 // test_kind: spec_case(IV-4)
+#[ cfg( feature = "full" ) ]
 #[ test ]
 fn input_type_001_iv_04_nine_formatters_accept_table_view()
 {

@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/expanded_behavior.rs`](../../expanded_behavior.rs) | Expanded formatter test implementation |
+| [`tests/variant_011_expanded_property_test.rs`](../../variant_011_expanded_property_test.rs) | Spec tests for VT-1..VT-4 — expanded property variant |

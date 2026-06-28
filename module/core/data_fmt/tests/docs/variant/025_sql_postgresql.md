@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/sql.rs`](../../sql.rs) | SQL formatter test implementation |
+| [`tests/variant_025_sql_postgresql_test.rs`](../../variant_025_sql_postgresql_test.rs) | Spec tests for VT-1..VT-4 — sql_postgresql variant |

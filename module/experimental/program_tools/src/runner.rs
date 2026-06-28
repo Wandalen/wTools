@@ -5,12 +5,18 @@ mod private
   use std::path::{ Path, PathBuf };
   use std::process::{ Command, Stdio };
   use std::sync::mpsc;
+  use std::sync::atomic::{ AtomicU64, Ordering };
   use core::time::Duration;
-  use std::time::{ Instant, SystemTime, UNIX_EPOCH };
+  use std::time::Instant;
 
   use crate::program::{ Plan, Program };
   use crate::run_options::RunOptions;
   use crate::output::CapturedOutput;
+
+  // Process-wide counter provides monotone uniqueness across threads.
+  // Combined with the thread ID it gives a prefix unique per-thread — critical
+  // for the cleanup test which must not delete sibling threads' workspaces.
+  static WORKSPACE_COUNTER : AtomicU64 = AtomicU64::new( 0 );
 
   // ── Internal helpers ──────────────────────────────────────────────────────────
 
@@ -34,14 +40,32 @@ mod private
     if opts.package_name.is_empty() { "script" } else { &opts.package_name }
   }
 
+  /// Return an ASCII-safe string that identifies the current thread.
+  ///
+  /// `ThreadId`'s `Debug` format is implementation-defined (e.g. `"ThreadId(3)"`).
+  /// We strip non-alphanumeric characters so the result is safe to embed in a
+  /// filesystem path on every platform.
+  pub fn thread_id_str() -> String
+  {
+    format!( "{:?}", std::thread::current().id() )
+      .chars()
+      .filter( | c | c.is_ascii_alphanumeric() )
+      .collect()
+  }
+
   fn create_temp_workspace() -> Result< PathBuf >
   {
-    let nanos = SystemTime::now()
-      .duration_since( UNIX_EPOCH )
-      .unwrap_or_default()
-      .subsec_nanos();
+    // Fix(BUG-014): include thread ID + monotonic counter in the directory name.
+    // Root cause: `cargo test` runs tests as parallel threads sharing the same PID,
+    //   so PID-only prefixes are non-unique; the cleanup test for `cleanup=false`
+    //   was bulk-deleting sibling threads' workspaces by PID prefix, causing
+    //   "manifest path does not exist" for those threads' concurrent `cargo run`.
+    // Pitfall: directory names must be unique both across threads (thread ID) and
+    //   within a thread (counter), because a single test can call `run()` many times.
+    let tid = thread_id_str();
+    let count = WORKSPACE_COUNTER.fetch_add( 1, Ordering::Relaxed );
     let pid = std::process::id();
-    let dir_name = format!( "program_tools_{pid}_{nanos}" );
+    let dir_name = format!( "program_tools_{pid}_{tid}_{count}" );
     let workspace_dir = std::env::temp_dir().join( dir_name );
     std::fs::create_dir_all( &workspace_dir )
       .map_err( | e | format_err!( "failed to create temp workspace '{}': {e}", workspace_dir.display() ) )?;
@@ -355,6 +379,6 @@ mod private
 
 mod_interface::mod_interface!
 {
-  exposed use private::{ run, run_source, run_file, run_project };
-  prelude use private::{ run, run_source, run_file, run_project };
+  exposed use private::{ run, run_source, run_file, run_project, thread_id_str };
+  prelude use private::{ run, run_source, run_file, run_project, thread_id_str };
 }

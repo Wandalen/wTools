@@ -581,10 +581,12 @@ fn run_cleanup_false_leaves_workspace()
   use std::collections::HashSet;
 
   let temp_dir = std::env::temp_dir();
-  // Each nextest test runs in its own process; our PID uniquely identifies
-  // workspaces created by this test.
+  // Filter by PID + thread ID so we only see workspaces created by THIS test
+  // thread.  Under `cargo test` all threads share the same PID, so a PID-only
+  // prefix would match sibling threads' workspaces and cause spurious deletions.
   let pid = std::process::id();
-  let pid_prefix = format!( "program_tools_{pid}_" );
+  let tid = the_module::thread_id_str();
+  let thread_prefix = format!( "program_tools_{pid}_{tid}_" );
 
   let snapshot_dirs = | | -> HashSet< String >
   {
@@ -592,7 +594,7 @@ fn run_cleanup_false_leaves_workspace()
       .expect( "failed to read temp dir" )
       .filter_map( core::result::Result::ok )
       .filter_map( | e | e.file_name().into_string().ok() )
-      .filter( | name | name.starts_with( &pid_prefix ) )
+      .filter( | name | name.starts_with( &thread_prefix ) )
       .collect()
   };
 
@@ -615,7 +617,7 @@ fn run_cleanup_false_leaves_workspace()
   let after = snapshot_dirs();
   let new_dirs : Vec< String > = after.difference( &before ).cloned().collect();
 
-  // Cleanup leftovers before asserting to avoid polluting the temp dir.
+  // Cleanup only THIS thread's leftover directories — never touch sibling threads'.
   for name in &new_dirs
   {
     std::fs::remove_dir_all( temp_dir.join( name ) ).ok();

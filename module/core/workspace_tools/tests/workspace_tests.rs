@@ -197,34 +197,27 @@ fn test_workspace_boundaries_external()
 #[ test ]
 fn test_fallback_resolution_current_dir()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   env ::remove_var( "WORKSPACE_PATH" );
   
   let workspace = Workspace ::resolve_with_extended_fallbacks();
   
-  // with cargo integration enabled, should detect cargo workspace first
-  #[ cfg( feature = "serde" ) ]
-  {
-  // should detect actual cargo workspace (not just fallback to current dir)
+  // Fix(BUG-015): from_cargo_workspace() uses cargo_metadata (always-on core dep),
+  // so the cargo workspace is detected regardless of the `serde` feature.
+  // Root cause: the previous cfg(not(feature = "serde")) branch assumed current-dir
+  //   fallback, but cargo_metadata is never gated — it's always in [dependencies].
+  // Pitfall: "cargo integration" ≠ serde feature; workspace detection always works.
   assert!( workspace.is_cargo_workspace() );
-  // workspace root should exist and be a directory
   assert!( workspace.root().exists() );
   assert!( workspace.root().is_dir() );
-  // should contain a Cargo.toml with workspace configuration
   assert!( workspace.cargo_toml().exists() );
- }
-  
-  // without cargo integration, should fallback to current directory
-  #[ cfg( not( feature = "serde" ) ) ]
-  {
-  let current_dir = env ::current_dir().unwrap();
-  assert_eq!( workspace.root(), current_dir );
- }
 }
 
 /// test workspace creation from current directory
 #[ test ]
 fn test_from_current_dir()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let workspace = Workspace ::from_current_dir().unwrap();
   let current_dir = env ::current_dir().unwrap();
   
@@ -235,6 +228,7 @@ fn test_from_current_dir()
 #[ test ]
 fn test_convenience_function()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   // Save original env var and cwd to restore later
   let original_workspace_path = env ::var( "WORKSPACE_PATH" ).ok();
   let original_cwd = env ::current_dir().ok();

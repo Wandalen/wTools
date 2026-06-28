@@ -31,6 +31,7 @@ use tempfile ::TempDir;
 #[ test ]
 fn test_from_cargo_workspace_success()
 {
+  let _lock = CARGO_TEST_MUTEX.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
   let temp_dir = create_test_cargo_workspace();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   
@@ -66,6 +67,7 @@ fn test_from_cargo_workspace_success()
 #[ test ]  
 fn test_from_cargo_workspace_not_found()
 {
+  let _lock = CARGO_TEST_MUTEX.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
   let temp_dir = TempDir ::new().unwrap();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   
@@ -234,6 +236,7 @@ fn test_workspace_members()
 #[ test ]
 fn test_resolve_or_fallback_cargo_primary()
 {
+  let _lock = CARGO_TEST_MUTEX.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
   let temp_dir = create_test_cargo_workspace();
   let temp_path = temp_dir.path().to_path_buf(); // Get owned path
   

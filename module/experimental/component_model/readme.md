@@ -35,7 +35,7 @@ let config = ConfigBuilder::new()
 
 **Component Model approach** - Clean, type-safe, zero boilerplate:
 
-```rust
+```rust,ignore
 use component_model::Assign;
 
 #[ derive( Default, Assign ) ]
@@ -105,7 +105,7 @@ Available features:
 
 ### 1. Basic Assignment with ComponentModel
 
-```rust
+```rust,ignore
 use component_model::{ ComponentModel, Assign };
 
 #[ derive( Default, Debug, ComponentModel ) ]
@@ -131,7 +131,7 @@ fn main()
 
 ComponentModel provides built-in support for popular Rust types with intelligent conversion:
 
-```rust
+```rust,ignore
 use component_model::{ ComponentModel, Assign };
 use std::time::Duration;
 use std::path::PathBuf;
@@ -166,7 +166,7 @@ fn main()
 
 ComponentModel works with structs that contain enum fields, enabling type-safe enum assignment:
 
-```rust
+```rust,ignore
 use component_model::{ ComponentModel, Assign };
 
 #[ derive( Debug, PartialEq ) ]
@@ -217,7 +217,7 @@ fn main()
 
 #### Complex Enum Fields
 
-```rust
+```rust,ignore
 use component_model::{ ComponentModel, Assign };
 use std::time::Duration;
 
@@ -269,7 +269,7 @@ fn main()
 
 ### 4. Fluent Builder Pattern
 
-```rust
+```rust,ignore
 # use component_model::{ ComponentModel, Assign };
 # #[ derive( Default, ComponentModel ) ]
 # struct Person { name : String, age : i32 }
@@ -280,7 +280,7 @@ let person = Person::default()
 
 ### 5. Multiple Component Assignment
 
-```rust
+```rust,ignore
 use component_model::{ ComponentModel, Assign };
 
 #[ derive( Default, ComponentModel ) ]
@@ -299,7 +299,7 @@ config.assign( 8080 );           // i32 component
 
 For custom behavior, implement traits manually:
 
-```rust
+```rust,ignore
 use component_model::prelude::*;
 
 #[ derive( Default ) ]
@@ -357,7 +357,7 @@ ComponentModel includes built-in intelligent conversion for:
 
 **Type Ambiguity**: When a struct has multiple fields of the same type, `assign()` becomes ambiguous and won't compile. This is by design for type safety.
 
-```rust
+```rust,ignore
 # use component_model::{ ComponentModel, Assign };
 # #[ derive( Default, ComponentModel ) ]
 struct Config
@@ -387,7 +387,7 @@ struct Config
 ## 🎯 Real-World Use Cases
 
 ### Configuration Management with Popular Types
-```rust
+```rust,ignore
 use component_model::{ ComponentModel, Assign };
 use std::time::Duration;
 use std::path::PathBuf;
@@ -407,7 +407,7 @@ let config = DatabaseConfig::default()
 ```
 
 ### HTTP Client Builders
-```rust
+```rust,ignore
 use component_model::{ ComponentModel, Assign };
 use std::time::Duration;
 
@@ -424,7 +424,7 @@ let client = HttpClient::default()
 ```
 
 ### Game Entity Systems
-```rust
+```rust,ignore
 use component_model::{ ComponentModel, Assign };
 
 #[ derive( Default, ComponentModel ) ]

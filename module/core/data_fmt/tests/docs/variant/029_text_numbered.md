@@ -61,3 +61,4 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/text.rs`](../../text.rs) | Text formatter test implementation |
+| [`tests/variant_029_text_numbered_test.rs`](../../variant_029_text_numbered_test.rs) | Spec tests for VT-1..VT-4 — text_numbered variant |
