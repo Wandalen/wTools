@@ -208,6 +208,7 @@ mod core_workspace_tests
   #[ test ]
   fn test_resolve_with_missing_env_var()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   env ::remove_var( "WORKSPACE_PATH" );
   let result = Workspace ::resolve();
@@ -228,8 +229,9 @@ mod core_workspace_tests
   #[ test ]
   fn test_resolve_with_empty_env_var()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
-  
+
   // Set empty string and test immediately to avoid race conditions
   env ::set_var( "WORKSPACE_PATH", "" );
   let result = Workspace ::resolve();
@@ -252,9 +254,10 @@ mod core_workspace_tests
   #[ test ]
   fn test_resolve_with_file_instead_of_dir()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_file = NamedTempFile ::new().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
-  
+
   env ::set_var( "WORKSPACE_PATH", temp_file.path() );
   
   // resolve should succeed (file exists)
@@ -278,6 +281,7 @@ mod core_workspace_tests
   #[ test ]
   fn test_fallback_to_current_dir()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   env ::remove_var( "WORKSPACE_PATH" );
   let workspace = Workspace ::resolve_with_extended_fallbacks();
@@ -298,16 +302,17 @@ mod core_workspace_tests
   #[ test ]
   fn test_fallback_to_git_root()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   let git_dir = temp_dir.path().join( ".git" );
   fs ::create_dir_all( &git_dir ).unwrap();
-  
+
   let sub_dir = temp_dir.path().join( "subdir" );
   fs ::create_dir_all( &sub_dir ).unwrap();
-  
+
   let original_dir = env ::current_dir().unwrap();
   let original_env = env ::var( "WORKSPACE_PATH" ).ok();
-  
+
   env ::remove_var( "WORKSPACE_PATH" );
   env ::set_current_dir( &sub_dir ).unwrap();
   
@@ -323,6 +328,7 @@ mod core_workspace_tests
   #[ test ]
   fn test_fallback_infallible()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   env ::remove_var( "WORKSPACE_PATH" );
   
@@ -1281,8 +1287,9 @@ mod integration_tests
   #[ test ]
   fn test_environment_changes()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
-  
+
   // first workspace
   let temp_dir1 = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir1.path() );
@@ -1489,13 +1496,14 @@ mod performance_tests
   // #[ cfg( feature = "stress" ) ]
   fn test_repeated_workspace_operations()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
-  
+
   // Create a stable test file in the temp directory to ensure it's valid
   let test_file = temp_dir.path().join( "test_marker.txt" );
   std ::fs ::write( &test_file, "test workspace" ).unwrap();
-  
+
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
   let start = Instant ::now();
