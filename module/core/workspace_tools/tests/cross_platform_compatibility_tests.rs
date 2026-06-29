@@ -4,8 +4,11 @@
 //! by handling platform-specific path differences and behaviors.
 
 use workspace_tools :: { Workspace, WorkspaceError };
-use std :: { env, fs, path ::PathBuf };
+use std :: { env, fs, path ::PathBuf, sync ::Mutex };
 use tempfile :: { TempDir, NamedTempFile };
+
+// Serialize tests that mutate WORKSPACE_PATH — cargo test runs threads in parallel.
+static ENV_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
 
 /// helper to create test workspace with standard directory structure
 fn create_test_workspace_with_structure() -> ( TempDir, Workspace )
@@ -82,6 +85,7 @@ fn test_cross_platform_boundary_checking()
 #[ test ]
 fn test_cross_platform_file_directory_validation()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_file = NamedTempFile ::new().expect( "Failed to create temp file" );
   let original_workspace_path = env ::var( "WORKSPACE_PATH" ).ok();
   
@@ -121,6 +125,7 @@ fn test_cross_platform_file_directory_validation()
 #[ test ]
 fn test_cross_platform_nonexistent_paths()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let original_workspace_path = env ::var( "WORKSPACE_PATH" ).ok();
   
   // Create a guaranteed nonexistent path using system temp + unique components

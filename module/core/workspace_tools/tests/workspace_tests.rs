@@ -52,6 +52,7 @@ fn test_workspace_resolution_with_env_var()
 #[ test ]
 fn test_workspace_resolution_missing_env_var()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   env ::remove_var( "WORKSPACE_PATH" );
   
   let result = Workspace ::resolve();
@@ -72,6 +73,7 @@ fn test_workspace_resolution_missing_env_var()
 #[ test ]
 fn test_workspace_validation_valid_path()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
@@ -89,6 +91,7 @@ fn test_workspace_validation_valid_path()
 #[ test ]
 fn test_workspace_validation_invalid_path()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   // Save original env var to restore later
   let original_workspace_path = env ::var( "WORKSPACE_PATH" ).ok();
 
@@ -144,6 +147,7 @@ fn test_standard_directories()
 #[ test ]
 fn test_path_joining()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
@@ -163,6 +167,7 @@ fn test_path_joining()
 #[ test ]
 fn test_workspace_boundaries_internal()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
@@ -180,6 +185,7 @@ fn test_workspace_boundaries_internal()
 #[ test ]
 fn test_workspace_boundaries_external()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
@@ -294,6 +300,7 @@ mod secret_management_tests
   #[ test ]
   fn test_secret_directory()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
@@ -308,6 +315,7 @@ mod secret_management_tests
   #[ test ]
   fn test_secret_file_loading()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
@@ -335,6 +343,7 @@ mod secret_management_tests
   #[ test ]
   fn test_secret_key_loading_with_fallback()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "TEST_ENV_KEY", "env_value" );
   
@@ -359,6 +368,7 @@ mod glob_tests
   #[ test ]
   fn test_find_resources()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
   
@@ -393,6 +403,7 @@ mod glob_tests
   #[ test ]
   fn test_find_config()
   {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   

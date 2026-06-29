@@ -7,13 +7,18 @@
 #[ cfg( feature = "secrets" ) ]
 use workspace_tools ::{ Workspace, testing, WorkspaceError };
 #[ cfg( feature = "secrets" ) ]
-use std ::{ env, fs };
+use std ::{ env, fs, sync ::Mutex };
+
+// Serialize tests that mutate PRO/HOME env vars — cargo test runs threads in parallel.
+#[ cfg( feature = "secrets" ) ]
+static ENV_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
 
 /// test that path deduplication works with symlinks
 #[ test ]
 #[ cfg( all( feature = "secrets", unix ) ) ]  // symlinks work differently on Windows
 fn test_path_deduplication_with_symlinks()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // create secret in local workspace
@@ -42,6 +47,7 @@ fn test_path_deduplication_with_symlinks()
 #[ cfg( feature = "secrets" ) ]
 fn test_empty_pro_env_var()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // set $PRO to empty string
@@ -65,6 +71,7 @@ fn test_empty_pro_env_var()
 #[ cfg( feature = "secrets" ) ]
 fn test_whitespace_pro_env_var()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // set $PRO to whitespace
@@ -172,6 +179,7 @@ fn test_device_file_rejected()
 #[ cfg( feature = "secrets" ) ]
 fn test_fallback_priority_local_wins()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // create secret in local with one value
@@ -201,6 +209,7 @@ fn test_fallback_priority_local_wins()
 #[ cfg( feature = "secrets" ) ]
 fn test_fallback_priority_pro_wins_over_home()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // no local secret
@@ -279,6 +288,7 @@ fn test_permission_denied_error()
 #[ cfg( feature = "secrets" ) ]
 fn test_error_shows_all_tried_locations()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // set up $PRO so we have multiple locations to try

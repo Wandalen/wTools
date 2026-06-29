@@ -5,13 +5,18 @@
 #[ cfg( feature = "secrets" ) ]
 use workspace_tools ::{ Workspace, testing };
 #[ cfg( feature = "secrets" ) ]
-use std ::{ env, fs };
+use std ::{ env, fs, sync ::Mutex };
+
+// Serialize tests that mutate PRO env var — cargo test runs threads in parallel.
+#[ cfg( feature = "secrets" ) ]
+static ENV_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
 
 #[ test ]
 #[ cfg( feature = "secrets" ) ]
 #[ ignore = "depends on environment setup" ]
 fn test_fallback_to_pro_workspace()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   // Setup: Create temp workspace without local secrets
   let temp_dir = env ::temp_dir().join( "test_fallback_to_pro" );
   fs ::create_dir_all( &temp_dir ).unwrap();
@@ -63,6 +68,7 @@ fn test_fallback_to_pro_workspace()
 #[ cfg( feature = "secrets" ) ]
 fn test_fallback_priority()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let ( _temp_dir, workspace ) = testing ::create_test_workspace_with_structure();
 
   // Setup: Create secret in local workspace

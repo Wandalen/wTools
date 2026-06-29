@@ -21,6 +21,8 @@ use tempfile ::TempDir;
 
 // Serialize tests that mutate process-global cwd — cargo test runs threads in parallel.
 static CWD_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
+// Serialize tests that mutate WORKSPACE_PATH env var.
+static ENV_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
 
 /// Helper function to create a test workspace with proper cleanup
 fn create_test_workspace_at( path: &std ::path ::Path ) -> Workspace
@@ -151,6 +153,7 @@ fn test_from_cwd_infallible()
 #[ test ]
 fn test_resolve_or_fallback_no_environment()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   
@@ -177,6 +180,7 @@ fn test_resolve_or_fallback_no_environment()
 #[ test ]
 fn test_workspace_helper_function_error()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
 

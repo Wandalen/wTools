@@ -17,8 +17,11 @@
 //! | ER.11 | PartialEq trait | Same variants | Compare correctly |
 
 use workspace_tools :: { Workspace, WorkspaceError };
-use std :: { env, path ::PathBuf };
+use std :: { env, path ::PathBuf, sync ::Mutex };
 use tempfile ::TempDir;
+
+// Serialize tests that mutate WORKSPACE_PATH — cargo test runs threads in parallel.
+static ENV_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
 
 /// Test ER.1 : `EnvironmentVariableMissing` error display
 #[ test ]
@@ -191,6 +194,7 @@ fn test_error_display_distinctness()
 #[ test ]
 fn test_error_creation_missing_env_var()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   
@@ -218,6 +222,7 @@ fn test_error_creation_missing_env_var()
 #[ test ]
 fn test_error_creation_invalid_path()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   // Save original state
   let original = env ::var( "WORKSPACE_PATH" ).ok();
 
@@ -255,9 +260,10 @@ fn test_error_creation_invalid_path()
 #[ test ]
 fn test_error_creation_validate_invalid()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
   let invalid_path = temp_dir.path().join( "nonexistent" );
-  
+
   // Save original state and temporarily set invalid path
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   env ::set_var( "WORKSPACE_PATH", &invalid_path );
@@ -283,8 +289,9 @@ fn test_error_creation_validate_invalid()
 #[ test ]
 fn test_error_creation_path_outside_workspace()
 {
+  let _lock = ENV_TEST_MUTEX.lock().unwrap();
   let temp_dir = TempDir ::new().unwrap();
-  
+
   // Save original state and set workspace path
   let original = env ::var( "WORKSPACE_PATH" ).ok();
   env ::set_var( "WORKSPACE_PATH", temp_dir.path() );
