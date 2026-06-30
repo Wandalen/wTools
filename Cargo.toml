@@ -240,7 +240,7 @@ path = "module/experimental/component_model"
 default-features = false
 
 [workspace.dependencies.component_model_meta]
-version = "~0.20.1"
+version = "~0.21.1"
 path = "module/experimental/component_model_meta"
 default-features = false
 
