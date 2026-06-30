@@ -436,7 +436,7 @@ path = "module/experimental/async_from"
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.52.1"
+version = "~0.53.1"
 path = "module/experimental/wca"
 
 ## willbe

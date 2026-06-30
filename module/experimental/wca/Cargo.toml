@@ -1,6 +1,6 @@
 [package]
 name = "wca"
-version = "0.52.1"
+version = "0.53.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
