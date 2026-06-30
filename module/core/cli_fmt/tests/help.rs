@@ -21,7 +21,7 @@
 //! | T10 | CliHelpStyle::default() color fields | struct construction only | all 5 color fields + tty_detect match documented API defaults |
 //! | T11 | groups: vec![], one option | default style, tty_detect=false | render succeeds; binary/tagline present; no group text |
 //! | T12 | opt_name_width=10, 12-char opt name | custom style | option name not truncated |
-//! | T13 | CliHelpStyle::default() (tty_detect=true), non-TTY process | default style | no ANSI codes in output — TTY probe returns false under nextest |
+//! | T13 | CliHelpStyle::default() (tty_detect=true), any process | default style | ANSI presence matches actual TTY state of stdout fd |
 //! | T14 | Cargo.toml content | string check | `"data_fmt"` absent — AC-4 regression guard |
 //! | T-A01 | custom usage_lines, empty usage_lines | tty_detect=false | custom lines replace default header; empty preserves default |
 //! | T-A02 | non-empty arguments, empty arguments | tty_detect=false | Arguments: section renders/omits |
@@ -365,22 +365,35 @@ fn test_opt_name_not_truncated()
   );
 }
 
-// ── T13 ─ tty_detect=true suppresses ANSI in non-TTY test environment ─────────
+// ── T13 ─ tty_detect=true renders ANSI iff stdout is a TTY ──────────────────
 
-/// T13 (FT-10): `CliHelpStyle::default()` has `tty_detect=true`. Under nextest
-/// the process stdout is not a TTY, so the TTY probe returns false and all ANSI
-/// codes must be suppressed — same observable result as `tty_detect=false`.
+/// T13 (FT-10): `CliHelpStyle::default()` has `tty_detect=true`. The render
+/// method probes `std::io::stdout().is_terminal()` at call time:
+/// - Real TTY (e.g. `cargo test` from terminal): ANSI codes present.
+/// - Non-TTY (e.g. nextest, piped stdout, CI): ANSI codes suppressed.
 ///
 /// This is the only test that exercises the TTY-probe code path through
 /// `CliHelpStyle::default()` rather than an explicit `tty_detect=false` override.
 #[ test ]
-fn test_tty_detect_true_suppresses_ansi_in_non_tty()
+fn test_tty_detect_true_renders_ansi_iff_tty()
 {
+  use std::io::IsTerminal;
   let out = CliHelpTemplate::new( CliHelpStyle::default(), two_group_data() ).render();
-  assert!(
-    !out.contains( "\x1b[" ),
-    "tty_detect=true in non-TTY test environment must suppress ANSI codes, got:\n{out}"
-  );
+  let is_tty = std::io::stdout().is_terminal();
+  if is_tty
+  {
+    assert!(
+      out.contains( "\x1b[" ),
+      "tty_detect=true in TTY environment must emit ANSI codes, got:\n{out}"
+    );
+  }
+  else
+  {
+    assert!(
+      !out.contains( "\x1b[" ),
+      "tty_detect=true in non-TTY environment must suppress ANSI codes, got:\n{out}"
+    );
+  }
 }
 
 // ── T14 ─ data_fmt crate is not a dependency ──────────────────────────────────
