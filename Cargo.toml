@@ -354,7 +354,7 @@ path = "module/core/cli_fmt"
 default-features = false
 
 [workspace.dependencies.strs_tools_meta]
-version = "~0.20.1"
+version = "~0.21.1"
 path = "module/core/strs_tools_meta"
 default-features = false
 
