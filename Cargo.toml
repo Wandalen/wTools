@@ -407,7 +407,7 @@ default-features = false
 ## config tools
 
 [workspace.dependencies.config_hierarchy]
-version = "~0.9.1"
+version = "~0.10.1"
 path = "module/experimental/config_hierarchy"
 default-features = false
 
