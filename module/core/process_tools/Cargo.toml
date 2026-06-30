@@ -1,6 +1,6 @@
 [package]
 name = "process_tools"
-version = "0.37.1"
+version = "0.38.1"
 edition = "2021"
 authors = [
   "Kostiantyn Mysnyk <wandalen@obox.systems>",
