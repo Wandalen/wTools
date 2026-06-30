@@ -315,7 +315,7 @@ path = "module/deprecated/is_slice"
 default-features = false
 
 [workspace.dependencies.asbytes]
-version = "~0.3.0"
+version = "~0.4.1"
 path = "module/experimental/asbytes"
 default-features = false
 
