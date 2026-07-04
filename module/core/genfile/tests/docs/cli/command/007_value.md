@@ -5,18 +5,20 @@
 - **Element:** Commands `22–24` (`.value.*` namespace)
 - **Source:** `docs/cli/command/value.md`
 - **Prefix:** `IT-`
-- **Minimum cases:** 5
+- **Minimum cases:** 8
 
 ### Case Index
 
 | ID | Name | Category | Status |
 |----|------|----------|--------|
 | IT-41 | value_set_stores_value_for_defined_parameter | nominal | ✅ |
-| IT-42 | value_set_undefined_parameter_exits_1 | error | ✅ |
+| IT-42 | value_set_undefined_parameter_exits_1 | error | 🔶 deferred |
 | IT-43 | value_set_overwrites_previous_value | nominal | ✅ |
 | IT-44 | value_list_shows_set_and_unset_params | nominal | ✅ |
 | IT-45 | value_clear_resets_all_values | nominal | ✅ |
-| IT-46 | value_clear_dry_run_makes_no_changes | nominal | ✅ |
+| IT-46 | value_clear_dry_run_makes_no_changes | nominal | 🔶 deferred |
+| IT-57 | value_set_persists_after_save_and_load | nominal | 🚧 |
+| IT-58 | value_list_empty_archive_shows_empty_output | nominal | 🚧 |
 
 ---
 
@@ -32,7 +34,7 @@
 - **Given:** An archive with no parameter named `undefined_param`
 - **When:** `.value.set name::undefined_param value::"foo"` is run
 - **Then:** Exit code 1; error message indicates parameter not defined
-- **Tests:** `tests/param_value_commands_test.rs`
+- **Tests:** none — see task/004_implement_deferred_source_behaviors.md
 
 ### IT-43: value.set overwrites previous value without error
 
@@ -60,4 +62,18 @@
 - **Given:** An archive with parameter values set
 - **When:** `.value.clear dry::1` is run
 - **Then:** Exit code 0; values remain set; output contains `[DRY RUN]`
+- **Tests:** none — deferred; no assigned implementation task
+
+### IT-57: value.set persists after save and load
+
+- **Given:** An archive with `port` parameter; `.value.set name::port value::"9000"` run; archive saved and reloaded
+- **When:** `.value.list` is run after reload
+- **Then:** Exit code 0; `port` shows value `"9000"` (value persists through round-trip)
+- **Tests:** `tests/param_value_commands_test.rs`
+
+### IT-58: value.list empty archive shows empty output
+
+- **Given:** An archive with no parameters is loaded
+- **When:** `.value.list` is run
+- **Then:** Exit code 0; output is empty or shows zero-count message (no error for empty list)
 - **Tests:** `tests/param_value_commands_test.rs`

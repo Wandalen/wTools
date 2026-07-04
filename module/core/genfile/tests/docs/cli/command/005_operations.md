@@ -5,7 +5,7 @@
 - **Element:** Commands `16–18` (`.materialize`, `.unpack`, `.pack`)
 - **Source:** `docs/cli/command/operations.md`
 - **Prefix:** `IT-`
-- **Minimum cases:** 6
+- **Minimum cases:** 8
 
 ### Case Index
 
@@ -17,6 +17,9 @@
 | IT-32 | unpack_preserves_placeholders | nominal | ✅ |
 | IT-33 | pack_creates_self_contained_archive | nominal | ✅ |
 | IT-34 | pack_dry_run_writes_no_file | nominal | ✅ |
+| IT-53 | materialize_with_default_value_used_when_no_explicit_value | nominal | 🚧 |
+| IT-54 | unpack_creates_destination_if_not_exists | nominal | 🚧 |
+| IT-59 | pack_internalizes_external_file_refs_before_saving | nominal | 🔶 deferred |
 
 ---
 
@@ -53,11 +56,32 @@
 - **Given:** A directory with 3 files
 - **When:** `.pack input::<dir> output::<file>.json` is run
 - **Then:** Exit code 0; `<file>.json` exists; all 3 files embedded inline in JSON
-- **Tests:** `tests/materialization_test.rs`
+- **Tests:** `tests/archive_commands_test.rs`
 
 ### IT-34: pack dry run writes no archive file
 
 - **Given:** A directory with files
 - **When:** `.pack input::<dir> output::<file>.json dry::1` is run
 - **Then:** Exit code 0; no file created at `<file>.json`; output contains `[DRY RUN]`
+- **Tests:** `tests/archive_commands_test.rs`
+
+### IT-53: materialize with default value used when no explicit value
+
+- **Given:** Archive with parameter `port` (default `"3000"`); no explicit `.value.set` called
+- **When:** `.materialize destination::<dir>` is run; archive file contains `{{port}}`
+- **Then:** Exit code 0; output file contains `3000` (default substituted)
 - **Tests:** `tests/materialization_test.rs`
+
+### IT-54: unpack creates destination if not exists
+
+- **Given:** Archive with files; destination directory `./new_dir` does not exist
+- **When:** `.unpack destination::"./new_dir"` is run
+- **Then:** Exit code 0; `./new_dir/` is created; files written with placeholders intact
+- **Tests:** `tests/materialization_test.rs`
+
+### IT-59: pack internalizes external file references before saving
+
+- **Given:** An archive is loaded that contains `ContentSource::File` references to external paths (created via `.archive.from_directory mode::reference`)
+- **When:** `.pack output::<file>.json` is run
+- **Then:** Exit code 0; `<file>.json` contains all file content inline; no external path references remain in the output
+- **Tests:** none — see task/004_implement_deferred_source_behaviors.md

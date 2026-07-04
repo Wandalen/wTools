@@ -30,3 +30,9 @@ Inconsistent exit codes break shell scripts and CI pipelines that check `$?`. Si
 | File | Relationship |
 |------|--------------|
 | [`src/error.rs`](../../src/error.rs) | Error formatting helpers enforcing the message format |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/invariant_test.rs`](../../tests/invariant_test.rs) | Verifies error message format, exit code contracts, and path traversal rejection |

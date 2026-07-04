@@ -21,11 +21,11 @@
 - **Given:** genfile binary is built in release mode; archive exists on disk
 - **When:** `.archive.load path::<file>` is run and execution time is measured
 - **Then:** Elapsed time is under 100ms for the command execution (excluding `cargo run` overhead)
-- **Tests:** none — see task/001_fill_test_surface_gaps.md
+- **Tests:** none — deferred; no assigned implementation task
 
 ### IN-02: REPL startup completes within 500ms
 
 - **Given:** genfile binary is built in release mode
 - **When:** `genfile` is started and time-to-prompt is measured
 - **Then:** First prompt appears within 500ms
-- **Tests:** none — see task/001_fill_test_surface_gaps.md
+- **Tests:** none — deferred; no assigned implementation task

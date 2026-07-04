@@ -94,7 +94,6 @@ docs/cli/
 
 | File | Responsibility |
 |------|----------------|
-| [command/readme.md](command/readme.md) | Command index and Quick Reference |
 | [param.md](param.md) | Parameter specifications and constraints |
 | [type.md](type.md) | Semantic type definitions and validation rules |
 | [param_group.md](param_group.md) | Shared parameter group definitions |

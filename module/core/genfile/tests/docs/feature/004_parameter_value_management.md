@@ -44,4 +44,4 @@
 - **Given:** An archive with no `ghost` parameter defined is loaded
 - **When:** `.value.set name::ghost value::foo` is run
 - **Then:** Exit code 1; error indicates parameter `ghost` is not defined
-- **Tests:** `tests/param_value_commands_test.rs`
+- **Tests:** none — see task/004_implement_deferred_source_behaviors.md

@@ -5,7 +5,7 @@
 - **Element:** Commands `12–15` (`.file.*` namespace)
 - **Source:** `docs/cli/command/file.md`
 - **Prefix:** `IT-`
-- **Minimum cases:** 6
+- **Minimum cases:** 8
 
 ### Case Index
 
@@ -18,6 +18,7 @@
 | IT-26 | file_remove_nonexistent_exits_1 | error | ✅ |
 | IT-27 | file_list_shows_all_files | nominal | ✅ |
 | IT-28 | file_show_displays_content_with_placeholders | nominal | ✅ |
+| IT-52 | file_list_empty_archive_shows_empty_output | nominal | 🚧 |
 
 ---
 
@@ -68,4 +69,11 @@
 - **Given:** Archive contains `main.rs` with `{{project_name}}` placeholder
 - **When:** `.file.show path::"main.rs"` is run
 - **Then:** Exit code 0; output contains `{{project_name}}` verbatim (no substitution)
+- **Tests:** `tests/file_commands_test.rs`
+
+### IT-52: file.list empty archive shows empty output
+
+- **Given:** An archive with no files is loaded
+- **When:** `.file.list` is run
+- **Then:** Exit code 0; output is empty or shows a zero-count message (no error for empty list)
 - **Tests:** `tests/file_commands_test.rs`

@@ -5,8 +5,14 @@
 - **Executor Type:** any
 - **Actor:** null
 - **Claimed At:** null
+- **Priority:** 0
+- **Advisability:** 0
 - **Status:** ✅ (Complete)
 - **Closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/genfile
+- **Validated By:** ai:retroactive-normalization-2026-07-04
+- **Validation Date:** 2026-07-04
 
 ## Goal
 
@@ -130,10 +136,10 @@ Desired answer for every question is YES.
 
 ### Anti-faking checks
 
-- [ ] AF1 — spec coverage: `grep -c "⏳" /home/user1/pro/lib/wip_core/wtools/dev/module/core/genfile/tests/docs/feature/*.md` → 0 (all feature cases resolved)
-- [ ] AF2 — spec coverage: `grep -c "⏳" /home/user1/pro/lib/wip_core/wtools/dev/module/core/genfile/tests/docs/invariant/*.md` → 0 (all invariant cases resolved)
-- [ ] AF3 — path traversal test exists: `grep -c "path_traversal" /home/user1/pro/lib/wip_core/wtools/dev/module/core/genfile/tests/materialization_test.rs` → ≥ 1
-- [ ] AF4 — help system test file exists: `test -f /home/user1/pro/lib/wip_core/wtools/dev/module/core/genfile/tests/help_system_test.rs && echo OK` → OK
+- [ ] AF1 — spec coverage: `grep -c "⏳" /home/user1/pro/lib/yrd_core/wtools/dev/module/core/genfile/tests/docs/feature/*.md` → 0 (all feature cases resolved)
+- [ ] AF2 — spec coverage: `grep -c "⏳" /home/user1/pro/lib/yrd_core/wtools/dev/module/core/genfile/tests/docs/invariant/*.md` → 0 (all invariant cases resolved)
+- [ ] AF3 — path traversal test exists: `grep -c "path_traversal" /home/user1/pro/lib/yrd_core/wtools/dev/module/core/genfile/tests/materialization_test.rs` → ≥ 1
+- [ ] AF4 — help system test file exists: `test -f /home/user1/pro/lib/yrd_core/wtools/dev/module/core/genfile/tests/help_system_test.rs && echo OK` → OK
 
 ## Outcomes
 
@@ -166,3 +172,11 @@ Desired answer for every question is YES.
 - AF4: `tests/help_system_test.rs` exists ✅
 
 **Source code impact:** Zero changes to `src/` (all behaviors were already implemented). One pre-existing clippy issue (`write!` with trailing `\n`) in `src/handlers/materialize.rs` was found and fixed (`writeln!`) — already in the commit that established this test surface.
+
+## Verification Record
+
+- **[2026-07-04]** RETROACTIVE VERIFY PASS — 6 MAAV subagents dispatched (task system normalization audit).
+  - D1 Scope Coherence: PASS — deliverables match scope; test files verified at correct yrd_core paths
+  - D2 MOST Goal Quality: PASS — 92/92 nextest + 3 doc tests passing, Level 3 PASS
+  - D3 Value / YAGNI: PASS — zero unresolved spec cases; no speculative work added
+  - D4 Implementation Readiness: PASS — all behaviors implemented; AF checks pass against correct paths

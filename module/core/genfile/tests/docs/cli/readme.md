@@ -14,7 +14,7 @@ Three tiers of test specs, each covering a distinct layer of the CLI contract:
 | Tier | Directory | Prefix | Covers |
 |------|-----------|--------|--------|
 | 1 | `param/` | `EC-` | Individual parameter invariants (default values, constraints, source priority, edge cases) |
-| 2 | `param_group/` | `GRP-` | Parameter group composition contracts (co-membership, semantic coherence, cross-command consistency) |
+| 2 | `param_group/` | `CC-` | Parameter group composition contracts (co-membership, semantic coherence, cross-command consistency) |
 | 3 | `command/` | `IT-` | Command behavioral specs (per-command contracts, exit codes, output format, integration flows) |
 
 ### Responsibility Table
@@ -23,4 +23,4 @@ Three tiers of test specs, each covering a distinct layer of the CLI contract:
 |-----------|----------------|
 | [command/](command/readme.md) | Spec files for each CLI command namespace (IT- prefix) |
 | [param/](param/readme.md) | Spec files for CLI parameters (EC- prefix) |
-| [param_group/](param_group/readme.md) | Spec files for CLI parameter groups (GRP- prefix) |
+| [param_group/](param_group/readme.md) | Spec files for CLI parameter groups (CC- prefix) |

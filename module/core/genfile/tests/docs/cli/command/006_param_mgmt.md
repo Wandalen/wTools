@@ -5,7 +5,7 @@
 - **Element:** Commands `19–21` (`.parameter.*` namespace)
 - **Source:** `docs/cli/command/param_mgmt.md`
 - **Prefix:** `IT-`
-- **Minimum cases:** 5
+- **Minimum cases:** 8
 
 ### Case Index
 
@@ -13,10 +13,12 @@
 |----|------|----------|--------|
 | IT-35 | parameter_add_registers_mandatory_param | nominal | ✅ |
 | IT-36 | parameter_add_registers_optional_param_with_default | nominal | ✅ |
-| IT-37 | parameter_add_duplicate_name_exits_1 | error | ✅ |
+| IT-37 | parameter_add_duplicate_name_exits_1 | error | 🔶 deferred |
 | IT-38 | parameter_list_shows_all_definitions | nominal | ✅ |
 | IT-39 | parameter_remove_deletes_existing_definition | nominal | ✅ |
 | IT-40 | parameter_remove_nonexistent_exits_1 | error | ✅ |
+| IT-55 | parameter_list_empty_archive_shows_empty_output | nominal | 🚧 |
+| IT-56 | parameter_add_persists_after_save_and_load | nominal | 🚧 |
 
 ---
 
@@ -39,7 +41,7 @@
 - **Given:** An archive with parameter `project_name` already defined
 - **When:** `.parameter.add name::project_name mandatory::false` is run again
 - **Then:** Exit code 1; error message indicates duplicate parameter name
-- **Tests:** `tests/param_value_commands_test.rs`
+- **Tests:** none — see task/004_implement_deferred_source_behaviors.md
 
 ### IT-38: parameter.list shows all definitions with metadata
 
@@ -60,4 +62,18 @@
 - **Given:** An archive with no parameter named `ghost`
 - **When:** `.parameter.remove name::ghost` is run
 - **Then:** Exit code 1; error message indicates parameter not found
+- **Tests:** `tests/param_value_commands_test.rs`
+
+### IT-55: parameter.list empty archive shows empty output
+
+- **Given:** An archive with no parameters is loaded
+- **When:** `.parameter.list` is run
+- **Then:** Exit code 0; output is empty or shows a zero-count message (no error)
+- **Tests:** `tests/param_value_commands_test.rs`
+
+### IT-56: parameter.add persists after save and load
+
+- **Given:** An archive is loaded; `.parameter.add name::env mandatory::true` is run; archive saved and reloaded
+- **When:** `.parameter.list` is run after reload
+- **Then:** Exit code 0; `env` appears in the list as mandatory (persists through round-trip)
 - **Tests:** `tests/param_value_commands_test.rs`

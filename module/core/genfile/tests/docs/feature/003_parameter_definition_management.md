@@ -52,4 +52,4 @@
 - **Given:** An archive with parameter `author` already defined is loaded
 - **When:** `.parameter.add name::author` is run again
 - **Then:** Exit code 1; error indicates duplicate parameter name
-- **Tests:** `tests/param_value_commands_test.rs`
+- **Tests:** none — see task/004_implement_deferred_source_behaviors.md

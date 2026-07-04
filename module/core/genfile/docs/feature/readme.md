@@ -19,5 +19,5 @@
 | 006 | [Template Materialization](006_template_materialization.md) | Render templates to generated files with parameter substitution | ✅ |
 | 007 | [Archive Serialization](007_archive_serialization.md) | Pack archives to portable self-contained files | ✅ |
 | 008 | [Archive Analysis](008_archive_analysis.md) | Analyze archives for status, parameters, and readiness | ✅ |
-| 009 | [Help System](009_help_system.md) | Universal and per-command help with auto-generation | ✅ |
+| 009 | [Help System](009_help_system.md) | Universal and per-command help with auto-generation | 🔄 |
 | 010 | [REPL Mode](010_repl_mode.md) | Interactive multi-command session with archive state persistence | ✅ |

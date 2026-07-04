@@ -30,3 +30,10 @@ Path traversal allows an attacker to overwrite arbitrary files outside the inten
 | File | Relationship |
 |------|--------------|
 | [`src/handlers/materialize.rs`](../../src/handlers/materialize.rs) | Primary path validation call site |
+
+### Tests
+
+| File | Relationship |
+|------|--------------|
+| [`tests/invariant_test.rs`](../../tests/invariant_test.rs) | Path traversal rejection tests for archive load paths |
+| [`tests/materialization_test.rs`](../../tests/materialization_test.rs) | Path traversal rejection tests for materialize destination |

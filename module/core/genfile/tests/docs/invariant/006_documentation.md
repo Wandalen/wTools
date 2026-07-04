@@ -21,7 +21,7 @@
 - **Given:** `readme.md` at the crate root is read
 - **When:** The file is checked for a quick start section
 - **Then:** A section headed "Quick Start" (or equivalent) is present with at least one end-to-end example
-- **Tests:** none — see task/001_fill_test_surface_gaps.md
+- **Tests:** none — deferred; no assigned implementation task
 
 ### IN-02: doc tests compile without warnings
 
@@ -29,4 +29,4 @@
 - **When:** `cargo test --doc --all-features` is run
 - **Then:** Exit code 0; no documentation warnings; all doc test examples compile and pass
 - **Behavioral Divergence:** doc with broken example → compile error; valid doc → passes
-- **Tests:** CI enforced via `w3 .test level::2`
+- **Tests:** none — doc compilation CI (`cargo test --doc --all-features`) enforces this invariant; no dedicated test file in `tests/`

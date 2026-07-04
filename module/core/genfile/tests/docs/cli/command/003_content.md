@@ -5,7 +5,7 @@
 - **Element:** Commands `9–11` (`.content.*` namespace)
 - **Source:** `docs/cli/command/content.md`
 - **Prefix:** `IT-`
-- **Minimum cases:** 5
+- **Minimum cases:** 8
 
 ### Case Index
 
@@ -16,6 +16,9 @@
 | IT-19 | content_externalize_writes_files_to_dir | nominal | ✅ |
 | IT-20 | content_list_shows_both_modes | nominal | ✅ |
 | IT-21 | content_list_filter_inline_shows_inline_only | nominal | ✅ |
+| IT-49 | content_externalize_switches_archive_to_reference_mode | nominal | 🚧 |
+| IT-50 | content_internalize_missing_reference_returns_error | error | 🚧 |
+| IT-51 | content_list_empty_archive_shows_empty_output | nominal | 🚧 |
 
 ---
 
@@ -52,4 +55,25 @@
 - **Given:** An archive with inline and reference files
 - **When:** `.content.list filter::inline` is run
 - **Then:** Exit code 0; only inline files listed; reference section absent
+- **Tests:** `tests/content_commands_test.rs`
+
+### IT-49: content.externalize switches archive to reference mode
+
+- **Given:** An archive with 2 inline files; output directory exists
+- **When:** `.content.externalize output_dir::<dir>` is run
+- **Then:** Exit code 0; archive entries are now reference mode pointing to files in `<dir>`
+- **Tests:** `tests/content_commands_test.rs`
+
+### IT-50: content.internalize missing reference returns error
+
+- **Given:** An archive with a reference-mode entry pointing to a file that does not exist on disk
+- **When:** `.content.internalize` is run
+- **Then:** Exit code 1; error message identifies the missing file path
+- **Tests:** `tests/content_commands_test.rs`
+
+### IT-51: content.list empty archive shows empty output
+
+- **Given:** An archive with no files is loaded
+- **When:** `.content.list` is run
+- **Then:** Exit code 0; output is empty or shows zero-count sections (no error)
 - **Tests:** `tests/content_commands_test.rs`

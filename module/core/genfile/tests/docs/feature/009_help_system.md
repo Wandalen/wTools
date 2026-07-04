@@ -23,25 +23,25 @@
 - **Given:** genfile binary is available
 - **When:** `.` or `.help` is invoked
 - **Then:** Exit code 0; output lists `.archive.new`, `.file.add`, and other non-help commands; no `.archive.new.help` entries in the list
-- **Tests:** none — see task/001_fill_test_surface_gaps.md
+- **Tests:** none — see task/003_implement_fr9_help_system.md
 
 ### FT-02: per-command help shows parameters and examples
 
 - **Given:** genfile binary is available
 - **When:** `.archive.new.help` is invoked
 - **Then:** Exit code 0; output describes `.archive.new`, lists its parameters with kinds/defaults, and shows usage examples
-- **Tests:** none — see task/001_fill_test_surface_gaps.md
+- **Tests:** none — see task/003_implement_fr9_help_system.md
 
 ### FT-03: help commands filtered from normal listings
 
 - **Given:** genfile binary is available
 - **When:** `.` is invoked (universal help)
 - **Then:** Output does NOT include `.archive.new.help` or any `*.help` entries
-- **Tests:** none — see task/001_fill_test_surface_gaps.md
+- **Tests:** none — see task/003_implement_fr9_help_system.md
 
 ### FT-04: .help alias behaves identically to .
 
 - **Given:** genfile binary is available
 - **When:** `.help` is invoked
 - **Then:** Exit code 0; output is equivalent to `.` invocation
-- **Tests:** none — see task/001_fill_test_surface_gaps.md
+- **Tests:** none — see task/003_implement_fr9_help_system.md

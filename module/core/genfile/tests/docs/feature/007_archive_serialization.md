@@ -23,7 +23,7 @@
 - **Given:** An archive with external file references is loaded
 - **When:** `.pack output::<file>.json` is run
 - **Then:** Exit code 0; the output archive file is self-contained (all content inline)
-- **Tests:** `tests/archive_commands_test.rs`
+- **Tests:** none — see task/004_implement_deferred_source_behaviors.md
 
 ### FT-02: pack from directory creates portable archive
 

@@ -5,7 +5,7 @@
 - **Element:** Commands `1–4` (`.info`, `.discover.parameters`, `.status`, `.analyze`)
 - **Source:** `docs/cli/command/operations.md`
 - **Prefix:** `IT-`
-- **Minimum cases:** 6
+- **Minimum cases:** 8
 
 ### Case Index
 
@@ -17,6 +17,8 @@
 | IT-14 | analyze_detects_unused_parameters | nominal | ✅ |
 | IT-15 | discover_parameters_finds_placeholders | nominal | ✅ |
 | IT-16 | discover_parameters_dry_run_no_changes | nominal | ✅ |
+| IT-47 | analyze_detects_undefined_placeholders | nominal | 🚧 |
+| IT-48 | info_shows_version_when_set | nominal | 🚧 |
 
 ---
 
@@ -60,4 +62,18 @@
 - **Given:** An archive file containing `{{project_name}}`; no parameters defined
 - **When:** `.discover.parameters dry::1` is run
 - **Then:** Exit code 0; output shows discovered parameter; no definition added (archive unchanged)
+- **Tests:** `tests/analysis_test.rs`
+
+### IT-47: analyze detects undefined placeholders
+
+- **Given:** An archive has `{{env}}` in a file content but no parameter `env` defined
+- **When:** `.analyze` is run
+- **Then:** Exit code 0; output identifies `env` as an undefined placeholder (used but not declared)
+- **Tests:** `tests/analysis_test.rs`
+
+### IT-48: info shows version when set
+
+- **Given:** An archive with version `"1.0.0"` set
+- **When:** `.info` is run
+- **Then:** Exit code 0; output includes the version field `"1.0.0"`
 - **Tests:** `tests/analysis_test.rs`

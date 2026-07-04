@@ -37,4 +37,4 @@
 - **Given:** An archive with parameter `secret_key` set to `my-secret` is loaded
 - **When:** A command fails and produces error output
 - **Then:** The value `my-secret` does not appear in stdout or stderr
-- **Tests:** none — see task/001_fill_test_surface_gaps.md
+- **Tests:** none — IN-03/004 deferred; requires `is_sensitive` flag design; no assigned implementation task
