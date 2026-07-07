@@ -13,6 +13,9 @@ exclude = [
 
   # Deprecated crates — parked here before final deletion
   "module/deprecated/*",
+
+  # Docs-only scaffold, not yet a crate (no Cargo.toml)
+  "module/core/will",
 ]
 # default-members = [ "module/core/wtools" ]
 
