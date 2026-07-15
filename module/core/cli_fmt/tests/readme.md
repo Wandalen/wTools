@@ -2,7 +2,7 @@
 
 This directory contains all automated tests for the cli_fmt crate.
 
-## Scope
+### Scope
 
 **Responsibilities:**
 Validates CLI output processing and help template rendering. Tests are organized by functional domain, with comprehensive coverage of OutputConfig behavior, process_output integration, ANSI preservation, and CliHelpTemplate column alignment and section omission. Test spec documents in `docs/` map each doc entity instance to its test cases.
@@ -43,7 +43,7 @@ Validates CLI output processing and help template rendering. Tests are organized
 
 ## Test Coverage
 
-`output.rs` (59 tests):
+`output.rs` (61 tests) *(verified 2026-07-15)*:
 - **OutputConfig Tests**: Default configuration, has_processing detection, builder pattern, is_default discriminant tests (stream_filter, width_suffix, unicode_aware, tail, width), new() constructor alias
 - **Stream Selection Tests**: stdout-only, stderr-only, both streams, both-with-empty-stdout, both-with-empty-stderr, stderr-before-stdout ordering
 - **Head Tests**: Truncate to N lines, exceeds total, exact count, empty input
@@ -53,8 +53,9 @@ Validates CLI output processing and help template rendering. Tests are organized
 - **Integration Tests**: Combined operations testing, combined both-streams+head+width, `lines_omitted` correctness via `process_output`
 - **Stream Merge Edge Cases**: stderr trailing newline (no double-newline separator), both streams trailing newlines (no double-newline), stdout-trailing-newline with separator, merge_streams Stdout-only direct call (AP-14), merge_streams Stderr-only direct call (AP-15)
 - **Combined Limit Tests** (FT-36..FT-44): stdout-filter+head, stderr-filter+head (FT-42 — symmetric counterpart), head+tail+width triple combination, empty stdout+non-empty stderr+head, width=0 disables truncation when head is active, unicode_aware=false char-not-byte counting (FT-43), line exactly 1 over max_width (FT-44)
+- **Re-export Contract Tests**: `cli_fmt::prelude::*` re-exports all output-processing items, isolated in a nested module to prove the wildcard import itself (AP-16); `cli_fmt::dependency::strs_tools` re-exports the underlying crate via fully-qualified path (AP-17)
 
-`help.rs` (34 tests):
+`help.rs` (38 tests) *(verified 2026-07-15)*:
 - **T01** Column alignment: cmd/opt names padded to configured widths, no ANSI in no-TTY mode
 - **T02** No ANSI codes: `tty_detect=false` suppresses all escape sequences
 - **T03** Explicit `tty_detect=false`: equivalent behavior to T01
@@ -89,13 +90,17 @@ Validates CLI output processing and help template rendering. Tests are organized
 - **T-B10** tagline appears after `Usage:` line, separated by a blank line (`"\n\n"`)
 - **T-B11** `col_gap=4` produces 4 spaces between padded name column and description (FT-31)
 - **T-B12** `cmd_indent=2` produces 2-space leading indent instead of default 4 (FT-32)
+- **T-B13** 7-char command name at default `cmd_name_width=20`: padding+col_gap+desc contiguous in one assertion (FT-33)
+- **T-B14** 9-char option name at default `opt_name_width=18`: padding+col_gap+desc contiguous for the legacy options path (FT-34)
+- **T-B15** All 8 help-template types referenced via `cli_fmt::prelude::*` only, isolated in a nested module: prelude re-export renders correctly (AP-10)
+- **T-B16** One `option_group` with entries of length 2 and 10: shorter entry pads to the group's own max length, not a global constant (FT-35)
 
 Compile_fail doc test (in `src/help.rs`):
 - **T-A08** Exhaustive external `CliHelpData` struct literal rejected by `#[non_exhaustive]`
 
-Total: 93 integration tests + 6 doc tests = 99 tests
+Total: 99 integration tests + 6 doc tests = 105 tests *(verified 2026-07-15)*
 
-`output_passthrough.rs` (1 test — not in standard suite; run with `cargo nextest run --test output_passthrough --no-default-features --features output_passthrough`):
+`output_passthrough.rs` (1 test — not in standard suite; run with `cargo nextest run --test output_passthrough --no-default-features --features output_passthrough`) *(verified 2026-07-15)*:
 - `feature_flag_line_filtering_passthrough` (FT-41) — verifies `apply_line_filtering` passthrough branch returns content unchanged with `lines_omitted == 0` when compiled without `string_split`
 
 ## Test Execution

@@ -2,10 +2,15 @@
 
 ### Scope
 
-- **Purpose**: Document what `cli_fmt` does and why each capability exists.
-- **Responsibility**: Behavioral capabilities — output filtering, truncation, stream merging, and CLI help template rendering.
-- **In Scope**: Instance 001 — CLI output filtering, truncation, and stream merging pipeline; Instance 002 — typed CLI help template with style/data separation.
-- **Out of Scope**: Public interface contracts — see `api/` instances.
+**Responsibilities:**
+Documents what `cli_fmt` does and why each capability exists — behavioral capabilities covering output filtering, truncation, stream merging, and CLI help template rendering.
+
+**In Scope:**
+- Instance 001 — CLI output filtering, truncation, and stream merging pipeline
+- Instance 002 — typed CLI help template with style/data separation
+
+**Out of Scope:**
+- Public interface contracts (see `api/` instances)
 
 ### Overview Table
 

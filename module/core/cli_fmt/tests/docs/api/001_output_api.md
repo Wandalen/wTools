@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the API contract documented in `docs/api/001_output_api.md`.
 - **Responsibility**: Test spec for infallibility, OutputConfig builder correctness, StreamFilter selection semantics, ProcessedOutput metadata accuracy, and merge_streams ordering guarantee.
-- **In Scope**: Infallibility on empty inputs (AP-1), builder chain processing state detection (AP-2), StreamFilter variant selection (AP-3), result metadata correctness (AP-4), merge_streams ordering (AP-5), OutputConfig::new() equivalence to default (AP-6), has_processing for tail and width builders (AP-7), with_stream_filter builder routing (AP-8), with_suffix builder customization (AP-9), with_unicode_aware builder activation (AP-10), merge_streams infallibility on empty inputs (AP-11), with_width(0) active processing state despite runtime no-op (AP-12), with_suffix("") empty suffix produces clean truncation with no marker (AP-13), merge_streams with Stdout filter (AP-14), merge_streams with Stderr filter (AP-15).
+- **In Scope**: Infallibility on empty inputs (AP-1), builder chain processing state detection (AP-2), StreamFilter variant selection (AP-3), result metadata correctness (AP-4), merge_streams ordering (AP-5), OutputConfig::new() equivalence to default (AP-6), has_processing for tail and width builders (AP-7), with_stream_filter builder routing (AP-8), with_suffix builder customization (AP-9), with_unicode_aware builder activation (AP-10), merge_streams infallibility on empty inputs (AP-11), with_width(0) active processing state despite runtime no-op (AP-12), with_suffix("") empty suffix produces clean truncation with no marker (AP-13), merge_streams with Stdout filter (AP-14), merge_streams with Stderr filter (AP-15), prelude re-export surface (AP-16), dependency::strs_tools re-export surface (AP-17).
 - **Out of Scope**: Internal processing logic — see `tests/docs/feature/001_output_processing.md` for feature-level behavioral specs.
 
 ### AP-1: process_output is infallible — accepts empty inputs without error or panic
@@ -85,17 +85,29 @@
 - **When:** `process_output("01234567890123456789", "", &config)`
 - **Then:** `result.width_truncated == true`; content begins with `"0123456789"` (first 10 chars); no extra character appended after position 10 — the empty suffix produces clean truncation with no visible indicator
 
-### AP-14: merge_streams with Stdout filter returns only stdout content ⏳
+### AP-14: merge_streams with Stdout filter returns only stdout content
 
 - **Given:** stdout `"hello"`, stderr `"world"`, `StreamFilter::Stdout`
 - **When:** `merge_streams("hello", "world", &StreamFilter::Stdout)`
 - **Then:** returns `"hello"` — only stdout content is returned; stderr is discarded entirely; no newline or separator is inserted
 
-### AP-15: merge_streams with Stderr filter returns only stderr content ⏳
+### AP-15: merge_streams with Stderr filter returns only stderr content
 
 - **Given:** stdout `"hello"`, stderr `"world"`, `StreamFilter::Stderr`
 - **When:** `merge_streams("hello", "world", &StreamFilter::Stderr)`
 - **Then:** returns `"world"` — only stderr content is returned; stdout is discarded entirely; no newline or separator is inserted
+
+### AP-16: cli_fmt::prelude::* re-exports all output-processing API items
+
+- **Given:** a consumer crate importing `use cli_fmt::prelude::*;`
+- **When:** `process_output`, `merge_streams`, `OutputConfig`, `StreamFilter`, `ProcessedOutput` are referenced by their bare names
+- **Then:** all resolve without an explicit `cli_fmt::output::` path — the prelude re-export makes the output API directly accessible
+
+### AP-17: cli_fmt::dependency::strs_tools re-exports the underlying strs_tools crate
+
+- **Given:** a consumer crate importing `cli_fmt::dependency::strs_tools`
+- **When:** the path is resolved
+- **Then:** it refers to the same `strs_tools` crate cli_fmt depends on internally — callers needing direct strs_tools access do not need their own separate `strs_tools` dependency declaration
 
 ### APIs
 
@@ -113,4 +125,4 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../tests/output.rs` | AP-1: `select_streams_both_empty`; AP-2: `output_config_default_is_no_processing`, `output_config_with_head_has_processing`; AP-3: `select_streams_stdout_only`, `select_streams_stderr_only`, `select_streams_both`; AP-4: `combined_head_and_width`; AP-5: `merge_streams_ordering`; AP-6: `output_config_new_matches_default`; AP-7: `output_config_with_tail_has_processing`, `output_config_with_width_has_processing`; AP-8: `select_streams_stdout_only`, `select_streams_stderr_only`, `stdout_filter_with_head`; AP-9: `width_custom_suffix`; AP-10: `unicode_aware_truncation`; AP-11: `merge_streams_both_empty_infallible`; AP-12: `output_config_with_width_zero_has_processing`; AP-13: `width_empty_suffix_no_marker`; AP-14: `merge_streams_stdout_only`; AP-15: `merge_streams_stderr_only` |
+| `../../../tests/output.rs` | AP-1: `select_streams_both_empty`; AP-2: `output_config_default_is_no_processing`, `output_config_with_head_has_processing`; AP-3: `select_streams_stdout_only`, `select_streams_stderr_only`, `select_streams_both`; AP-4: `combined_head_and_width`; AP-5: `merge_streams_ordering`; AP-6: `output_config_new_matches_default`; AP-7: `output_config_with_tail_has_processing`, `output_config_with_width_has_processing`; AP-8: `select_streams_stdout_only`, `select_streams_stderr_only`, `stdout_filter_with_head`; AP-9: `width_custom_suffix`; AP-10: `unicode_aware_truncation`; AP-11: `merge_streams_both_empty_infallible`; AP-12: `output_config_with_width_zero_has_processing`; AP-13: `width_empty_suffix_no_marker`; AP-14: `merge_streams_stdout_only`; AP-15: `merge_streams_stderr_only`; AP-16: `test_prelude_reexports_output_items`; AP-17: `test_dependency_strs_tools_reexport` |

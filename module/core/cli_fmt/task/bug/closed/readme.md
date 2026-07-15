@@ -1,5 +1,18 @@
 # Closed Bugs — cli_fmt
 
+### Scope
+
+**Responsibilities:**
+Archives resolved bug reports for the cli_fmt crate, each documenting root cause, fix location, and verification evidence per the Bug-Fixing Workflow.
+
+**In Scope:**
+- Closed/resolved bug report files (BUG-NNN, verified and fixed)
+- Fix Documentation: Hypothesis Table, Evidence Table, Root Cause, Why Not Caught, Fix Location, Prevention, Generalized Version, History
+
+**Out of Scope:**
+- Open/unresolved bugs (see `../readme.md`)
+- Bug index and tracking tables (see `../readme.md`)
+
 ## Responsibility Table
 
 | File | Responsibility |

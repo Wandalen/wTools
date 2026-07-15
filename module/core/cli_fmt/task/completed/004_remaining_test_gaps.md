@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** MAAV(VG-1..VG-4 PASS); Level-3-PASS(58/58 nextest, 4 doc, 0 clippy)
-- **Validation Date:** 2026-06-06
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-06-06
+- **blocked_by:** null
 
 ## Goal
 
@@ -136,6 +139,8 @@ Desired answer for every question is YES.
 - **[2026-06-06]** `COMPLETED` — All 4 tests implemented and passing (58/58 nextest, 4 doc, 0 clippy). FT-24/FT-25 ⏳ markers removed from spec headers. FT-10/FT-11 mapped to test function names. feature/readme.md Status → ✅.
 
 ## Verification Record
+
+_Legacy `validated_by` (pre-normalization, preserved for record): `MAAV(VG-1..VG-4 PASS); Level-3-PASS(58/58 nextest, 4 doc, 0 clippy)`_
 
 - **VG-1 (Scope Coherence):** PASS — In/Out-of-Scope non-empty, concrete, consistent; confirmed FT-24/FT-25/FT-10/FT-11 ⏳ markers present in spec files; confirmed 4 test functions absent from implementation files.
 - **VG-2 (MOST Goal Quality):** PASS — all 4 MOST dimensions present and substantive; observable outcome is binary and grep-checkable; testable command is Level-3 with quantified count.

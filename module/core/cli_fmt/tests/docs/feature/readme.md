@@ -2,10 +2,14 @@
 
 ### Scope
 
-- **Purpose**: Document test cases verifying behavioral requirements of cli_fmt feature doc instances.
-- **Responsibility**: Test specifications verifying behavioral requirements for output processing and CLI help template rendering.
-- **In Scope**: FT-prefixed specs for Feature 001 (output processing, FT-1..FT-44) and Feature 002 (cli_help_template, FT-1..FT-32).
-- **Out of Scope**: Test implementation code — see `tests/output.rs` (Feature 001) and `tests/help.rs` (Feature 002).
+**Responsibilities:**
+Documents test cases verifying behavioral requirements of cli_fmt feature doc instances — test specifications for output processing and CLI help template rendering.
+
+**In Scope:**
+- FT-prefixed specs for Feature 001 (output processing, FT-1..FT-44) and Feature 002 (cli_help_template, FT-1..FT-35)
+
+**Out of Scope:**
+- Test implementation code (see `tests/output.rs` for Feature 001, `tests/help.rs` for Feature 002)
 
 ### Overview Table
 

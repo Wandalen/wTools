@@ -2,6 +2,20 @@
 
 Tasks that passed validation and are finished.
 
+### Scope
+
+**Responsibilities:**
+Archives finished task files for the cli_fmt crate, each retaining Work Procedure, Validation Checklist, and Outcomes evidence for completed work.
+
+**In Scope:**
+- Completed task files (001–009, 015) with appended Outcomes sections and closure History
+- Validation evidence for finished work (measurements, invariants, anti-faking checks)
+
+**Out of Scope:**
+- In-progress or not-yet-started tasks (see `../unverified/`, `../verifying/`, `../verified/`, `../executing/`, `../validating/`)
+- Cancelled tasks (see `../cancelled/`)
+- Bug reports (see `../bug/`)
+
 ## Responsibility Table
 
 | File | Responsibility |
@@ -15,3 +29,4 @@ Tasks that passed validation and are finished.
 | `007_fix_test_assertion_gaps.md` | Add FT-33/FT-17 missing assertions to `tests/output.rs` |
 | `008_feature_flag_filtering_test.md` | Add FT-41 passthrough test via `output_passthrough` feature |
 | `009_fill_new_test_coverage_gaps.md` | Implement 7 ⏳ spec cases — FT-42..FT-44, AP-14..AP-15, FT-31, FT-32 |
+| `015_fill_col_gap_padding_contiguity_test.md` | Add FT-33 test proving padding, col_gap, and description are contiguous |

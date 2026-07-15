@@ -16,6 +16,9 @@ both to `CliHelpTemplate::new()`, and call `render()` to obtain the complete hel
 `render()` is infallible — it performs no I/O beyond a single TTY probe and cannot return
 an error or panic.
 
+All items are re-exported through `cli_fmt::prelude::*`, the crate's recommended import
+path.
+
 ### Types
 
 **`CliHelpStyle`** — visual and layout parameters for rendering. All fields are public.
@@ -97,7 +100,7 @@ an error or panic.
 2. Emits header: when `data.usage_lines` is non-empty, emits each line as `"  {line}"`; otherwise emits `"{bold}Usage:{rst} {binary} <command>"`. In both cases follows with: blank line, tagline text, blank line, `"{bold}Commands:{rst}"`.
 3. If `data.arguments` is non-empty: emits `"{bold}Arguments:{rst}"` section; entries padded to the maximum argument name length across all argument entries.
 4. Emits each command group from `data.groups` with entries padded to `cmd_name_width`.
-5. For each `OptionGroup` in `data.option_groups`: emits `"{name}:"` header then entries padded to that group's own maximum entry name length independently.
+5. For each `OptionGroup` in `data.option_groups`: if the group's `entries` list is non-empty, emits `"{name}:"` header then entries padded to that group's own maximum entry name length independently; groups with an empty `entries` list are omitted entirely (header included).
 6. If `data.option_groups` is empty and `data.options` is non-empty: emits `"{bold}Options:{rst}"` section with names padded to `opt_name_width` (backward compat).
 7. If `data.examples` is non-empty: emits `"{bold}Examples:{rst}"` section; each entry with a present desc appends `  # {text}`; entries without desc emit the invocation bare.
 
@@ -112,12 +115,6 @@ Column padding uses minimum-width alignment. For commands (step 4) and legacy op
 All public struct fields and the `new` / `render` signatures are stable across patch and minor versions. New fields may be added to `CliHelpStyle` or `CliHelpData` in minor versions with backward-compatible defaults. Semantic changes to existing fields require a major version bump.
 
 `CliHelpData` is an extensible structure — struct literals from outside the crate fail to compile. Callers must use the default constructor followed by field assignment; struct update syntax also fails to compile outside the crate. Validated by the T-A08 compile_fail doctest in `src/help.rs`.
-
-### API Tests
-
-| File | Relationship |
-|------|-------------|
-| [`../../tests/docs/api/002_help_api.md`](../../tests/docs/api/002_help_api.md) | Test specification verifying the API contracts defined here |
 
 ### Features
 
@@ -141,4 +138,5 @@ All public struct fields and the `new` / `render` signatures are stable across p
 
 | File | Relationship |
 |------|-------------|
+| [`../../tests/docs/api/002_help_api.md`](../../tests/docs/api/002_help_api.md) | Test specification verifying the API contracts defined here |
 | `tests/help.rs` | API contract verification — render infallibility, layout defaults, column padding, section omission, annotation rendering, and OptionGroup construction |

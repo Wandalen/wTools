@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** author-inline (pre-MAAV historic — see ## Verification Record)
-- **Validation Date:** 2026-05-17
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-05-17
+- **blocked_by:** null
 
 ## Goal
 
@@ -168,5 +171,7 @@ All Checklist items (C1–C14, I2, AF1–AF4 statically; M1, M2, I1, AF4 by test
 - **[2026-05-17]** `COMPLETED` — All 9 tests pass (T01–T09 including T09 bug reproducer). Validated via w3 .test level::3.
 
 ## Verification Record
+
+_Legacy `validated_by` (pre-normalization, preserved for record): `author-inline (pre-MAAV historic — see ## Verification Record)`_
 
 Pre-MAAV inline validation — 2026-05-17. This task predates the MAAV (Multi-Agent Adversarial Validation) standard (GP #11). Validation was performed inline by the authoring entity without independent adversarial subagents — constitutes Self-Verification Forgery by current GP #11 standards. Accepted as a historic baseline: all Checklist items C1–C14 and AF1–AF4 statically verified; M1, M2, I1, AF4 verified by test run. C15 is permanently non-verifiable from cli_fmt scope (external crates) — accepted by convention.

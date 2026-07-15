@@ -44,6 +44,10 @@
 //! | T-B10 | tagline and usage line | tty_detect=false | blank line separates usage from tagline; usage appears first |
 //! | T-B11 | col_gap=4, cmd_name_width=7, one command | tty_detect=false | 4-space gap between padded name column and description (FT-31) |
 //! | T-B12 | cmd_indent=2, cmd_name_width=3, one command | tty_detect=false | 2-space leading indent instead of default 4 (FT-32) |
+//! | T-B13 | cmd_name_width=20 (default), 7-char command name | tty_detect=false | padding+col_gap+desc contiguous for a genuinely short name (FT-33) |
+//! | T-B14 | opt_name_width=18 (default), 9-char option name | tty_detect=false | padding+col_gap+desc contiguous for legacy options path (FT-34) |
+//! | T-B15 | all 8 help-template types referenced via `cli_fmt::prelude::*` only | tty_detect=false | prelude re-export renders correctly; isolated nested module (AP-10) |
+//! | T-B16 | one option_group, entries of length 2 and 10 | tty_detect=false | shorter entry pads to group's own max length, not a global constant (FT-35) |
 
 use cli_fmt::help::*;
 
@@ -968,5 +972,129 @@ fn test_cmd_indent_custom()
   assert!(
     out.contains( "  run  run the app" ),
     "FT-32: cmd_indent=2 must produce 2-space leading indent instead of default 4, got:\n{out}",
+  );
+}
+
+// ── T-B13 ─ padded short command name contiguous with gap+desc ──────────────
+
+/// T-B13 (FT-33): a command name shorter than `cmd_name_width` (default 20)
+/// must be padded all the way to that width, then immediately followed by
+/// `col_gap` (default 2) more spaces, then the description — proving the
+/// padding, gap, and description form one contiguous run for a genuinely
+/// short name, not just for exact-fit names (FT-31/FT-32).
+#[ test ]
+fn test_padded_name_contiguous_with_gap_and_description()
+{
+  let style = CliHelpStyle { tty_detect : false, ..CliHelpStyle::default() };
+  let mut data = CliHelpData::default();
+  data.groups = vec!
+  [
+    CommandGroup
+    {
+      name    : "CMDS".into(),
+      entries : vec![ CommandEntry { name : "cmd-one".into(), desc : "do one thing".into() } ],
+    },
+  ];
+  let out = CliHelpTemplate::new( style, data ).render();
+  assert!(
+    out.contains( "cmd-one               do one thing" ),
+    "FT-33: \"cmd-one\" (7 chars) padded to cmd_name_width=20 (13 spaces) plus col_gap=2 (15 spaces total) must be immediately contiguous with the description, got:\n{out}",
+  );
+}
+
+// ── T-B14 ─ padded short option name contiguous with gap+desc ───────────────
+
+/// T-B14 (FT-34): mirrors T-B13 for the legacy `options` path — an option
+/// name shorter than `opt_name_width` (default 18) must be padded to that
+/// width, then immediately followed by `col_gap` (default 2) more spaces,
+/// then the description, proving `emit_options` shares the same contiguity
+/// guarantee as `emit_groups` (T-B13/FT-33).
+#[ test ]
+fn test_padded_opt_name_contiguous_with_gap_and_description()
+{
+  let style = CliHelpStyle { tty_detect : false, ..CliHelpStyle::default() };
+  let mut data = CliHelpData::default();
+  data.options = vec![ OptionEntry { name : "dry::bool".into(), desc : "Dry run".into() } ];
+  let out = CliHelpTemplate::new( style, data ).render();
+  assert!(
+    out.contains( "dry::bool           Dry run" ),
+    "FT-34: \"dry::bool\" (9 chars) padded to opt_name_width=18 (9 spaces) plus col_gap=2 (11 spaces total) must be immediately contiguous with the description, got:\n{out}",
+  );
+}
+
+// ── T-B15 ─ prelude re-exports all help-template API items ──────────────────
+
+/// T-B15 (AP-10): `cli_fmt::prelude::*` must re-export all 8 help-template
+/// types (`CliHelpStyle`, `CommandGroup`, `CommandEntry`, `OptionEntry`,
+/// `ExampleEntry`, `CliHelpData`, `CliHelpTemplate`, `OptionGroup`) by bare
+/// name. Isolated in its own nested module (own `use`, no `use super::*`) so
+/// a broken prelude re-export fails to COMPILE here, not just fail an
+/// assertion — the file-scope `use cli_fmt::help::*;` above must not mask it.
+mod prelude_reexports_help_items
+{
+  use cli_fmt::prelude::*;
+
+  #[ test ]
+  fn test_prelude_reexports_help_items()
+  {
+    let style = CliHelpStyle { tty_detect : false, ..CliHelpStyle::default() };
+    let mut data = CliHelpData::default();
+    data.groups = vec!
+    [
+      CommandGroup
+      {
+        name    : "CMDS".into(),
+        entries : vec![ CommandEntry { name : "run".into(), desc : "run it".into() } ],
+      },
+    ];
+    data.option_groups = vec!
+    [
+      OptionGroup
+      {
+        name    : "OPTS".into(),
+        entries : vec![ OptionEntry { name : "--flag".into(), desc : "a flag".into() } ],
+      },
+    ];
+    data.examples = vec![ ExampleEntry { invocation : "app run".into(), desc : None } ];
+    let out = CliHelpTemplate::new( style, data ).render();
+    assert!( out.contains( "run" ),     "AP-10: prelude-constructed CliHelpTemplate must render CommandGroup/CommandEntry, got:\n{out}" );
+    assert!( out.contains( "--flag" ),  "AP-10: prelude-constructed CliHelpTemplate must render OptionGroup/OptionEntry, got:\n{out}" );
+    assert!( out.contains( "app run" ), "AP-10: prelude-constructed CliHelpTemplate must render ExampleEntry, got:\n{out}" );
+  }
+}
+
+// ── T-B16 ─ option_groups within-group differential padding ─────────────────
+
+/// T-B16 (FT-35): mirrors the arguments self-relative padding proof (FT-22)
+/// for `option_groups` — within one group, a name shorter than the group's
+/// own longest entry must pad to that self-relative max length, then
+/// immediately continue with the fixed 2-space gap and description. T-A06
+/// only proves independence ACROSS groups (two groups, two different
+/// max-lengths); this proves differential padding WITHIN a single group.
+#[ test ]
+fn test_option_group_differential_padding_within_group()
+{
+  let style = CliHelpStyle { tty_detect : false, ..CliHelpStyle::default() };
+  let mut data = CliHelpData::default();
+  data.option_groups = vec!
+  [
+    OptionGroup
+    {
+      name    : "GRP".into(),
+      entries : vec!
+      [
+        OptionEntry { name : "-x".into(),         desc : "short flag".into() },
+        OptionEntry { name : "--extended".into(), desc : "long flag".into() },
+      ],
+    },
+  ];
+  let out = CliHelpTemplate::new( style, data ).render();
+  assert!(
+    out.contains( "  -x          short flag" ),
+    "FT-35: \"-x\" (2 chars) padded to this group's own max length 10 (8 spaces) plus the fixed 2-space gap (10 spaces total) must be contiguous with the description, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  --extended  long flag" ),
+    "FT-35: \"--extended\" (10 chars, this group's max) needs no padding — only the fixed 2-space gap separates it from the description, got:\n{out}",
   );
 }

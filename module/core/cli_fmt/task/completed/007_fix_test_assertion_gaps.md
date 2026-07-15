@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** MAAV(VG-1..VG-4 PASS)
-- **Validation Date:** 2026-06-23
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-06-23
+- **blocked_by:** null
 
 ## Goal
 
@@ -97,12 +100,6 @@ Desired answer for every question is YES.
 - `docs/feature/001_output_processing.md` — normative output processing behavioral requirements
 - `docs/api/001_output_api.md` — output API contract (updated in doc_tsk pass)
 
-## History
-
-- **[2026-06-23]** `CREATED` — Fix three assertion gaps found during spec audit: FT-33 missing width_truncated assertion, FT-17 missing suffix-absence assertion, and stale test matrix missing 7 rows.
-- **[2026-06-23]** `UPDATED` — Scope narrowed to two assertion gaps: test matrix stale-row gap already resolved (rows 83–89 confirmed present); FT-17 path committed to suffix-absence assertion (behavior confirmed in code comment at lines 587–588 and FT-17 spec); acceptance criteria made binary and machine-verifiable per Verification Gate findings.
-- **[2026-06-23]** `COMPLETED` — Both assertions present in `tests/output.rs`: `assert!(result.width_truncated, ...)` in `combined_streams_head_width` (C1 ✓); `assert!(!result.content.contains('→'), ...)` in `width_one_truncates` (C2 ✓). Level 3 PASS: 85/85 nextest + 6 doc + 0 clippy (C3 ✓).
-
 ## Outcomes
 
 Both FT-33 and FT-17 Then-clause claims are now asserted by the test suite:
@@ -111,7 +108,15 @@ Both FT-33 and FT-17 Then-clause claims are now asserted by the test suite:
 
 Level 3 PASS: 85 nextest + 6 doc + 0 clippy.
 
+## History
+
+- **[2026-06-23]** `CREATED` — Fix three assertion gaps found during spec audit: FT-33 missing width_truncated assertion, FT-17 missing suffix-absence assertion, and stale test matrix missing 7 rows.
+- **[2026-06-23]** `UPDATED` — Scope narrowed to two assertion gaps: test matrix stale-row gap already resolved (rows 83–89 confirmed present); FT-17 path committed to suffix-absence assertion (behavior confirmed in code comment at lines 587–588 and FT-17 spec); acceptance criteria made binary and machine-verifiable per Verification Gate findings.
+- **[2026-06-23]** `COMPLETED` — Both assertions present in `tests/output.rs`: `assert!(result.width_truncated, ...)` in `combined_streams_head_width` (C1 ✓); `assert!(!result.content.contains('→'), ...)` in `width_one_truncates` (C2 ✓). Level 3 PASS: 85/85 nextest + 6 doc + 0 clippy (C3 ✓).
+
 ## Verification Record
+
+_Legacy `validated_by` (pre-normalization, preserved for record): `MAAV(VG-1..VG-4 PASS)`_
 
 - **Date:** 2026-06-23
 - **VG-1 (Scope Coherence):** PASS — In Scope names exact file, functions, assertion expressions, and insertion points; Out of Scope is substantive with rationale per exclusion; observable outcome is grep-verifiable (C1/C2 binary string presence).

@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** author-inline (pre-MAAV historic — see ## Verification Record)
-- **Validation Date:** 2026-05-17
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-05-17
+- **blocked_by:** null
 
 ## Goal
 
@@ -133,5 +136,7 @@ Validation run 2026-05-17: 33 output tests pass (M1), both new test functions ex
 - **[2026-05-17]** `COMPLETED` — width_exact_boundary and process_output_head_lines_omitted added; 33 output tests pass.
 
 ## Verification Record
+
+_Legacy `validated_by` (pre-normalization, preserved for record): `author-inline (pre-MAAV historic — see ## Verification Record)`_
 
 Pre-MAAV inline validation — 2026-05-17. This task predates the MAAV (Multi-Agent Adversarial Validation) standard (GP #11). Validation was performed inline by the authoring entity without independent adversarial subagents — constitutes Self-Verification Forgery by current GP #11 standards. Accepted as a historic baseline: all Checklist items C1–C11, Measurements (M1=33, M2=2), Invariant I1, and Anti-faking checks AF1–AF2 verified at completion time.

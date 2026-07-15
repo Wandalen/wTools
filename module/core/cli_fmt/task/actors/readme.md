@@ -7,3 +7,4 @@ Registry of all actors in the cli_fmt task system.
 | Canonical | Name | Role | Aliases | Notes |
 |-----------|------|------|---------|-------|
 | dev | Developer | Executor | — | Generic development executor for cli_fmt tasks |
+| validator | Independent Validator | Validator | — | Dispatched fresh per task for the 🔎→✅ gate; never shares context with the executor |

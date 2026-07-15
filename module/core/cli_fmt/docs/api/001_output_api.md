@@ -16,6 +16,10 @@ stage is needed.
 
 Both functions are infallible — they perform no I/O and cannot produce errors.
 
+All items are re-exported through `cli_fmt::prelude::*`, the crate's recommended import
+path. The underlying `strs_tools` crate is additionally re-exported at
+`cli_fmt::dependency::strs_tools` for callers that need direct access.
+
 ### Operations
 
 **Process output** — applies stream selection, line filtering, and width truncation
@@ -25,7 +29,7 @@ Returns a processed output value containing the result text and accuracy metadat
 **Merge streams** — combines stdout and stderr into a single string according to the
 stream filter. Does not apply line filtering or width truncation.
 
-**Output configuration** — a builder-pattern value for specifying processing options:
+**Output configuration** (`OutputConfig::new()` / `OutputConfig::default()` — equivalent constructors) — a builder-pattern value for specifying processing options:
 - Head limit: retain only the first N lines of combined output.
 - Tail limit: retain only the last N lines of combined output.
 - Width limit: maximum visible character width per line; zero disables truncation at
@@ -60,12 +64,6 @@ Both public functions are infallible. They perform no I/O and accept any string 
 
 The function signatures, configuration fields, and result structure are stable across patch and minor versions. New configuration options may be added in minor versions with backward-compatible defaults. Changes to existing option semantics require a major version bump.
 
-### API Tests
-
-| File | Relationship |
-|------|-------------|
-| [`../../tests/docs/api/001_output_api.md`](../../tests/docs/api/001_output_api.md) | Test specification verifying the API contracts defined here |
-
 ### Features
 
 | File | Relationship |
@@ -88,4 +86,5 @@ The function signatures, configuration fields, and result structure are stable a
 
 | File | Relationship |
 |------|-------------|
+| [`../../tests/docs/api/001_output_api.md`](../../tests/docs/api/001_output_api.md) | Test specification verifying the API contracts defined here |
 | `tests/output.rs` | API contract verification across processing configurations |

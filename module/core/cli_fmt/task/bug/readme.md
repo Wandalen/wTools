@@ -1,5 +1,20 @@
 # Bug Reports — cli_fmt
 
+### Scope
+
+**Responsibilities:**
+Tracks all bug reports for the cli_fmt crate — open investigations and resolved fixes — with severity, component, root cause, and reopen-count metadata.
+
+**In Scope:**
+- Open bug reports under investigation or awaiting fix (BUG-NNN files in this directory)
+- Bug index tables (Open Bugs, Closed Bugs) with severity/component/root-cause summaries
+- Cross-references to closed bug reports in `closed/`
+
+**Out of Scope:**
+- Resolved bug report content itself (see `closed/`)
+- Feature requests or enhancement proposals (not bugs)
+- Task tracking for non-bug work (see `../completed/`, `../readme.md`)
+
 ## Responsibility Table
 
 | File | Responsibility |
@@ -11,6 +26,7 @@
 
 | ID | Title | State | Severity | Component | Filed | Root Cause | Reopen Count |
 |----|-------|-------|----------|-----------|-------|------------|--------------|
+| BUG-008 | [CliHelpData non_exhaustive break shipped as semver-patch](./008_non_exhaustive_patch_release_break.md) | 🟢 Verified | Medium | `Cargo.toml`/`changelog.md` (v0.9.2 release) | 2026-07-15 | `#[non_exhaustive]` added to `CliHelpData` in a 0.9.1→0.9.2 patch-level bump, which Cargo's caret-matching rule treats as backward-compatible | 0 |
 
 ## Closed Bugs
 

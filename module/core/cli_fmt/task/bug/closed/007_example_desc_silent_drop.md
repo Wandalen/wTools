@@ -28,7 +28,7 @@ warning emitted. Affects every invocation where any example has `desc: Some(_)`.
 ## How Discovered
 
 ```bash
-# Discovered during test surface audit (task 003) of cli_help_template module.
+# Discovered during test surface audit (task 001) of cli_help_template module.
 # Code review of emit_examples() found the desc field was never read.
 $ cargo test test_example_desc_rendered -- --nocapture
 ```

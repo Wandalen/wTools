@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the API contract documented in `docs/api/002_help_api.md`.
 - **Responsibility**: Test spec for render infallibility, `CliHelpStyle::default()` field values, column padding semantics, conditional section omission, and `ExampleEntry.desc` annotation rendering.
-- **In Scope**: Render infallibility (AP-1), `CliHelpStyle::default()` layout field values (AP-2), column padding as minimum width (AP-3), section omission when vecs empty (AP-4), `ExampleEntry.desc` Some/None rendering (AP-5), `CliHelpStyle::default()` color field values and `tty_detect` (AP-6), `OptionGroup` struct construction (AP-7), `CliHelpData::default()` constructs with empty Vecs (AP-8).
+- **In Scope**: Render infallibility (AP-1), `CliHelpStyle::default()` layout field values (AP-2), column padding as minimum width (AP-3), section omission when vecs empty (AP-4), `ExampleEntry.desc` Some/None rendering (AP-5), `CliHelpStyle::default()` color field values and `tty_detect` (AP-6), `OptionGroup` struct construction (AP-7), `CliHelpData::default()` constructs with empty Vecs (AP-8), `CliHelpData` struct-literal rejection under `#[non_exhaustive]` (AP-9), prelude re-export surface (AP-10), OptionGroup with empty entries list omitted entirely including header (AP-11).
 - **Out of Scope**: Behavioral rationale and style customization — see `tests/docs/feature/002_cli_help_template.md` for feature-level behavioral specs.
 
 ### AP-1: CliHelpTemplate::render() is infallible — accepts any valid input without panic
@@ -55,6 +55,24 @@
 - **When:** each field is inspected
 - **Then:** `usage_lines.is_empty()`; `arguments.is_empty()`; `option_groups.is_empty()`; `groups.is_empty()`; `options.is_empty()`; `examples.is_empty()`; `binary` is an empty string; `tagline` is an empty string; no panic
 
+### AP-9: CliHelpData struct literals from outside the crate fail to compile under #[non_exhaustive]
+
+- **Given:** external crate code attempting `CliHelpData { binary: String::new(), tagline: String::new(), groups: vec![], options: vec![], examples: vec![], usage_lines: vec![], arguments: vec![], option_groups: vec![] }` — a fully-exhaustive struct literal naming every field
+- **When:** the crate is compiled
+- **Then:** compilation fails with E0639 (`#[non_exhaustive]` blocks struct expressions, including struct update syntax, from outside the defining crate); callers must use `CliHelpData::default()` followed by field assignment instead
+
+### AP-10: cli_fmt::prelude::* re-exports all help-template API items
+
+- **Given:** a consumer crate importing `use cli_fmt::prelude::*;`
+- **When:** `CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, `OptionGroup`, `CommandGroup`, `CommandEntry`, `OptionEntry`, `ExampleEntry` are referenced by their bare names
+- **Then:** all resolve without an explicit `cli_fmt::help::` path — the prelude re-export makes the help-template API directly accessible
+
+### AP-11: OptionGroup with an empty entries list is omitted entirely, header included
+
+- **Given:** a `CliHelpData` with `option_groups` containing an `OptionGroup` whose `entries` list is empty
+- **When:** `CliHelpTemplate::new(style, data).render()`
+- **Then:** the rendered output contains neither the group's `"{name}:"` header nor any entry line for that group — omission is unconditional on entries being empty, not partial (header-only) omission
+
 ### APIs
 
 | File | Relationship |
@@ -71,5 +89,5 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../tests/help.rs` | AP-1: `test_single_group_binary_name`; AP-2: `test_style_default_fields`; AP-3: `test_name_not_truncated`; AP-4: `test_no_options_section`, `test_no_examples_section`; AP-5: `test_example_desc_rendered`; AP-6: `test_style_color_defaults`; AP-7: `test_option_groups_render` (T-A03); AP-8: `test_cli_help_data_default` (T-A07) |
-| `../../../src/help.rs` | T-A08 (compile_fail doctest): exhaustive external `CliHelpData` literal rejected by `#[non_exhaustive]` |
+| `../../../tests/help.rs` | AP-1: `test_single_group_binary_name`; AP-2: `test_style_default_fields`; AP-3: `test_name_not_truncated`; AP-4: `test_no_options_section`, `test_no_examples_section`; AP-5: `test_example_desc_rendered`; AP-6: `test_style_color_defaults`; AP-7: `test_option_groups_render` (T-A03); AP-8: `test_cli_help_data_default` (T-A07); AP-10: `test_prelude_reexports_help_items` (T-B15); AP-11: `test_option_group_empty_entries_skipped` (T-B06) |
+| `../../../src/help.rs` | AP-9: T-A08 (compile_fail doctest): exhaustive external `CliHelpData` literal rejected by `#[non_exhaustive]` |

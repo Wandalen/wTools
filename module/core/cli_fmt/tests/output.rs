@@ -64,6 +64,8 @@
 //! | unicode | unicode_aware=false: char count not byte count (FT-43) | ✓ |
 //! | width | line exactly 1 over max_width is truncated (FT-44) | ✓ |
 //! | integration | StreamFilter::Stderr combined with head (FT-42) | ✓ |
+//! | prelude | cli_fmt::prelude::* re-exports all output items (AP-16) | ✓ |
+//! | dependency | cli_fmt::dependency::strs_tools re-exports strs_tools (AP-17) | ✓ |
 
 use cli_fmt::output::*;
 use strs_tools::string::lines::*;
@@ -955,5 +957,51 @@ fn test_strs_tools_sole_runtime_dependency()
   assert!(
     dep_lines[ 0 ].starts_with( "strs_tools" ),
     "the sole runtime dependency must be strs_tools, got:\n{:?}", dep_lines[ 0 ]
+  );
+}
+
+// ============================================================================
+// Prelude / dependency re-export contract tests (AP-16, AP-17)
+// ============================================================================
+
+// AP-16: cli_fmt::prelude::* re-exports all output-processing API items.
+// Isolated in its own nested module (own `use`, no `use super::*`) so a
+// broken prelude re-export fails to COMPILE here, not just fail an
+// assertion — the file-scope `use cli_fmt::output::*;` above must not mask it.
+mod prelude_reexports_output_items
+{
+  use cli_fmt::prelude::*;
+
+  #[ test ]
+  fn test_prelude_reexports_output_items()
+  {
+    let config = OutputConfig::default().with_head( 1 );
+    let result : ProcessedOutput = process_output( "line1\nline2", "", &config );
+    assert_eq!(
+      result.content, "line1",
+      "AP-16: prelude-constructed OutputConfig/process_output must behave normally, got:\n{:?}", result.content
+    );
+    let merged = merge_streams( "out", "err", &StreamFilter::Both );
+    assert_eq!(
+      merged, "err\nout",
+      "AP-16: prelude-imported merge_streams/StreamFilter must behave normally, got:\n{:?}", merged
+    );
+  }
+}
+
+// AP-17: cli_fmt::dependency::strs_tools re-exports the underlying strs_tools
+// crate. Referenced via a fully-qualified path (not a wildcard import), which
+// is unambiguous proof on its own: this specific path can only resolve if
+// `cli_fmt::dependency` actually re-exports strs_tools, regardless of the
+// fact that strs_tools is also a direct dependency of this test crate
+// (see IN-3 above and Cargo.toml) — no nested-module isolation is needed
+// for a fully-qualified path the way it is for prelude wildcard imports.
+#[ test ]
+fn test_dependency_strs_tools_reexport()
+{
+  let result = cli_fmt::dependency::strs_tools::string::lines::head( "line1\nline2\nline3", 2 );
+  assert_eq!(
+    result, "line1\nline2",
+    "AP-17: cli_fmt::dependency::strs_tools must resolve to the real strs_tools crate with working functions, got:\n{:?}", result
   );
 }

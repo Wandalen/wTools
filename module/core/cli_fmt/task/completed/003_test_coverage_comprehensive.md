@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** MAAV-VG1(a5a177338a697192b), MAAV-VG2(a6629527803a0ec4a), MAAV-VG4(a6beba17b3196347c); Level-3-PASS(54/54)
-- **Validation Date:** 2026-06-06
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-06-06
+- **blocked_by:** null
 
 ## Goal
 
@@ -192,6 +195,8 @@ Desired answer for every question is YES.
 - Fix applied: removed the `contains("→")` assertion from `tests/output.rs:width_one_truncates`; kept `width_truncated == true` assertion which fully satisfies T08's contract. Added comment explaining the suffix-omission behavior.
 
 ## Verification Record
+
+_Legacy `validated_by` (pre-normalization, preserved for record): `MAAV-VG1(a5a177338a697192b), MAAV-VG2(a6629527803a0ec4a), MAAV-VG4(a6beba17b3196347c); Level-3-PASS(54/54)`_
 
 - **VG-1 (Scope Coherence):** PASS — 10/10 checks pass; P-labels unique, no In/Out-of-Scope conflicts, test counts match.
 - **VG-2 (MOST Goal Quality):** PASS — all 4 MOST dimensions pass; N+12 count consistent with 9+3 named test functions.

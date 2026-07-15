@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** null
-- **Validation Date:** null
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-06-23
+- **blocked_by:** null
 
 ## Goal
 
@@ -199,6 +202,16 @@ Desired answer for every question is YES.
 
 - [x] I1 — `w3 .test level::3` → 0 failures, 0 clippy warnings
 - [x] I2 — decisions gate: `task/decisions.md` exists and Index shows no ❓ Open entries
+
+## Outcomes
+
+**Completed:** 2026-06-23
+
+7 test functions added: `stderr_filter_with_head`, `unicode_aware_false_char_not_byte`, `width_one_over_boundary`, `merge_streams_stdout_only`, `merge_streams_stderr_only` in `tests/output.rs`; `test_col_gap_custom`, `test_cmd_indent_custom` in `tests/help.rs`. All ⏳ markers replaced with function names across the three affected spec files. `tests/readme.md` counts updated: output 54→59, help 32→34, total 86→93.
+
+### Validation Results
+
+`w3 .test level::3` — 93 nextest integration tests, 6 doc tests, 0 clippy warnings, all PASS.
 
 ## Related Documentation
 

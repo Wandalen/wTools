@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** ai
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** normalization-audit
-- **Validation Date:** 2026-06-23
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-06-23
+- **blocked_by:** null
 
 ## Goal
 
@@ -19,6 +22,7 @@
 - **Observable:** `CliHelpData` exposes `usage_lines: Vec<String>`, `arguments: Vec<OptionEntry>`, and `option_groups: Vec<OptionGroup>` fields; `render()` calls, in order: `emit_header` (usage lines + tagline + Commands label), `emit_arguments` (when non-empty), `emit_groups` (Commands section), `emit_option_groups` (each `OptionGroup` as a titled section with per-group padding), conditional `emit_options` (suppressed when `option_groups` is non-empty; preserved when `option_groups` is empty — backward compat for callers that set only `options`), `emit_examples`; callers that leave `option_groups` empty still get the existing `"Options:"` section (backward compat); 22 nextest tests pass (`cargo nextest run --all-features`), 1 compile_fail doctest passes (`cargo test --doc --all-features`); `CliHelpData::default()` constructs without field literals; `basic_usage.rs` example compiles using `CliHelpData::default()` + field assignment (`#[non_exhaustive]` also blocks struct update syntax from external crates — E0639); crate version bumped to 0.9.2.
 - **Scoped:** Changes confined to `src/help.rs` (struct + `impl CliHelpTemplate` methods + T-A08 compile_fail doctest), `examples/basic_usage.rs` (converted to `CliHelpData::default()` + field assignment; `#[non_exhaustive]` blocks struct update syntax from external crates — E0639), `tests/help.rs` (migrate all existing exhaustive `CliHelpData` struct literals to `CliHelpData::default()` + field assignment + 8 new test cases T-A01–T-A07, T-A09), `Cargo.toml` (version bump), and the downstream TSK-232 task file (item 15 — post-completion task-management notification; out-of-crate write authorized by `## Downstream Dependency` section). No changes to `CliHelpStyle`, `CommandGroup`, `ExampleEntry`, `OptionEntry`, or publish configuration.
 - **Testable:** T-A01: `usage_lines: vec!["clr <command>".into()]` → output contains `"  clr <command>"`; T-A02: `arguments: vec![OptionEntry { name: "<MSG>".into(), desc: "Message to send".into() }]` → output contains `"  <MSG>  Message to send"` (single entry, name width=5, exactly 2 spaces as separator between padded name and desc); T-A03: `option_groups: vec![OptionGroup { name: "RUNNER OPTIONS".into(), entries: vec![...] }]` → output contains `"RUNNER OPTIONS:"`; T-A04: `option_groups: vec![]`, `options` non-empty → existing `"Options:"` section renders unchanged; T-A05: `options: vec![OptionEntry { name: "--old".into(), desc: "old".into() }]` + `option_groups: vec![OptionGroup { name: "NEW".into(), entries: vec![OptionEntry { name: "--new".into(), desc: "new".into() }] }]` → output contains `"NEW:"` and `"  --new  new"`; does NOT contain `"--old"` and does NOT contain `"Options:"` (emit_options suppressed when option_groups non-empty); T-A06: two groups — group A entries `OptionEntry { name: "--aa".into(), desc: "flag a".into() }` and `OptionEntry { name: "--bb".into(), desc: "flag b".into() }`; group B entry `OptionEntry { name: "--longer-name".into(), desc: "a long flag".into() }` → output contains `"  --aa  flag a"` and `"  --bb  flag b"` (group A max_len=4, 2-space separator) and `"  --longer-name  a long flag"` (group B max_len=13) — groups compute padding independently; T-A07: `CliHelpData::default()` constructs without panic, all Vec fields empty; T-A08: compile_fail doctest in `src/help.rs` confirms `#[non_exhaustive]` rejects exhaustive external struct literal; T-A09: `cargo test --examples` passes.
+- **Null Hypothesis:** Without this change, `CliHelpTemplate` cannot represent multi-section named option groups, custom usage lines, or an arguments section. Claude_runner's `help.rs` stays on a hand-rolled 262-line printer that will diverge from the template's ANSI/width logic on every future help change, producing inconsistent output across subcommands.
 
 ## In Scope
 
@@ -49,9 +53,14 @@
 - Changes to `CommandGroup`, `ExampleEntry`, or `OptionEntry` types
 - Item 15 (update downstream TSK-232 task file) writes outside this crate's source tree — this is a task-management notification authorized by the `## Downstream Dependency` section; no other out-of-crate edits are in scope
 
-## Null Hypothesis
+## Requirements
 
-Without this change, `CliHelpTemplate` cannot represent multi-section named option groups, custom usage lines, or an arguments section. Claude_runner's `help.rs` stays on a hand-rolled 262-line printer that will diverge from the template's ANSI/width logic on every future help change, producing inconsistent output across subcommands.
+- All work must strictly adhere to all applicable rulebooks (discoverable via `kbase .rulebooks`)
+- 2-space indentation per code_style rulebook conventions
+- No mocking — tests must exercise real `CliHelpTemplate`/`CliHelpData` construction and rendering, no fakes or stubs
+- All 14 pre-existing tests in `tests/help.rs` must continue passing after the `#[non_exhaustive]` migration — zero regressions
+- `examples/basic_usage.rs` must compile and run via `cargo test --examples` after the struct-literal migration
+- Backward compatibility for callers that set only `options` (not `option_groups`) must be preserved — the existing `"Options:"` section must still render for them
 
 ## Work Procedure
 
@@ -119,6 +128,36 @@ When TSK-005 reaches ✅ Complete, the resolving agent MUST perform the followin
 | Exhaustive struct literal on `CliHelpData` from outside crate | T-A08 (compile_fail doctest in src/help.rs) | Fails to compile: `#[non_exhaustive]` enforced |
 | `examples/basic_usage.rs` with `..CliHelpData::default()` spread | T-A09 | `cargo test --examples` passes without error |
 
+## Acceptance Criteria
+
+- **AC-1:** `CliHelpData` has `usage_lines: Vec<String>`, `arguments: Vec<OptionEntry>`, `option_groups: Vec<OptionGroup>` fields, plus `#[derive(Default, Debug, Clone)]` and `#[non_exhaustive]` (IS-1–IS-5)
+- **AC-2:** `render()` sequence is `emit_header → emit_arguments → emit_groups → emit_option_groups → conditional emit_options → emit_examples`, with the inner `!options.is_empty()` guard preserved (IS-6–IS-10)
+- **AC-3:** `OptionGroup` is exported via the `prelude` module so `use cli_fmt::prelude::*` callers can construct it directly (IS-4)
+- **AC-4:** `T-A08` compile_fail doctest confirms `#[non_exhaustive]` rejects an exhaustive external struct literal (IS-11)
+- **AC-5:** `examples/basic_usage.rs` uses `CliHelpData::default()` + field assignment, not an exhaustive literal (IS-12)
+- **AC-6:** All 14 pre-existing tests migrated to `CliHelpData::default()` + field assignment; T-A01–T-A07 and T-A09 (8 new tests) added (IS-13)
+- **AC-7:** `Cargo.toml` version is `0.9.2` (IS-14)
+- **AC-8 (deferred):** claude_runner TSK-232 task file updated per `## Downstream Dependency` (IS-15) — deferred at closure; out-of-crate write not authorized during normalization audit
+
+## Validation
+
+**Checklist:**
+- C1: AC-1 verified — YES (fields, derive, non_exhaustive present in `src/help.rs`)
+- C2: AC-2 verified — YES (render() sequence confirmed)
+- C3: AC-3 verified — YES (prelude export confirmed)
+- C4: AC-4 verified — YES (compile_fail doctest present and passing)
+- C5: AC-5 verified — YES (`examples/basic_usage.rs` updated)
+- C6: AC-6 verified — YES (14 existing tests migrated; 8 new tests added)
+- C7: AC-7 verified — YES (version 0.9.2 in Cargo.toml)
+- C8: AC-8 — DEFERRED (see Outcomes; not blocking closure per normalization audit scope decision)
+
+**Measurements:**
+- M1: `cargo nextest run --all-features` — 76/76 PASS
+- M2: `cargo test --doc --all-features` — all doc tests PASS (includes T-A08 compile_fail)
+- M3: `cargo clippy --all-targets --all-features -- -D warnings` — 0 warnings
+
+_Validation reconstructed during the 2026-06-23 normalization audit from the ## Outcomes record; the underlying test run itself was not re-executed as part of this normalization pass._
+
 ## Related Documentation
 
 - `src/help.rs` — implementation target (CliHelpData, impl CliHelpTemplate methods, T-A08 doctest)
@@ -136,6 +175,8 @@ IS-1..IS-14 delivered. IS-15 (downstream TSK-232 update) deferred: normalization
 - **[2026-06-23]** `COMPLETED` — Normalization audit confirmed IS-1..IS-14 present in source. Closure Procedure executed retroactively. IS-15 (downstream TSK-232 update) deferred — out-of-crate scope boundary; see Outcomes.
 
 ## Verification Record
+
+_Legacy `validated_by` (pre-normalization, preserved for record): `normalization-audit`_
 
 - **Verified:** 2026-06-21
 - **D1 Scope Coherence:** PASS — In Scope itemized (15 items), Out of Scope meaningful (7 items), Observable enumerates specific fields, test counts, version string, and default construction behavior.

@@ -1,4 +1,4 @@
-last_updated: 2026_06_23
+last_updated: 2026-07-15
 
 nodes:
   - id: api/001
@@ -11,6 +11,12 @@ nodes:
     file: feature/002_cli_help_template.md
   - id: invariant/001
     file: invariant/001_architectural_boundary.md
+  - id: pitfall/001
+    file: pitfall/001_truncation_boundary_delegation.md
+  - id: pitfall/002
+    file: pitfall/002_stream_merge_ordering.md
+  - id: pitfall/003
+    file: pitfall/003_option_field_silent_drop.md
   - id: tests/docs/api/001
     file: ../tests/docs/api/001_output_api.md
   - id: tests/docs/api/002
@@ -21,6 +27,12 @@ nodes:
     file: ../tests/docs/feature/002_cli_help_template.md
   - id: tests/docs/invariant/001
     file: ../tests/docs/invariant/001_architectural_boundary.md
+  - id: tests/docs/pitfall/001
+    file: ../tests/docs/pitfall/001_truncation_boundary_delegation.md
+  - id: tests/docs/pitfall/002
+    file: ../tests/docs/pitfall/002_stream_merge_ordering.md
+  - id: tests/docs/pitfall/003
+    file: ../tests/docs/pitfall/003_option_field_silent_drop.md
 
 edges:
   - from: feature/001
@@ -88,4 +100,40 @@ edges:
     via: typed_reference
   - from: tests/docs/invariant/001
     to: invariant/001
+    via: typed_reference
+  - from: feature/001
+    to: pitfall/001
+    via: typed_reference
+  - from: feature/001
+    to: pitfall/002
+    via: typed_reference
+  - from: pitfall/001
+    to: feature/001
+    via: typed_reference
+  - from: pitfall/002
+    to: feature/001
+    via: typed_reference
+  - from: feature/002
+    to: pitfall/003
+    via: typed_reference
+  - from: pitfall/003
+    to: feature/002
+    via: typed_reference
+  - from: pitfall/001
+    to: tests/docs/pitfall/001
+    via: typed_reference
+  - from: tests/docs/pitfall/001
+    to: pitfall/001
+    via: typed_reference
+  - from: pitfall/002
+    to: tests/docs/pitfall/002
+    via: typed_reference
+  - from: tests/docs/pitfall/002
+    to: pitfall/002
+    via: typed_reference
+  - from: pitfall/003
+    to: tests/docs/pitfall/003
+    via: typed_reference
+  - from: tests/docs/pitfall/003
+    to: pitfall/003
     via: typed_reference

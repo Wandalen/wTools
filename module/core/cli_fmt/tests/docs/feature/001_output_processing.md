@@ -260,19 +260,19 @@
 - **When:** `process_output("line1\nline2\nline3", "", &config)` executed with `--no-default-features --features output_passthrough`
 - **Then:** `result.content == "line1\nline2\nline3"` — all lines pass through unchanged; `result.lines_omitted == 0` — head limit has no effect; the filtering stage is compiled out and its passthrough branch returns zero lines omitted
 
-### FT-42: StreamFilter::Stderr combined with head limit — stdout discarded, head applied to stderr-only stream ⏳
+### FT-42: StreamFilter::Stderr combined with head limit — stdout discarded, head applied to stderr-only stream
 
 - **Given:** stdout `"x"` (1 line), stderr `"err1\nerr2\nerr3"` (3 lines), `OutputConfig::default().with_stream_filter(StreamFilter::Stderr).with_head(2)`
 - **When:** `process_output("x", "err1\nerr2\nerr3", &config)`
 - **Then:** `result.content` contains `"err1"` and `"err2"` but not `"err3"`; `"x"` is absent from content entirely; `result.lines_omitted == 1` — stdout discarded before head filtering; head(2) applies to the stderr-only merged stream; complements FT-36 (Stdout+head)
 
-### FT-43: unicode_aware=false uses char count, not byte count, for width measurement ⏳
+### FT-43: unicode_aware=false uses char count, not byte count, for width measurement
 
 - **Given:** single-char input `"é"` (U+00E9, 1 char, 2 bytes), `OutputConfig::default().with_width(1)` (unicode_aware defaults to false)
 - **When:** `process_output("é", "", &config)`
 - **Then:** `result.width_truncated == false` — unicode_aware=false uses char-based counting; `"é"` is exactly 1 char, which equals the limit 1; a byte-counting implementation would miscount 2 bytes and truncate; the char-based path correctly identifies no truncation is needed
 
-### FT-44: Line exactly one char wider than max_width is truncated ⏳
+### FT-44: Line exactly one char wider than max_width is truncated
 
 - **Given:** single-line input `"01234567890"` (11 visible chars), `OutputConfig::default().with_width(10)`
 - **When:** `process_output("01234567890", "", &config)`

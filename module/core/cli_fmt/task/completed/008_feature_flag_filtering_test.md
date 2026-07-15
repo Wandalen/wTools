@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** MAAV(VG-1..VG-4 PASS)
-- **Validation Date:** 2026-06-23
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-06-23
+- **blocked_by:** null
 
 ## Goal
 
@@ -109,11 +112,6 @@ Desired answer for every question is YES.
 - `docs/feature/001_output_processing.md` — Feature behavioral requirements: "when either [string_split or std] is absent, the filtering stage passes content through unchanged with zero lines reported as omitted"
 - `docs/api/001_output_api.md` — `process_output` API contract
 
-## History
-
-- **[2026-06-23]** `CREATED` — Add feature-flag passthrough test for FT-41: introduce `output_passthrough` feature and `tests/output_passthrough.rs` with `feature_flag_line_filtering_passthrough` test function.
-- **[2026-06-23]** `COMPLETED` — All acceptance criteria satisfied. `Cargo.toml` has `output_passthrough = ["enabled", "std"]` (absent from `full`/`default`). `src/lib.rs` gates `pub mod output` and two `orphan::*` re-exports with `any(output, output_passthrough)`. `tests/output_passthrough.rs` created with linter-refined gate `all(output_passthrough, not(string_split))`. FT-41 `⏳` marker removed from `tests/docs/feature/001_output_processing.md`; dedicated row added for `output_passthrough.rs`. Passthrough PASS: `feature_flag_line_filtering_passthrough` PASSED with `--no-default-features --features output_passthrough`. Level 3 PASS: 85/85 nextest + 6 doc + 0 clippy. Correction over task spec: invocation requires `--no-default-features` (default features include `output` → `string_split`, masking the passthrough branch).
-
 ## Outcomes
 
 `output_passthrough` feature added to `Cargo.toml` (`enabled + std`, absent from `full`/`default`). Three cfg gates in `src/lib.rs` expanded to `any(output, output_passthrough)`: `pub mod output`, `own::output::orphan::*`, `prelude::output::orphan::*`. `tests/output_passthrough.rs` created with one test function `feature_flag_line_filtering_passthrough`. FT-41 spec entry resolved: `⏳` removed, dedicated `tests/output_passthrough.rs` row added to `### Tests` table. `tests/readme.md` updated: new Responsibility Table row and invocation note.
@@ -122,7 +120,14 @@ Passthrough confirmed PASS with `cargo nextest run --test output_passthrough --n
 
 **Key discovery:** task spec commands were missing `--no-default-features`; default features include `output = ["enabled", "std", "string_split"]`, which activates `string_split` and makes the filtering branch active — defeating the passthrough test. Linter also refined the file-level gate to `all(output_passthrough, not(string_split))` for extra safety.
 
+## History
+
+- **[2026-06-23]** `CREATED` — Add feature-flag passthrough test for FT-41: introduce `output_passthrough` feature and `tests/output_passthrough.rs` with `feature_flag_line_filtering_passthrough` test function.
+- **[2026-06-23]** `COMPLETED` — All acceptance criteria satisfied. `Cargo.toml` has `output_passthrough = ["enabled", "std"]` (absent from `full`/`default`). `src/lib.rs` gates `pub mod output` and two `orphan::*` re-exports with `any(output, output_passthrough)`. `tests/output_passthrough.rs` created with linter-refined gate `all(output_passthrough, not(string_split))`. FT-41 `⏳` marker removed from `tests/docs/feature/001_output_processing.md`; dedicated row added for `output_passthrough.rs`. Passthrough PASS: `feature_flag_line_filtering_passthrough` PASSED with `--no-default-features --features output_passthrough`. Level 3 PASS: 85/85 nextest + 6 doc + 0 clippy. Correction over task spec: invocation requires `--no-default-features` (default features include `output` → `string_split`, masking the passthrough branch).
+
 ## Verification Record
+
+_Legacy `validated_by` (pre-normalization, preserved for record): `MAAV(VG-1..VG-4 PASS)`_
 
 - **Verified By:** MAAV — 4 independent subagents (VG-1 Scope Coherence, VG-2 MOST Goal Quality, VG-3 Value/YAGNI, VG-4 Implementation Readiness)
 - **Verification Date:** 2026-06-23

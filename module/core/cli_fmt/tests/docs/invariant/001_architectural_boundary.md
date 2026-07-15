@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the architectural boundary invariant from `docs/invariant/001_architectural_boundary.md` holds in the codebase.
 - **Responsibility**: Test spec for the one-directional dependency constraint — `cli_fmt` depends on `strs_tools`; `strs_tools` does not depend on `cli_fmt`.
-- **In Scope**: Dependency direction correctness (IN-1); absence of CLI-specific output-processing types from `strs_tools` (IN-2); absence of CLI-specific help-rendering types from `strs_tools` (IN-2); strs_tools as sole runtime dependency (IN-3).
+- **In Scope**: Dependency direction correctness (IN-1); absence of CLI-specific output-processing types from `strs_tools` (IN-2); absence of CLI-specific help-rendering types from `strs_tools` (IN-2); strs_tools as sole runtime dependency (IN-3); cli_fmt carries no dependency on data_fmt, in either direction (IN-4).
 - **Out of Scope**: Runtime performance of either crate; internal implementation details of `strs_tools`.
 
 ### IN-1: cli_fmt depends on strs_tools; strs_tools does not depend on cli_fmt
@@ -25,6 +25,12 @@
 - **When:** the `[dependencies]` section is inspected
 - **Then:** `strs_tools` is the only entry; no other crate appears in `[dependencies]`; dev-dependencies section is empty — cli_fmt's runtime footprint is limited to a single library
 
+### IN-4: cli_fmt carries no dependency on data_fmt, in either direction
+
+- **Given:** `cli_fmt/Cargo.toml`
+- **When:** the file content is inspected for the string `"data_fmt"`
+- **Then:** `data_fmt` does not appear as a dependency — cli_fmt's CLI-specific rendering stays decoupled from the domain-agnostic data_fmt formatting crate; the parallel-crates architecture keeps the coupling one-directional-free (data_fmt has no reason to import cli_fmt either)
+
 ### Invariants
 
 | File | Relationship |
@@ -44,4 +50,4 @@
 | File | Relationship |
 |------|-------------|
 | `../../../tests/output.rs` | Compilation + test success confirms CLI-specific output types (`StreamFilter`, `OutputConfig`, `ProcessedOutput`) remain in `cli_fmt`, not `strs_tools`; IN-3: `test_strs_tools_sole_runtime_dependency` |
-| `../../../tests/help.rs` | Compilation + test success confirms CLI-specific help types (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, etc.) remain in `cli_fmt`, not `strs_tools` or `data_fmt` |
+| `../../../tests/help.rs` | Compilation + test success confirms CLI-specific help types (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, etc.) remain in `cli_fmt`, not `strs_tools` or `data_fmt`; IN-4: `test_no_data_fmt_dependency` |

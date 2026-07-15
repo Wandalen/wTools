@@ -2,10 +2,14 @@
 
 ### Scope
 
-- **Purpose**: Define behavioral contracts that must always hold for this crate.
-- **Responsibility**: Architectural boundary enforcement between cli_fmt (CLI-specific) and strs_tools (general-purpose).
-- **In Scope**: Instance 001 — architectural boundary between `cli_fmt` and `strs_tools`.
-- **Out of Scope**: Desired behavior and processing logic — see `feature/` instances.
+**Responsibilities:**
+Defines behavioral contracts that must always hold for this crate — architectural boundary enforcement between cli_fmt (CLI-specific) and strs_tools (general-purpose).
+
+**In Scope:**
+- Instance 001 — architectural boundary between `cli_fmt` and `strs_tools`
+
+**Out of Scope:**
+- Desired behavior and processing logic (see `feature/` instances)
 
 ### Overview Table
 

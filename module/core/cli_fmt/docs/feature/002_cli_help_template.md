@@ -11,7 +11,7 @@
 
 **Separation principle:** CLI help rendering is domain-specific — it encodes CLI presentation conventions (column alignment, color roles, TTY detection, indent hierarchy). This is not general-purpose data formatting. The data_fmt crate operates on untyped row/column structures and is domain-agnostic. Adding CLI help rendering to data_fmt would impose CLI-domain assumptions on a generic library. cli_fmt already holds the boundary for CLI-specific utilities (see `docs/invariant/001_architectural_boundary.md`). The help template belongs here.
 
-**Dependency architecture:** data_fmt and cli_fmt are parallel crates — neither depends on the other. Both are consumed independently by downstream applications. This prevents coupling between domain-specific CLI rendering and generic data formatting.
+**Dependency architecture:** `data_fmt` and `cli_fmt` are parallel crates — neither depends on the other (see `docs/invariant/001_architectural_boundary.md`, which enforces this boundary alongside the `strs_tools` boundary). Both are consumed independently by downstream applications. This prevents coupling between domain-specific CLI rendering and generic data formatting.
 
 **Style/data separation:** The template splits configuration into two independent parameter sets. Style parameters (13 fields) control layout and color — indents, column widths, gaps, ANSI color codes, and TTY detection. Data parameters hold structured content — binary name, tagline, command groups, global options, and usage examples. This separation allows the same content to be rendered with different visual styles without rebuilding the data, and vice versa.
 
@@ -41,17 +41,17 @@ For complete type definitions, field defaults, and the rendering procedure, see 
 |------|-------------|
 | [`../api/002_help_api.md`](../api/002_help_api.md) | Public interface contract for this feature |
 
-### Feature Tests
-
-| File | Relationship |
-|------|-------------|
-| [`../../tests/docs/feature/002_cli_help_template.md`](../../tests/docs/feature/002_cli_help_template.md) | Test specification verifying the behavioral cases defined here |
-
 ### Invariants
 
 | File | Relationship |
 |------|-------------|
 | [`../invariant/001_architectural_boundary.md`](../invariant/001_architectural_boundary.md) | Boundary principle placing CLI rendering in cli_fmt, not strs_tools |
+
+### Pitfalls
+
+| File | Relationship |
+|------|-------------|
+| [`../pitfall/003_option_field_silent_drop.md`](../pitfall/003_option_field_silent_drop.md) | Option-field silent-drop trap this feature's example rendering must avoid |
 
 ### Sources
 
@@ -63,4 +63,5 @@ For complete type definitions, field defaults, and the rendering procedure, see 
 
 | File | Relationship |
 |------|-------------|
+| [`../../tests/docs/feature/002_cli_help_template.md`](../../tests/docs/feature/002_cli_help_template.md) | Test specification verifying the behavioral cases defined here |
 | `tests/help.rs` | Column alignment, TTY detection, conditional section rendering, backward compatibility, option groups, and edge cases |

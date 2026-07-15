@@ -3,15 +3,18 @@
 ## Execution State
 
 - **Executor Type:** any
-- **Actor:** null
-- **Claimed At:** null
-- **Reopen Count:** 0
-- **State:** ✅ (Completed)
-- **Closes:** null
-- **Blocked Reason:** null
-- **Dir:** .
-- **Validated By:** maav-round-4
-- **Validation Date:** 2026-06-23
+- **filed_by:** legacy-unknown
+- **actor:** null
+- **started_at:** null
+- **expires_at:** null
+- **round:** 1
+- **state:** ✅ (Completed)
+- **closes:** null
+- **unit_type:** module
+- **unit:** lib/yrd_core/wtools/dev/module/core/cli_fmt
+- **validated_by:** legacy-unknown
+- **validation_date:** 2026-06-23
+- **blocked_by:** null
 
 ## Goal
 
@@ -180,6 +183,8 @@ Desired answer for every question is YES.
 - **Fixes applied:** M1/M2 changed to `grep -c "^#\[ test \]"` which matches only test attribute lines. T06/T07 fields confirmed by reading `src/help.rs` — `ExampleEntry { invocation: String, desc: Option<String> }` and `CliHelpData` has `binary`, `tagline` fields.
 
 ## Verification Record
+
+_Legacy `validated_by` (pre-normalization, preserved for record): `maav-round-4`_
 
 MAAV round 4 — 2026-06-23 — all 4 dimensions PASS.
 
