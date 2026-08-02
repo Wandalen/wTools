@@ -15,7 +15,7 @@ mod private
   use std ::io ::Read;
   use std ::path :: { Path, PathBuf };
   use core ::time ::Duration;
-  use ureq ::AgentBuilder;
+  use ureq ::Agent;
 
   /// Represents a `.crate` archive, which is a collection of files and their contents.
   #[ derive(Default, Clone, PartialEq) ]
@@ -73,15 +73,17 @@ mod private
   where
    Url: AsRef< str >,
   {
-   let agent = AgentBuilder ::new()
-  .timeout_read(Duration ::from_secs(5))
-  .timeout_write(Duration ::from_secs(5))
+   let config = Agent ::config_builder()
+  .timeout_global(Some(Duration ::from_secs(30)))
+  .timeout_send_request(Some(Duration ::from_secs(5)))
+  .timeout_recv_response(Some(Duration ::from_secs(5)))
+  .timeout_recv_body(Some(Duration ::from_secs(5)))
   .build();
+   let agent = Agent ::new_with_config(config);
 
-   let resp = agent.get(url.as_ref()).call()?;
+   let mut resp = agent.get(url.as_ref()).call()?;
 
-   let mut buf = vec![];
-   resp.into_reader().read_to_end(&mut buf)?;
+   let buf = resp.body_mut().with_config().limit(u64 ::MAX).read_to_vec()?;
 
    Ok(Self ::decode(buf)?)
  }

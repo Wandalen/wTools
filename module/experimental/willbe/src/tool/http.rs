@@ -7,7 +7,6 @@ mod private
 
   use std ::
   {
-  io ::Read,
   fmt ::Write,
   time ::Duration
  };
@@ -23,23 +22,23 @@ mod private
   ///
   pub fn download< 'a >( name: &'a str, version: &'a str ) -> error ::untyped ::Result< Vec< u8 > >
   {
-  let agent: Agent = ureq ::AgentBuilder ::new()
-  .timeout_read( Duration ::from_secs( 5 ) )
-  .timeout_write( Duration ::from_secs( 5 ) )
+  let config = Agent ::config_builder()
+  .timeout_global( Some( Duration ::from_secs( 30 ) ) )
+  .timeout_send_request( Some( Duration ::from_secs( 5 ) ) )
+  .timeout_recv_response( Some( Duration ::from_secs( 5 ) ) )
+  .timeout_recv_body( Some( Duration ::from_secs( 5 ) ) )
   .build();
+  let agent = Agent ::new_with_config( config );
+  // Fix(issue-download-url-malformed-space): stray space after "https:" produced an
+  // invalid URI ("http: invalid uri character"), so every call failed before any request
+  // was sent. Root cause: unnoticed for years because `download` had zero callers and zero
+  // test coverage — first exercised by tests/inc/tool/http_test.rs.
   let mut buf = String ::new();
-  write!( &mut buf, "https: //static.crates.io/crates/{name}/{name}-{version}.crate" )?;
+  write!( &mut buf, "https://static.crates.io/crates/{name}/{name}-{version}.crate" )?;
 
-  let resp = agent.get( &buf[ .. ] ).call().context( "Get data of remote package" )?;
+  let mut resp = agent.get( &buf[ .. ] ).call().context( "Get data of remote package" )?;
 
-  let len: usize = resp.header( "Content-Length" )
-  .unwrap()
-  .parse()?;
-
-  let mut bytes: Vec< u8 > = Vec ::with_capacity( len );
-  resp.into_reader()
-  .take( u64 ::MAX )
-  .read_to_end( &mut bytes )?;
+  let bytes: Vec< u8 > = resp.body_mut().with_config().limit( u64 ::MAX ).read_to_vec()?;
 
   Ok( bytes )
  }

@@ -257,7 +257,7 @@ mod private
   let remote_package = match CrateArchive ::download_crates_io( name, version )
   {
    Ok( archive ) => archive,
-   Err( ureq ::Error ::Status( 403, _ ) ) => return Result ::Ok( true ),
+   Err( ureq ::Error ::StatusCode( 403 ) ) => return Result ::Ok( true ),
    _ => return Err( PackageError ::LoadRemotePackage ),
  };
 
