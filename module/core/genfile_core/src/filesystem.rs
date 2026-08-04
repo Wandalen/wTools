@@ -123,7 +123,7 @@ impl MemoryFileSystem
 
 impl FileSystem for MemoryFileSystem
 {
-  #[ allow( clippy::std_instead_of_core ) ]
+  #[ allow( clippy ::std_instead_of_core ) ]
   fn read( &self, path: &Path ) -> Result< String, Error >
   {
     self

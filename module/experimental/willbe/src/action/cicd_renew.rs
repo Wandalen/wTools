@@ -214,7 +214,7 @@ mod private
  }
 
   /// Create and write or rewrite content in file.
-  #[ allow( clippy::std_instead_of_core ) ]
+  #[ allow( clippy ::std_instead_of_core ) ]
   pub fn file_write( filename: &Path, content: &str ) -> error ::untyped ::Result< () >
   {
   if let Some( folder ) = filename.parent()

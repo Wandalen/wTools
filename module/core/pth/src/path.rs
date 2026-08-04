@@ -647,7 +647,6 @@ mod private
 
   let path_buf = Path ::new( path.as_ref() );
 
-  // fix clippy
   let parent = path_buf.parent()?;
   let name = path_buf.file_stem()?;
   let ends = format!( "{}/", name.to_string_lossy() );

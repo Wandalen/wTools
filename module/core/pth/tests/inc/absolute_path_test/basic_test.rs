@@ -8,8 +8,8 @@ fn basic()
 {
   let path1 = "/some/absolute/path";
   let got: AbsolutePath = path1.try_into().unwrap();
-  println!("got: {}", got);
-  println!("path1: {}", path1);
+  println!("got: {got}");
+  println!("path1: {path1}");
   assert_eq!(&got.to_string(), path1);
 }
 

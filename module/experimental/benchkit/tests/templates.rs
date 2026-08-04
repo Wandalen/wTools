@@ -283,7 +283,7 @@ mod tests
   // Should detect significant improvement
   assert!( regression_report.has_significant_changes() );
   assert_eq!( regression_report.get_trend_for( "fast_operation" ), Some( PerformanceTrend ::Improving ) );
-  
+
   // Should include statistical significance
   assert!( regression_report.is_statistically_significant( "fast_operation" ) );
  }

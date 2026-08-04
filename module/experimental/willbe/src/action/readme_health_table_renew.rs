@@ -492,10 +492,8 @@ ensure that at least one remotest is present in git. ",
   {
   let mut rou = format!
   (
-   "| [{}]({}/{}) |",
-   module_name,
-   table_parameters.base_path,
-   module_name
+   "| [{module_name}]({}/{module_name}) |",
+   table_parameters.base_path
  );
   if table_parameters.include_stability
   {

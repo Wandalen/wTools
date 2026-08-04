@@ -9,7 +9,7 @@ fn component_assign()
   o1.assign( "Hello, world!" );
   o1.assign( 13.01_f32 );
   println!( "field1: {}, field2: {}", o1.field1, o1.field2 );
-  let exp = Options1 { field1: 42, field2: "Hello, world!".to_string(), field3: 13.01 };
+  let exp = Options1 { field1: 42, field2: "Hello, world!".to_string(), field3: 13.01_f32 };
   assert_eq!( o1, exp );
 
 }

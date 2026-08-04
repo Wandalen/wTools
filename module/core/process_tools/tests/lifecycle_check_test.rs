@@ -9,6 +9,7 @@ use ::process_tools as the_module;
 use test_tools :: *;
 
 #[ cfg( all( feature = "enabled", unix ) ) ]
+#[ allow( clippy ::std_instead_of_core ) ]
 mod inc
 {
   use super :: *;
