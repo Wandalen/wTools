@@ -71,7 +71,7 @@ fn test_complex_mixed_configuration()
   
   // Test popular type assignments
   component_model_types ::Assign :: < Duration, u64 > ::assign( &mut config, 60 );
-  assert_eq!( config.timeout, Duration ::from_secs( 60 ) );
+  assert_eq!( config.timeout, Duration ::from_mins( 1 ) );
   
   component_model_types ::Assign :: < PathBuf, &str > ::assign( &mut config, "/var/log/app.log" );
   assert_eq!( config.log_path, PathBuf ::from( "/var/log/app.log" ) );

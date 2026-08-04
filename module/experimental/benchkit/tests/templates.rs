@@ -301,7 +301,7 @@ mod tests
   let run1_times = vec![ Duration ::from_micros( 140 ), Duration ::from_micros( 142 ), Duration ::from_micros( 138 ) ];
   run1_results.insert( "fast_operation".to_string(), BenchmarkResult ::new( "fast_operation", run1_times ) );
   historical_runs.push( TimestampedResults ::new( 
-   SystemTime ::now() - Duration ::from_secs( 604_800 ), // 1 week ago
+   SystemTime ::now() - Duration ::from_hours( 168 ), // 1 week ago
    run1_results 
  ) );
   
@@ -310,7 +310,7 @@ mod tests
   let run2_times = vec![ Duration ::from_micros( 120 ), Duration ::from_micros( 122 ), Duration ::from_micros( 118 ) ];
   run2_results.insert( "fast_operation".to_string(), BenchmarkResult ::new( "fast_operation", run2_times ) );
   historical_runs.push( TimestampedResults ::new(
-   SystemTime ::now() - Duration ::from_secs( 86400 ), // 1 day ago
+   SystemTime ::now() - Duration ::from_hours( 24 ), // 1 day ago
    run2_results
  ) );
   
@@ -340,7 +340,7 @@ mod tests
   
   let historical = HistoricalResults ::new()
    .with_previous_run( TimestampedResults ::new( 
-  SystemTime ::now() - Duration ::from_secs( 3600 ), // 1 hour ago
+  SystemTime ::now() - Duration ::from_hours( 1 ), // 1 hour ago
   previous_results 
  ) );
   

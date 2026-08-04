@@ -7,7 +7,7 @@ error[E0283]: type annotations needed for `Hmap<_, _>`
    |            |                              type must be known at this point
    |            required by a bound introduced by this call
    |
-   = note: cannot satisfy `_: From<&str>`
+   = note: the type must implement `From<&str>`
    = note: required for `&str` to implement `Into<_>`
 help: consider giving `_m` an explicit type, where the placeholders `_` are specified
    |
@@ -24,7 +24,7 @@ error[E0283]: type annotations needed for `Hmap<_, _>`
    |            required by a bound introduced by this call
    |
    = note: multiple `impl`s satisfying `_: From<i32>` found in the following crates: `core`, `std`:
-           - impl From<i32> for AtomicI32;
+           - impl From<i32> for Atomic<i32>;
            - impl From<i32> for f128;
            - impl From<i32> for f64;
            - impl From<i32> for i128;

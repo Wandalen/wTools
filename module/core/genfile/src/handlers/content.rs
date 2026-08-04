@@ -159,12 +159,33 @@ pub fn list_handler(
 
   match filter_str
   {
-    "inline" | "all" =>
+    "inline" | "all" if filter_str == "all" || !inline_files.is_empty() =>
     {
-      if filter_str == "all" || !inline_files.is_empty()
+      output_lines.push( format!( "Inline content ({}):", inline_files.len() ) );
+      for path in &inline_files
       {
-        output_lines.push( format!( "Inline content ({}):", inline_files.len() ) );
-        for path in &inline_files
+        output_lines.push( format!( "  {}", path.display() ) );
+      }
+    }
+    _ => {}
+  }
+
+  match filter_str
+  {
+    "file" | "all" if filter_str == "all" || !file_refs.is_empty() =>
+    {
+      if !output_lines.is_empty()
+      {
+        output_lines.push( String::new() );
+      }
+      output_lines.push( format!( "File references ({}):", file_refs.len() ) );
+      for ( path, ref_path ) in &file_refs
+      {
+        if verbosity >= 2
+        {
+          output_lines.push( format!( "  {} → {}", path.display(), ref_path.display() ) );
+        }
+        else
         {
           output_lines.push( format!( "  {}", path.display() ) );
         }
@@ -175,52 +196,22 @@ pub fn list_handler(
 
   match filter_str
   {
-    "file" | "all" =>
+    "url" | "all" if filter_str == "all" || !url_refs.is_empty() =>
     {
-      if filter_str == "all" || !file_refs.is_empty()
+      if !output_lines.is_empty()
       {
-        if !output_lines.is_empty()
-        {
-          output_lines.push( String::new() );
-        }
-        output_lines.push( format!( "File references ({}):", file_refs.len() ) );
-        for ( path, ref_path ) in &file_refs
-        {
-          if verbosity >= 2
-          {
-            output_lines.push( format!( "  {} → {}", path.display(), ref_path.display() ) );
-          }
-          else
-          {
-            output_lines.push( format!( "  {}", path.display() ) );
-          }
-        }
+        output_lines.push( String::new() );
       }
-    }
-    _ => {}
-  }
-
-  match filter_str
-  {
-    "url" | "all" =>
-    {
-      if filter_str == "all" || !url_refs.is_empty()
+      output_lines.push( format!( "URL references ({}):", url_refs.len() ) );
+      for ( path, url ) in &url_refs
       {
-        if !output_lines.is_empty()
+        if verbosity >= 2
         {
-          output_lines.push( String::new() );
+          output_lines.push( format!( "  {} → {}", path.display(), url ) );
         }
-        output_lines.push( format!( "URL references ({}):", url_refs.len() ) );
-        for ( path, url ) in &url_refs
+        else
         {
-          if verbosity >= 2
-          {
-            output_lines.push( format!( "  {} → {}", path.display(), url ) );
-          }
-          else
-          {
-            output_lines.push( format!( "  {}", path.display() ) );
-          }
+          output_lines.push( format!( "  {}", path.display() ) );
         }
       }
     }

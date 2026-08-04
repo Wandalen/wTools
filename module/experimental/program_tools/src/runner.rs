@@ -5,7 +5,7 @@ mod private
   use std::path::{ Path, PathBuf };
   use std::process::{ Command, Stdio };
   use std::sync::mpsc;
-  use std::sync::atomic::{ AtomicU64, Ordering };
+  use core::sync::atomic::{ AtomicU64, Ordering };
   use core::time::Duration;
   use std::time::Instant;
 
@@ -45,11 +45,12 @@ mod private
   /// `ThreadId`'s `Debug` format is implementation-defined (e.g. `"ThreadId(3)"`).
   /// We strip non-alphanumeric characters so the result is safe to embed in a
   /// filesystem path on every platform.
+  #[ must_use ]
   pub fn thread_id_str() -> String
   {
     format!( "{:?}", std::thread::current().id() )
       .chars()
-      .filter( | c | c.is_ascii_alphanumeric() )
+      .filter( char::is_ascii_alphanumeric )
       .collect()
   }
 

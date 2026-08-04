@@ -111,7 +111,7 @@ fn create_rolling_average_historical_data() -> HistoricalResults
   run1_results.insert( "memory_allocator".to_string(), BenchmarkResult ::new( "memory_allocator", run1_allocator ) );
   
   historical_runs.push( TimestampedResults ::new(
-  SystemTime ::now() - Duration ::from_secs( 1_209_600 ), // 2 weeks ago
+  SystemTime ::now() - Duration ::from_hours( 336 ), // 2 weeks ago
   run1_results
  ) );
   
@@ -126,7 +126,7 @@ fn create_rolling_average_historical_data() -> HistoricalResults
   run2_results.insert( "memory_allocator".to_string(), BenchmarkResult ::new( "memory_allocator", run2_allocator ) );
   
   historical_runs.push( TimestampedResults ::new(
-  SystemTime ::now() - Duration ::from_secs( 604_800 ), // 1 week ago  
+  SystemTime ::now() - Duration ::from_hours( 168 ), // 1 week ago
   run2_results
  ) );
   
@@ -141,7 +141,7 @@ fn create_rolling_average_historical_data() -> HistoricalResults
   run3_results.insert( "memory_allocator".to_string(), BenchmarkResult ::new( "memory_allocator", run3_allocator ) );
   
   historical_runs.push( TimestampedResults ::new(
-  SystemTime ::now() - Duration ::from_secs( 259_200 ), // 3 days ago
+  SystemTime ::now() - Duration ::from_hours( 72 ), // 3 days ago
   run3_results
  ) );
   
@@ -163,7 +163,7 @@ fn create_previous_run_historical_data() -> HistoricalResults
   previous_results.insert( "memory_allocator".to_string(), BenchmarkResult ::new( "memory_allocator", prev_allocator ) );
   
   let previous_run = TimestampedResults ::new(
-  SystemTime ::now() - Duration ::from_secs( 86_400 ), // 1 day ago
+  SystemTime ::now() - Duration ::from_hours( 24 ), // 1 day ago
   previous_results
  );
   

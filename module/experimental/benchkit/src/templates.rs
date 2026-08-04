@@ -715,7 +715,7 @@ impl PerformanceReport
 
   // Sort by performance
   let mut sorted_results: Vec< _ > = results.iter().collect();
-  sorted_results.sort_by( | a, b | a.1.mean_time().cmp( &b.1.mean_time() ) );
+  sorted_results.sort_by_key( | a | a.1.mean_time() );
 
   for ( name, result ) in sorted_results
   {

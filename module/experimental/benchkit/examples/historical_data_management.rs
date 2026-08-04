@@ -81,11 +81,10 @@ fn create_comprehensive_historical_dataset() -> HistoricalResults
    // Slight degradation due to system changes
    1.0 + ( week as f64 * 0.005 )
  },
-  "bubblesort" =>
+  "bubblesort" if week <= 13 =>
   {
    // Major optimization at week 13 (3 months ago)
-   if week <= 13 
-   { 0.4 } else { 1.0 }  // 60% improvement
+   0.4  // 60% improvement
  },
   _ => 1.0,
  };
@@ -135,10 +134,10 @@ fn demonstrate_incremental_data_building()
   // Simulate adding measurements over time
   let mut runs = Vec ::new();
   let timestamps = vec![
-  ( "1 month ago", SystemTime ::now() - Duration ::from_secs( 30 * 24 * 3600 ), 90_u64 ),
-  ( "2 weeks ago", SystemTime ::now() - Duration ::from_secs( 14 * 24 * 3600 ), 85_u64 ),
-  ( "1 week ago", SystemTime ::now() - Duration ::from_secs( 7 * 24 * 3600 ), 80_u64 ),
-  ( "Yesterday", SystemTime ::now() - Duration ::from_secs( 24 * 3600 ), 75_u64 ),
+  ( "1 month ago", SystemTime ::now() - Duration ::from_hours( 720 ), 90_u64 ),
+  ( "2 weeks ago", SystemTime ::now() - Duration ::from_hours( 336 ), 85_u64 ),
+  ( "1 week ago", SystemTime ::now() - Duration ::from_hours( 168 ), 80_u64 ),
+  ( "Yesterday", SystemTime ::now() - Duration ::from_hours( 24 ), 75_u64 ),
  ];
   
   for ( description, timestamp, perf_micros ) in timestamps
@@ -164,7 +163,7 @@ fn demonstrate_incremental_data_building()
   previous_results.insert( "algorithm_v1".to_string(), BenchmarkResult ::new( "algorithm_v1", previous_times ) );
   
   let previous_run = TimestampedResults ::new(
-  SystemTime ::now() - Duration ::from_secs( 3600 ), // 1 hour ago
+  SystemTime ::now() - Duration ::from_hours( 1 ), // 1 hour ago
   previous_results
  );
   historical = historical.with_previous_run( previous_run );
@@ -210,7 +209,7 @@ fn demonstrate_data_validation_and_cleanup()
   let mut good_results = HashMap ::new();
   let good_times = generate_realistic_benchmark_data( 100, 0.05, 15 );
   good_results.insert( "stable_algo".to_string(), BenchmarkResult ::new( "stable_algo", good_times ) );
-  problematic_runs.push( TimestampedResults ::new( now - Duration ::from_secs( 7 * 24 * 3600 ), good_results ) );
+  problematic_runs.push( TimestampedResults ::new( now - Duration ::from_hours( 168 ), good_results ) );
   
   // Noisy data point (high variance)
   let mut noisy_results = HashMap ::new();
@@ -219,19 +218,19 @@ fn demonstrate_data_validation_and_cleanup()
   Duration ::from_micros( 300 ), Duration ::from_micros( 85 ), Duration ::from_micros( 150 ),
  ];
   noisy_results.insert( "stable_algo".to_string(), BenchmarkResult ::new( "stable_algo", noisy_times ) );
-  problematic_runs.push( TimestampedResults ::new( now - Duration ::from_secs( 6 * 24 * 3600 ), noisy_results ) );
+  problematic_runs.push( TimestampedResults ::new( now - Duration ::from_hours( 144 ), noisy_results ) );
   
   // Insufficient samples
   let mut sparse_results = HashMap ::new();
   let sparse_times = vec![ Duration ::from_micros( 95 ), Duration ::from_micros( 105 ) ];  // Only 2 samples
   sparse_results.insert( "stable_algo".to_string(), BenchmarkResult ::new( "stable_algo", sparse_times ) );
-  problematic_runs.push( TimestampedResults ::new( now - Duration ::from_secs( 5 * 24 * 3600 ), sparse_results ) );
+  problematic_runs.push( TimestampedResults ::new( now - Duration ::from_hours( 120 ), sparse_results ) );
   
   // Another good data point
   let mut good_results2 = HashMap ::new();
   let good_times2 = generate_realistic_benchmark_data( 98, 0.08, 12 );
   good_results2.insert( "stable_algo".to_string(), BenchmarkResult ::new( "stable_algo", good_times2 ) );
-  problematic_runs.push( TimestampedResults ::new( now - Duration ::from_secs( 4 * 24 * 3600 ), good_results2 ) );
+  problematic_runs.push( TimestampedResults ::new( now - Duration ::from_hours( 96 ), good_results2 ) );
   
   let historical = HistoricalResults ::new().with_historical_runs( problematic_runs );
   
@@ -309,7 +308,7 @@ fn demonstrate_trend_analysis()
   current_results.insert( "quicksort".to_string(), BenchmarkResult ::new( "quicksort", vec![ Duration ::from_micros( 80 ), Duration ::from_micros( 82 ), Duration ::from_micros( 78 ) ] ) );
   current_results.insert( "mergesort".to_string(), BenchmarkResult ::new( "mergesort", vec![ Duration ::from_micros( 155 ), Duration ::from_micros( 158 ), Duration ::from_micros( 152 ) ] ) );
   current_results.insert( "heapsort".to_string(), BenchmarkResult ::new( "heapsort", vec![ Duration ::from_micros( 210 ), Duration ::from_micros( 215 ), Duration ::from_micros( 205 ) ] ) );
-  current_results.insert( "bubblesort".to_string(), BenchmarkResult ::new( "bubblesort", vec![ Duration ::from_micros( 2000 ), Duration ::from_micros( 2050 ), Duration ::from_micros( 1950 ) ] ) );
+  current_results.insert( "bubblesort".to_string(), BenchmarkResult ::new( "bubblesort", vec![ Duration ::from_millis( 2 ), Duration ::from_micros( 2050 ), Duration ::from_micros( 1950 ) ] ) );
   
   // Different trend window analyses
   let trend_windows = vec![ 4, 8, 12, 20 ];

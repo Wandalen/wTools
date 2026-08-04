@@ -742,7 +742,7 @@ field: {field_ident}",
    return qt! {};
  }
 
-  let doc = format!("Scalar setter for the '{field_ident}' field.",);
+  let doc = format!("Scalar setter for the '{field_ident}' field.");
 
   // Optimized setter generation - reduce conditional overhead
   let setter_impl =  if is_reference 

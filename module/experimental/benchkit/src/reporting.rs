@@ -253,7 +253,7 @@ impl ReportGenerator {
 
     // Sort results by performance (fastest first)
     let mut sorted_results: Vec<_> = self.results.iter().collect();
-    sorted_results.sort_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()));
+    sorted_results.sort_by_key(|a| a.1.mean_time());
 
     // Table rows with statistical rigor information
     for (name, result) in sorted_results {
@@ -405,7 +405,7 @@ impl ReportGenerator {
     output.push_str("## Executive Summary\n\n");
     let sorted_results: Vec<_> = {
       let mut results: Vec<_> = self.results.iter().collect();
-      results.sort_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()));
+      results.sort_by_key(|a| a.1.mean_time());
       results
     };
     
@@ -437,7 +437,7 @@ impl ReportGenerator {
   fn add_performance_insights(&self, output: &mut String) {
     let sorted_results: Vec<_> = {
       let mut results: Vec<_> = self.results.iter().collect();
-      results.sort_by(|a, b| a.1.mean_time().cmp(&b.1.mean_time()));
+      results.sort_by_key(|a| a.1.mean_time());
       results
     };
 
