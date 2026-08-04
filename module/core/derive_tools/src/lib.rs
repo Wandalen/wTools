@@ -150,7 +150,8 @@ pub mod orphan
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod exposed 
+#[ allow( ambiguous_glob_reexports ) ]
+pub mod exposed
 {
 
   use super :: *;
@@ -168,10 +169,6 @@ pub mod exposed
   #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   #[ doc( inline ) ]
   pub use ::variadic_from ::exposed :: *;
-
-  #[ cfg( feature = "derive_strum" ) ]
-  #[ doc( inline ) ]
-  pub use ::strum :: *;
 
   #[ cfg( feature = "derive_display" ) ]
   #[ doc( inline ) ]
