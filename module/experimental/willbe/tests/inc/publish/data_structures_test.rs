@@ -153,5 +153,5 @@ fn stale_reason_types()
   let being_published = StaleReason ::BeingPublished;
 
   // Just verify they're different
-  assert!( core ::mem ::discriminant( &incompatible ) != core ::mem ::discriminant( &being_published ) );
+  assert_ne!( core ::mem ::discriminant( &incompatible ), core ::mem ::discriminant( &being_published ) );
 }

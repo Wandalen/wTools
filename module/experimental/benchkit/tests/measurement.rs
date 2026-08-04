@@ -36,5 +36,5 @@ fn test_bench_block_macro()
   core ::hint ::black_box( x );
  });
   
-  assert!(result.times.len() == 1);
+  assert_eq!(result.times.len(), 1);
 }

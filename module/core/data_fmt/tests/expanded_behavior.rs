@@ -275,6 +275,7 @@ fn test_expanded_after_separator_alignment_with_indent()
 
 /// B3: `write_to()` produces byte-identical output to `format()` when `indent_prefix` set.
 #[ test ]
+#[ allow( clippy::std_instead_of_core ) ]
 fn test_expanded_write_to_matches_format_with_indent()
 {
   use std::io::Cursor;

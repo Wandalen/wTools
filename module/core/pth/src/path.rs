@@ -649,22 +649,15 @@ mod private
 
   // fix clippy
   let parent = path_buf.parent()?;
-  let file_stem = match path_buf.file_stem()
-  {
-   Some( name ) =>
-   {
+  let name = path_buf.file_stem()?;
   let ends = format!( "{}/", name.to_string_lossy() );
-  if path.as_ref().to_string_lossy().ends_with( &ends )
+  let file_stem = if path.as_ref().to_string_lossy().ends_with( &ends )
   {
    ends
  }
   else
   {
    String ::from( name.to_string_lossy() )
- }
-
- }
-   None => return None,
  };
 
   let mut full_path = parent.to_path_buf();

@@ -176,7 +176,7 @@ fn test_json_format_basic()
   assert!( parsed.is_object() );
   assert!( parsed[ "parameters" ].is_object() );
   assert!( parsed[ "parameters" ][ "timeout" ].is_object() );
-  assert!( parsed[ "parameters" ][ "timeout" ][ "value" ] == JsonValue::Number( 30.into() ) );
+  assert_eq!( parsed[ "parameters" ][ "timeout" ][ "value" ], JsonValue::Number( 30.into() ) );
   assert!( parsed[ "parameters" ][ "timeout" ][ "source" ].is_object() );
 }
 
@@ -225,7 +225,7 @@ fn test_json_format_filtered()
 
   let parsed : serde_json::Value = serde_json::from_str( &output ).expect( "Invalid JSON" );
 
-  assert!( parsed[ "value" ] == JsonValue::Number( 30.into() ) );
+  assert_eq!( parsed[ "value" ], JsonValue::Number( 30.into() ) );
   assert!( parsed[ "source" ].is_string() );
 }
 

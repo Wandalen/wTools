@@ -68,6 +68,7 @@ use std ::path ::Path;
 /// Pitfall: Always use `create_dir_all` before file writes; never assume directories exist
 
 #[ test ]
+#[ allow( clippy::std_instead_of_core ) ]
 fn test_file_write_without_directory_creation_fails()
 {
   // Cleanup: ensure clean test environment

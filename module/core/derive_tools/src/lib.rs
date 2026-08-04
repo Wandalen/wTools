@@ -169,6 +169,10 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use ::variadic_from ::exposed :: *;
 
+  #[ cfg( feature = "derive_variadic_from" ) ]
+  #[ doc( inline ) ]
+  pub use ::derive_tools_meta ::VariadicFrom;
+
   #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
   pub use ::strum :: *;

@@ -137,9 +137,9 @@ mod private
   (
    "{}{}",
    if command.subjects.is_empty() 
-   { String ::new() } else { format!( "\nSubjects: \n\t{}", &full_subjects ) },
-   if command.properties.is_empty() 
-   { String ::new() } else { format!( "\nProperties: \n\t{}",&full_properties ) }
+   { String ::new() } else { format!( "\nSubjects: \n\t{full_subjects}" ) },
+   if command.properties.is_empty()
+   { String ::new() } else { format!( "\nProperties: \n\t{full_properties}" ) }
  )
  } else { String ::new() };
 

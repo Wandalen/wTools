@@ -32,6 +32,7 @@ pub enum Error
   /// File system operation failed.
   ///
   /// Wraps underlying I/O errors from filesystem operations.
+  #[ allow( clippy::std_instead_of_core ) ]
   Fs( std ::io ::Error ),
 
   /// Invalid template.
@@ -67,6 +68,7 @@ impl core ::error ::Error for Error
   }
 }
 
+#[ allow( clippy::std_instead_of_core ) ]
 impl From< std ::io ::Error > for Error
 {
   fn from( err: std ::io ::Error ) -> Self

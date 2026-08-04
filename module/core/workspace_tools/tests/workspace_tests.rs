@@ -391,7 +391,7 @@ mod glob_tests
   // all found files should be rust files
   for path in found
   {
-   assert!( path.extension().unwrap() == "rs" );
+   assert_eq!( path.extension().unwrap(), "rs" );
    assert!( workspace.is_workspace_file( &path ) );
  }
   

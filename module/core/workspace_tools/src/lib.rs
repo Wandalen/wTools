@@ -1183,11 +1183,8 @@ impl Workspace
    canonical_paths.insert( canonical );
    if local_path.exists()
    {
-     match Self::read_secret_file_validated( &local_path )
-     {
-       Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
-       Err( e ) => return Err( e ),
-     }
+     let content = Self::read_secret_file_validated( &local_path )?;
+     return Ok( Self::parse_key_value_file( &content ) );
    }
   }
 
@@ -1207,11 +1204,8 @@ impl Workspace
            tried_paths.push( format!( "  - {} ($PRO workspace)", pro_path.display() ) );
            if pro_path.exists()
            {
-             match Self::read_secret_file_validated( &pro_path )
-             {
-               Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
-               Err( e ) => return Err( e ),
-             }
+             let content = Self::read_secret_file_validated( &pro_path )?;
+             return Ok( Self::parse_key_value_file( &content ) );
            }
          }
        }
@@ -1240,11 +1234,8 @@ impl Workspace
            tried_paths.push( format!( "  - {} ($HOME directory)", home_path.display() ) );
            if home_path.exists()
            {
-             match Self::read_secret_file_validated( &home_path )
-             {
-               Ok( content ) => return Ok( Self::parse_key_value_file( &content ) ),
-               Err( e ) => return Err( e ),
-             }
+             let content = Self::read_secret_file_validated( &home_path )?;
+             return Ok( Self::parse_key_value_file( &content ) );
            }
          }
        }

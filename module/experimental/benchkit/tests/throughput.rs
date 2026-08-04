@@ -49,7 +49,7 @@ fn test_throughput_comparison()
   
   let comparison = analyzer.compare_throughput(&results);
   
-  assert!(comparison.metrics.len() == 2);
+  assert_eq!(comparison.metrics.len(), 2);
   
   let (fastest_name, _) = comparison.fastest_throughput().unwrap();
   assert_eq!(fastest_name, "fast");

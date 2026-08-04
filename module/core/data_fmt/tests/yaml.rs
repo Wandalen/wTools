@@ -49,7 +49,7 @@ mod yaml_tests
     let yaml = formatter.format( &view ).unwrap();
 
     // Empty table should produce empty array: []
-    assert!( yaml.trim() == "[]" );
+    assert_eq!( yaml.trim(), "[]" );
   }
 
   #[ test ]

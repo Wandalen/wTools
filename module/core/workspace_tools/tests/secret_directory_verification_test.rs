@@ -40,7 +40,7 @@ fn test_secret_directory_path_correctness()
   let expected_path = workspace.root().join( "secret" );
   
   assert_eq!( secret_dir, expected_path );
-  assert!( secret_dir.file_name().unwrap() == "secret" );
+  assert_eq!( secret_dir.file_name().unwrap(), "secret" );
   assert!( !secret_dir.to_string_lossy().contains( ".secrets" ) );
 }
 
@@ -55,7 +55,7 @@ fn test_secret_file_path_correctness()
   let expected_path = workspace.root().join( "secret" ).join( "-secrets.sh" );
   
   assert_eq!( secret_file, expected_path );
-  assert!( secret_file.parent().unwrap().file_name().unwrap() == "secret" );
+  assert_eq!( secret_file.parent().unwrap().file_name().unwrap(), "secret" );
 }
 
 /// Test loading secrets from `-secrets.sh` file within `secret` directory

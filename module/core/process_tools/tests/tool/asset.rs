@@ -1,3 +1,5 @@
+#![ allow( clippy::std_instead_of_core ) ]
+
 pub const ASSET_PATH : &str = "tests/asset";
 
 macro_rules! ERR_MSG {

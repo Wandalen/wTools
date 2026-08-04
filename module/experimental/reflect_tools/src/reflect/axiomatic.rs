@@ -422,7 +422,7 @@ mod private
    f
    .debug_struct( "KeyVal" )
    .field( "key", &self.key )
-   .field( "val", &format_args!( "{:?}", &self.val ) )
+   .field( "val", &format_args!( "{:?}", self.val ) )
    .finish()
  }
  }

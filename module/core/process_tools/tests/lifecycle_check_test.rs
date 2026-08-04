@@ -1,4 +1,5 @@
 #![ allow( missing_docs ) ]
+#![ allow( clippy::std_instead_of_core ) ]
 
 include!( "../../../../module/step/meta/src/module/terminal.rs" );
 

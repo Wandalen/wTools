@@ -159,6 +159,7 @@ fn test_generic_table_view_with_formatter()
 // =============================================================================
 
 #[ test ]
+#[ allow( clippy::std_instead_of_core ) ]
 fn test_write_trait_to_stdout()
 {
   use data_fmt::{ RowBuilder, TableFormatter };
@@ -179,6 +180,7 @@ fn test_write_trait_to_stdout()
 }
 
 #[ test ]
+#[ allow( clippy::std_instead_of_core ) ]
 fn test_write_trait_multiple_formatters()
 {
   use data_fmt::{ RowBuilder, TableFormatter, ExpandedFormatter };

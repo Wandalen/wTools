@@ -705,7 +705,7 @@ mod glob_functionality_tests
   
   for path in &found
   {
-   assert!( path.extension().unwrap() == "rs" );
+   assert_eq!( path.extension().unwrap(), "rs" );
    assert!( workspace.is_workspace_file( path ) );
  }
  }
@@ -737,7 +737,7 @@ mod glob_functionality_tests
   
   for path in &found
   {
-   assert!( path.extension().unwrap() == "rs" );
+   assert_eq!( path.extension().unwrap(), "rs" );
    assert!( path.to_string_lossy().contains( "src" ) );
  }
  }

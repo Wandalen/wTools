@@ -87,9 +87,9 @@ mod private
    (
   "{heading}\n{}{}\n\n{hint}\n",
   if cmd.subjects.is_empty() 
-  { String ::new() } else { format!( "\n\nSubjects: {}", &full_subjects ) },
-  if cmd.properties.is_empty() 
-  { String ::new() } else { format!( "\n\nProperties: {}",&full_properties ) },
+  { String ::new() } else { format!( "\n\nSubjects: {full_subjects}" ) },
+  if cmd.properties.is_empty()
+  { String ::new() } else { format!( "\n\nProperties: {full_properties}" ) },
  )
 
  })
