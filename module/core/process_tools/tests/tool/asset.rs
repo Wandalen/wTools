@@ -11,6 +11,7 @@ WORKSPACE_PATH = { value = \".\", relative = true }
   };
 }
 
+#[ allow( clippy ::std_instead_of_core ) ]
 pub fn path() -> std ::io ::Result< std ::path ::PathBuf >
 {
   use std ::

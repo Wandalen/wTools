@@ -84,7 +84,7 @@ pub fn from_components(input: proc_macro ::TokenStream) -> Result< proc_macro2 :
 
   if has_debug 
   {
-  let about = format!("derive: FromComponents\nstructure: {0}", &parsed.ident);
+  let about = format!("derive: FromComponents\nstructure: {0}", parsed.ident);
   diag ::report_print(about, &original_input, &result);
  }
 

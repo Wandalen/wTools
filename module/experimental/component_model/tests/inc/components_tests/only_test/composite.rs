@@ -7,9 +7,9 @@ fn component_assign()
   let mut o1 = Options1 ::default();
   o1.assign( 42 );
   o1.assign( "Hello, world!" );
-  o1.assign( 13.01 );
+  o1.assign( 13.01_f32 );
   println!( "field1: {}, field2: {}", o1.field1, o1.field2 );
-  let exp = Options1 { field1: 42, field2: "Hello, world!".to_string(), field3: 13.01 };
+  let exp = Options1 { field1: 42, field2: "Hello, world!".to_string(), field3: 13.01_f32 };
   assert_eq!( o1, exp );
 
 }
@@ -23,7 +23,7 @@ fn component_assign_with_composite()
   let mut o1 = Options1 ::default();
   o1.assign( 42 );
   o1.assign( "Hello, world!" );
-  o1.assign( 13.01 );
+  o1.assign( 13.01_f32 );
   let mut o2 = Options2 ::default();
   o2.assign( Into :: < i32 > ::into( &o1 ) );
   o2.assign( Into :: < String > ::into( &o1 ) );
@@ -35,7 +35,7 @@ fn component_assign_with_composite()
   let mut o1 = Options1 ::default();
   o1.assign( 42 );
   o1.assign( "Hello, world!" );
-  o1.assign( 13.01 );
+  o1.assign( 13.01_f32 );
   let mut o2 = Options2 ::default();
   o2.assign_with_type :: < i32, _ >( &o1 );
   o2.assign_with_type :: < String, _ >( &o1 );
@@ -53,7 +53,7 @@ fn assign()
   let mut o1 = Options1 ::default();
   o1.assign( 42 );
   o1.assign( "Hello, world!" );
-  o1.assign( 13.01 );
+  o1.assign( 13.01_f32 );
   let mut o2 = Options2 ::default();
   o2.options_2_assign( &o1 );
   let exp = Options2 { field1: 42, field2: "Hello, world!".to_string() };
@@ -81,7 +81,7 @@ fn from_components()
   let mut o1 = Options1 ::default();
   o1.assign( 42 );
   o1.assign( "Hello, world!" );
-  o1.assign( 13.01 );
+  o1.assign( 13.01_f32 );
   let o2: Options2 = Into :: < Options2 > ::into( &o1 );
   let exp = Options2 { field1: 42, field2: "Hello, world!".to_string() };
   assert_eq!( o2, exp );

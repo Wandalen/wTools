@@ -492,10 +492,8 @@ ensure that at least one remotest is present in git. ",
   {
   let mut rou = format!
   (
-   "| [{}]({}/{}) |",
-   &module_name,
-   &table_parameters.base_path,
-   &module_name
+   "| [{module_name}]({}/{module_name}) |",
+   table_parameters.base_path
  );
   if table_parameters.include_stability
   {
@@ -671,7 +669,7 @@ ensure that at least one remotest is present in git. ",
   "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/workspace_push.yml?label=&branch={}&job={})]({}/actions/workflows/workspace_push.yml?query=branch%3A{})",
   table_parameters.user_and_repo,
   b,
-  &module_name.to_case( convert_case ::Case ::Snake ),
+  module_name.to_case( convert_case ::Case ::Snake ),
   table_parameters.core_url,
   b,
  )

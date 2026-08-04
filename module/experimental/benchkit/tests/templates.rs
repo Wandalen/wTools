@@ -282,8 +282,8 @@ mod tests
   
   // Should detect significant improvement
   assert!( regression_report.has_significant_changes() );
-  assert!( regression_report.get_trend_for( "fast_operation" ) == Some( PerformanceTrend ::Improving ) );
-  
+  assert_eq!( regression_report.get_trend_for( "fast_operation" ), Some( PerformanceTrend ::Improving ) );
+
   // Should include statistical significance
   assert!( regression_report.is_statistically_significant( "fast_operation" ) );
  }
@@ -324,7 +324,7 @@ mod tests
   let regression_report = analyzer.analyze( &results, &historical );
   
   // Should detect improving trend from rolling average
-  assert!( regression_report.get_trend_for( "fast_operation" ) == Some( PerformanceTrend ::Improving ) );
+  assert_eq!( regression_report.get_trend_for( "fast_operation" ), Some( PerformanceTrend ::Improving ) );
   assert!( regression_report.has_historical_data( "fast_operation" ) );
  }
 
@@ -350,7 +350,7 @@ mod tests
   let regression_report = analyzer.analyze( &results, &historical );
   
   // Should detect improvement compared to previous run
-  assert!( regression_report.get_trend_for( "fast_operation" ) == Some( PerformanceTrend ::Improving ) );
+  assert_eq!( regression_report.get_trend_for( "fast_operation" ), Some( PerformanceTrend ::Improving ) );
   assert!( regression_report.has_previous_run_data() );
  }
 
@@ -377,7 +377,7 @@ mod tests
   
   // Should detect that changes are not statistically significant
   assert!( !regression_report.is_statistically_significant( "fast_operation" ) );
-  assert!( regression_report.get_trend_for( "fast_operation" ) == Some( PerformanceTrend ::Stable ) );
+  assert_eq!( regression_report.get_trend_for( "fast_operation" ), Some( PerformanceTrend ::Stable ) );
  }
 
   #[ test ]

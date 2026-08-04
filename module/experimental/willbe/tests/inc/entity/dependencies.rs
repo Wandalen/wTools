@@ -149,7 +149,7 @@ fn workspace_with_cyclic_dependency()
 
   // Assert
   assert_eq!(1, output.len());
-  assert!(b.crate_dir() == output[0]);
+  assert_eq!( b.crate_dir(), output[ 0 ] );
 
   // Act
   let output = dependency ::list(&mut workspace, &b, DependenciesOptions ::default()).unwrap();
@@ -157,5 +157,5 @@ fn workspace_with_cyclic_dependency()
 
   // Assert
   assert_eq!(1, output.len());
-  assert!(a.crate_dir() == output[0]);
+  assert_eq!( a.crate_dir(), output[ 0 ] );
 }
