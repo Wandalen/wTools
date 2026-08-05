@@ -445,7 +445,7 @@ path = "module/experimental/wca"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.41.1"
+version = "~0.42.1"
 path = "module/experimental/willbe"
 
 ## lang
