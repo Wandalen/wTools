@@ -134,7 +134,7 @@ default-features = false
 # features = [ "enabled" ]
 
 [workspace.dependencies.reflect_tools]
-version = "~0.11.1"
+version = "~0.12.1"
 path = "module/experimental/reflect_tools"
 default-features = false
 # features = [ "enabled" ]
