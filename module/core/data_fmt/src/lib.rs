@@ -170,6 +170,9 @@
 #[ cfg( feature = "themes" ) ]
 pub mod themes;
 
+#[ cfg( feature = "quantity" ) ]
+pub mod quantity;
+
 // Public re-exports - Core data types
 #[ cfg( feature = "enabled" ) ]
 pub use data::{
@@ -261,4 +264,8 @@ pub use formatters::{ TextFormatter, TextVariant };
 // Color themes (feature-gated)
 #[ cfg( feature = "themes" ) ]
 pub use themes::{ ColorTheme, ColorThemeBuilder };
+
+// Quantity formatters (feature-gated)
+#[ cfg( feature = "quantity" ) ]
+pub use quantity::{ QuantityStyle, duration_6ch, number_compact, bytes_iec };
 
