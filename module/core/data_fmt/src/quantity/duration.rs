@@ -1,4 +1,4 @@
-//! Fixed 6-visible-column duration/age formatting.
+//! Duration/age formatting — fixed-width columnar and variable-width prose forms.
 
 use super::{ QuantityStyle, styled_unit };
 
@@ -66,5 +66,119 @@ pub fn duration_6ch( secs : u64, style : QuantityStyle ) -> String
     {
       format!( "{}{}", part( weeks, "w", style ), part( ( secs % WEEK ) / DAY, "d", style ) )
     }
+  }
+}
+
+/// Render one `Nu` segment: a value with no zero-padding, followed by its
+/// (optionally dimmed) unit — the variable-width counterpart of [`part`].
+fn seg( value : u64, unit : &str, style : QuantityStyle ) -> String
+{
+  format!( "{value}{}", styled_unit( unit, style ) )
+}
+
+/// Format a whole-second span as a compact, **variable-width** human-readable
+/// duration: the most-significant non-zero tier, followed by the next-lower tier
+/// only when it is itself non-zero. Tiers are days, hours, minutes, seconds.
+///
+/// Unlike [`duration_6ch`] (fixed 6 columns, zero-padded, for aligned table
+/// cells) this form targets inline prose — uptimes, ages, elapsed spans — where
+/// a shortest-sensible rendering reads better than a padded one.
+///
+/// | Range   | Layout  | Example           |
+/// |---------|---------|-------------------|
+/// | `< 1m`  | `Ss`    | `45` → `45s`      |
+/// | `< 1h`  | `Mm Ss` | `90` → `1m 30s`   |
+/// | `< 1d`  | `Hh Mm` | `3665` → `1h 1m`  |
+/// | `>= 1d` | `Dd Hh` | `90061` → `1d 1h` |
+///
+/// A lower tier that is exactly zero is dropped (`120` → `2m`, `3600` → `1h`,
+/// `86_400` → `1d`), so the result carries at most two tiers and never a trailing
+/// `0`-unit. With [`QuantityStyle::Colored`] the unit letters are dimmed and the
+/// digits and separating space are left unstyled.
+///
+/// # Examples
+///
+/// ```
+/// # #[ cfg( feature = "quantity" ) ]
+/// # {
+/// use data_fmt::{ duration_human, QuantityStyle };
+/// assert_eq!( duration_human( 45, QuantityStyle::Plain ), "45s" );
+/// assert_eq!( duration_human( 90, QuantityStyle::Plain ), "1m 30s" );
+/// assert_eq!( duration_human( 3600, QuantityStyle::Plain ), "1h" );
+/// assert_eq!( duration_human( 90_061, QuantityStyle::Plain ), "1d 1h" );
+/// # }
+/// ```
+pub fn duration_human( secs : u64, style : QuantityStyle ) -> String
+{
+  let days = secs / DAY;
+  let hours = ( secs % DAY ) / HOUR;
+  let minutes = ( secs % HOUR ) / MINUTE;
+  let seconds = secs % MINUTE;
+
+  if days > 0
+  {
+    if hours > 0 { format!( "{} {}", seg( days, "d", style ), seg( hours, "h", style ) ) }
+    else { seg( days, "d", style ) }
+  }
+  else if hours > 0
+  {
+    if minutes > 0 { format!( "{} {}", seg( hours, "h", style ), seg( minutes, "m", style ) ) }
+    else { seg( hours, "h", style ) }
+  }
+  else if minutes > 0
+  {
+    if seconds > 0 { format!( "{} {}", seg( minutes, "m", style ), seg( seconds, "s", style ) ) }
+    else { seg( minutes, "m", style ) }
+  }
+  else
+  {
+    seg( seconds, "s", style )
+  }
+}
+
+/// Format a millisecond span with **sub-second precision** at the low end,
+/// falling back to [`duration_human`] tiers once it reaches a minute.
+///
+/// | Range   | Layout  | Example            |
+/// |---------|---------|--------------------|
+/// | `< 1s`  | `Nms`   | `500` → `500ms`    |
+/// | `< 1m`  | `N.NNs` | `1500` → `1.50s`   |
+/// | `>= 1m` | (human) | `65_000` → `1m 5s` |
+///
+/// The seconds tier truncates to hundredths rather than rounding, so a value
+/// like `59_990` renders `59.99s` and can never round up across the minute
+/// boundary into `1m 0s` (Fix(BUG-1071)). With [`QuantityStyle::Colored`] the
+/// unit letters are dimmed and the digits left unstyled.
+///
+/// # Examples
+///
+/// ```
+/// # #[ cfg( feature = "quantity" ) ]
+/// # {
+/// use data_fmt::{ duration_ms, QuantityStyle };
+/// assert_eq!( duration_ms( 500, QuantityStyle::Plain ), "500ms" );
+/// assert_eq!( duration_ms( 1500, QuantityStyle::Plain ), "1.50s" );
+/// assert_eq!( duration_ms( 59_990, QuantityStyle::Plain ), "59.99s" );
+/// assert_eq!( duration_ms( 65_000, QuantityStyle::Plain ), "1m 5s" );
+/// # }
+/// ```
+pub fn duration_ms( ms : u64, style : QuantityStyle ) -> String
+{
+  if ms < 1_000
+  {
+    format!( "{ms}{}", styled_unit( "ms", style ) )
+  }
+  else if ms < 60_000
+  {
+    // Truncate to hundredths (never round) so 59_990 stays "59.99s" and cannot
+    // cross into the minute tier as "1m 0s" — Fix(BUG-1071).
+    let hundredths = ms / 10;
+    let whole = hundredths / 100;
+    let frac = hundredths % 100;
+    format!( "{whole}.{frac:02}{}", styled_unit( "s", style ) )
+  }
+  else
+  {
+    duration_human( ms / 1_000, style )
   }
 }

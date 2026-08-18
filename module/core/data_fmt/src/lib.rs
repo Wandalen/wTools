@@ -267,5 +267,5 @@ pub use themes::{ ColorTheme, ColorThemeBuilder };
 
 // Quantity formatters (feature-gated)
 #[ cfg( feature = "quantity" ) ]
-pub use quantity::{ QuantityStyle, duration_6ch, number_compact, bytes_iec };
+pub use quantity::{ QuantityStyle, duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_human };
 

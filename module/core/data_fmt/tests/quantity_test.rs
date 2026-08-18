@@ -1,14 +1,17 @@
 //! Golden tests for the feature-gated `quantity` formatting module.
 //!
-//! Covers the three formatter families — `duration_6ch`, `number_compact`,
-//! `bytes_iec` — plus the `QuantityStyle::resolve` policy. The load-bearing
-//! invariant for `duration_6ch` is that its **visible** width (ANSI escapes
-//! stripped, measured via the crate's public `visual_len`) is always exactly 6
-//! columns, in both `Plain` and `Colored` styles.
+//! Covers the six formatter families — fixed-width `duration_6ch`,
+//! `number_compact`, `bytes_iec` and variable-width `duration_human`,
+//! `duration_ms`, `bytes_human` — plus the `QuantityStyle::resolve` policy. The
+//! load-bearing invariant for `duration_6ch` is that its **visible** width (ANSI
+//! escapes stripped, measured via the crate's public `visual_len`) is always
+//! exactly 6 columns, in both `Plain` and `Colored` styles; the variable-width
+//! formatters instead assert per-band golden strings and colored/plain glyph
+//! parity.
 
 #![ cfg( feature = "quantity" ) ]
 
-use data_fmt::{ duration_6ch, number_compact, bytes_iec, QuantityStyle, visual_len };
+use data_fmt::{ duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_human, QuantityStyle, visual_len };
 
 // ── duration_6ch: band-selection golden values (Plain) ────────────────────────
 
@@ -318,4 +321,138 @@ fn colored_below_threshold_unit_handling()
   let n = number_compact( 42, QuantityStyle::Colored );
   assert_eq!( n, "42" );
   assert!( !n.contains( '\x1b' ), "no unit -> no escapes" );
+}
+
+// ── duration_human: variable-width tier selection (Plain) ─────────────────────
+
+#[ test ]
+fn duration_human_seconds_and_minutes()
+{
+  assert_eq!( duration_human( 0, QuantityStyle::Plain ), "0s" );
+  assert_eq!( duration_human( 45, QuantityStyle::Plain ), "45s" );
+  assert_eq!( duration_human( 59, QuantityStyle::Plain ), "59s" );
+  // Trailing zero-unit dropped: 60s and 120s carry no "0s" tail.
+  assert_eq!( duration_human( 60, QuantityStyle::Plain ), "1m" );
+  assert_eq!( duration_human( 90, QuantityStyle::Plain ), "1m 30s" );
+  assert_eq!( duration_human( 120, QuantityStyle::Plain ), "2m" );
+  assert_eq!( duration_human( 3599, QuantityStyle::Plain ), "59m 59s" );
+}
+
+#[ test ]
+fn duration_human_hours_and_days()
+{
+  assert_eq!( duration_human( 3600, QuantityStyle::Plain ), "1h" );       // 0m dropped
+  assert_eq!( duration_human( 3660, QuantityStyle::Plain ), "1h 1m" );
+  assert_eq!( duration_human( 3665, QuantityStyle::Plain ), "1h 1m" );    // sub-minute tier dropped
+  assert_eq!( duration_human( 86_399, QuantityStyle::Plain ), "23h 59m" );
+  assert_eq!( duration_human( 86_400, QuantityStyle::Plain ), "1d" );     // 0h dropped
+  assert_eq!( duration_human( 90_000, QuantityStyle::Plain ), "1d 1h" );
+  assert_eq!( duration_human( 90_061, QuantityStyle::Plain ), "1d 1h" );  // sub-hour tiers dropped
+}
+
+// ── duration_ms: sub-second precision + human fallback (Plain) ────────────────
+
+#[ test ]
+fn duration_ms_milliseconds_and_seconds()
+{
+  assert_eq!( duration_ms( 0, QuantityStyle::Plain ), "0ms" );
+  assert_eq!( duration_ms( 500, QuantityStyle::Plain ), "500ms" );
+  assert_eq!( duration_ms( 999, QuantityStyle::Plain ), "999ms" );
+  assert_eq!( duration_ms( 1000, QuantityStyle::Plain ), "1.00s" );
+  assert_eq!( duration_ms( 1500, QuantityStyle::Plain ), "1.50s" );
+  assert_eq!( duration_ms( 12_340, QuantityStyle::Plain ), "12.34s" );
+}
+
+#[ test ]
+fn duration_ms_truncates_not_rounds_at_minute_edge()
+{
+  // Fix(BUG-1071): hundredths truncate, never round up across the minute edge.
+  assert_eq!( duration_ms( 59_990, QuantityStyle::Plain ), "59.99s" );
+  assert_eq!( duration_ms( 59_999, QuantityStyle::Plain ), "59.99s" );
+  // >= 1 minute delegates to duration_human tiers.
+  assert_eq!( duration_ms( 60_000, QuantityStyle::Plain ), "1m" );
+  assert_eq!( duration_ms( 65_000, QuantityStyle::Plain ), "1m 5s" );
+  assert_eq!( duration_ms( 125_000, QuantityStyle::Plain ), "2m 5s" );
+}
+
+// ── bytes_human: verbose binary sizes (Plain) ─────────────────────────────────
+
+#[ test ]
+fn bytes_human_sub_kib_counts()
+{
+  assert_eq!( bytes_human( 0, QuantityStyle::Plain ), "0 bytes" );
+  assert_eq!( bytes_human( 1, QuantityStyle::Plain ), "1 byte" );   // singular special case
+  assert_eq!( bytes_human( 2, QuantityStyle::Plain ), "2 bytes" );
+  assert_eq!( bytes_human( 512, QuantityStyle::Plain ), "512 bytes" );
+  assert_eq!( bytes_human( 1023, QuantityStyle::Plain ), "1023 bytes" );
+}
+
+#[ test ]
+fn bytes_human_scales_with_two_decimals()
+{
+  assert_eq!( bytes_human( 1024, QuantityStyle::Plain ), "1.00 KB" );
+  assert_eq!( bytes_human( 1536, QuantityStyle::Plain ), "1.50 KB" );
+  assert_eq!( bytes_human( 1_048_576, QuantityStyle::Plain ), "1.00 MB" );
+  assert_eq!( bytes_human( 2_621_440, QuantityStyle::Plain ), "2.50 MB" );
+  assert_eq!( bytes_human( 1_073_741_824, QuantityStyle::Plain ), "1.00 GB" );
+  assert_eq!( bytes_human( 1_610_612_736, QuantityStyle::Plain ), "1.50 GB" );
+}
+
+// ── prose formatters: colored/plain parity + unit dimming ─────────────────────
+
+#[ test ]
+fn prose_formatters_colored_stripped_equals_plain()
+{
+  let secs : [ u64; 6 ] = [ 0, 45, 90, 3600, 90_000, 90_061 ];
+  for s in secs
+  {
+    assert_eq!
+    (
+      strip_ansi( &duration_human( s, QuantityStyle::Colored ) ),
+      duration_human( s, QuantityStyle::Plain ),
+      "duration_human secs={s}"
+    );
+  }
+
+  let millis : [ u64; 6 ] = [ 0, 500, 1000, 1500, 59_990, 65_000 ];
+  for ms in millis
+  {
+    assert_eq!
+    (
+      strip_ansi( &duration_ms( ms, QuantityStyle::Colored ) ),
+      duration_ms( ms, QuantityStyle::Plain ),
+      "duration_ms ms={ms}"
+    );
+  }
+
+  let sizes : [ u64; 6 ] = [ 0, 1, 512, 1536, 1_048_576, 1_073_741_824 ];
+  for n in sizes
+  {
+    assert_eq!
+    (
+      strip_ansi( &bytes_human( n, QuantityStyle::Colored ) ),
+      bytes_human( n, QuantityStyle::Plain ),
+      "bytes_human n={n}"
+    );
+  }
+}
+
+#[ test ]
+fn prose_formatters_colored_dims_units_only()
+{
+  // Multi-tier duration: both unit letters dimmed, digits + separating space plain.
+  let d = duration_human( 90, QuantityStyle::Colored );
+  assert!( d.contains( '\x1b' ), "duration_human units must be dimmed" );
+  assert_eq!( strip_ansi( &d ), "1m 30s" );
+
+  // Sub-second ms: "ms" dimmed, digits plain.
+  let ms = duration_ms( 500, QuantityStyle::Colored );
+  assert!( ms.contains( '\x1b' ), "duration_ms unit must be dimmed" );
+  assert_eq!( strip_ansi( &ms ), "500ms" );
+
+  // Verbose bytes: spelled-out unit dimmed, count + separating space left plain.
+  let b = bytes_human( 1536, QuantityStyle::Colored );
+  assert!( b.contains( '\x1b' ), "bytes_human unit must be dimmed" );
+  assert!( b.starts_with( "1.50 " ), "digits and separating space are not dimmed" );
+  assert_eq!( strip_ansi( &b ), "1.50 KB" );
 }

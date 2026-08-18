@@ -1,7 +1,9 @@
-//! Fixed-width, terminal-aware quantity formatting.
+//! Terminal-aware quantity formatting.
 //!
 //! Renders durations/ages, humanized counts, and byte sizes as compact strings
-//! for dense, columnar CLI output. Each formatter takes a [`QuantityStyle`]
+//! for CLI output — fixed-width forms for aligned columns ([`duration_6ch`],
+//! [`bytes_iec`]) and variable-width forms for inline prose ([`duration_human`],
+//! [`duration_ms`], [`bytes_human`]). Each formatter takes a [`QuantityStyle`]
 //! deciding whether unit letters are dimmed with ANSI color
 //! ([`QuantityStyle::Colored`]) or emitted as plain ASCII
 //! ([`QuantityStyle::Plain`]); the visible glyphs are identical either way.
@@ -17,19 +19,22 @@
 //! ```
 //! # #[ cfg( feature = "quantity" ) ]
 //! # {
-//! use data_fmt::{ duration_6ch, number_compact, bytes_iec, QuantityStyle };
+//! use data_fmt::{ duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_human, QuantityStyle };
 //!
 //! assert_eq!( duration_6ch( 146, QuantityStyle::Plain ), "02m26s" );
+//! assert_eq!( duration_human( 3665, QuantityStyle::Plain ), "1h 1m" );
+//! assert_eq!( duration_ms( 1500, QuantityStyle::Plain ), "1.50s" );
 //! assert_eq!( number_compact( 26_301_958, QuantityStyle::Plain ), "26.3M" );
 //! assert_eq!( bytes_iec( 1536, QuantityStyle::Plain ), "1.5K" );
+//! assert_eq!( bytes_human( 1536, QuantityStyle::Plain ), "1.50 KB" );
 //! # }
 //! ```
 
 mod duration;
 mod number;
 
-pub use duration::duration_6ch;
-pub use number::{ number_compact, bytes_iec };
+pub use duration::{ duration_6ch, duration_human, duration_ms };
+pub use number::{ number_compact, bytes_iec, bytes_human };
 
 use color_tools::DecoratedText;
 
