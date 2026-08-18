@@ -79,6 +79,24 @@ use unicode_width::{ UnicodeWidthStr, UnicodeWidthChar };
 pub use strs_tools::ansi::visual_len;
 pub use strs_tools::ansi::pad_to_width;
 
+/// Strip every ANSI escape sequence from `s`, returning plain text — the
+/// companion to [`visual_len`] for callers that need the plain string itself
+/// (piped / non-TTY output), not just its display width.
+///
+/// Re-exported from `strs_tools::ansi`.
+///
+/// # Examples
+///
+/// ```
+/// # #[ cfg( feature = "enabled" ) ]
+/// # {
+/// use data_fmt::strip_ansi;
+/// assert_eq!( strip_ansi( "\x1b[90mhi\x1b[0m" ), "hi" );
+/// assert_eq!( strip_ansi( "plain" ), "plain" );
+/// # }
+/// ```
+pub use strs_tools::ansi::strip as strip_ansi;
+
 /// Returns the display width of `s`, stripping ANSI escape sequences.
 ///
 /// Measures terminal display columns using `UnicodeWidthChar::width()`.

@@ -2,7 +2,8 @@
 //!
 //! Covers the six formatter families — fixed-width `duration_6ch`,
 //! `number_compact`, `bytes_iec` and variable-width `duration_human`,
-//! `duration_ms`, `bytes_human` — plus the `QuantityStyle::resolve` policy. The
+//! `duration_ms`, `bytes_human` — plus the `QuantityStyle::resolve` policy and,
+//! under the opt-in `quantity_parse` feature, the `parse_duration` inverse. The
 //! load-bearing invariant for `duration_6ch` is that its **visible** width (ANSI
 //! escapes stripped, measured via the crate's public `visual_len`) is always
 //! exactly 6 columns, in both `Plain` and `Colored` styles; the variable-width
@@ -455,4 +456,53 @@ fn prose_formatters_colored_dims_units_only()
   assert!( b.contains( '\x1b' ), "bytes_human unit must be dimmed" );
   assert!( b.starts_with( "1.50 " ), "digits and separating space are not dimmed" );
   assert_eq!( strip_ansi( &b ), "1.50 KB" );
+}
+
+// ── parse_duration: inverse of the formatters (opt-in `quantity_parse`) ───────
+
+#[ cfg( feature = "quantity_parse" ) ]
+use data_fmt::{ parse_duration, DurationError };
+
+#[ cfg( feature = "quantity_parse" ) ]
+#[ test ]
+fn parse_duration_single_units()
+{
+  // Assert on whole seconds — avoids constructing a `Duration` via the larger-unit
+  // helpers (`from_hours`/`from_mins`) that post-date the workspace MSRV.
+  assert_eq!( parse_duration( "1h" ).unwrap().as_secs(), 3600 );
+  assert_eq!( parse_duration( "30m" ).unwrap().as_secs(), 1800 );
+  assert_eq!( parse_duration( "45s" ).unwrap().as_secs(), 45 );
+  assert_eq!( parse_duration( "7d" ).unwrap().as_secs(), 7 * 86_400 );
+  assert_eq!( parse_duration( "2w" ).unwrap().as_secs(), 14 * 86_400 );
+}
+
+#[ cfg( feature = "quantity_parse" ) ]
+#[ test ]
+fn parse_duration_combined_units()
+{
+  assert_eq!( parse_duration( "1d6h" ).unwrap().as_secs(), 86_400 + 21_600 );
+  assert_eq!( parse_duration( "1h30m" ).unwrap().as_secs(), 5400 );
+  assert_eq!( parse_duration( "1d6h30m" ).unwrap().as_secs(), 86_400 + 21_600 + 1800 );
+}
+
+#[ cfg( feature = "quantity_parse" ) ]
+#[ test ]
+fn parse_duration_round_trips_with_duration_human()
+{
+  // parse_duration ∘ duration_human is identity on values duration_human renders
+  // exactly — single- or two-tier with no dropped sub-tier remainder.
+  for secs in [ 45u64, 90, 3600, 3660, 86_400, 90_000 ]
+  {
+    let text = duration_human( secs, QuantityStyle::Plain ).replace( ' ', "" );
+    assert_eq!( parse_duration( &text ).unwrap().as_secs(), secs, "round-trip {text}" );
+  }
+}
+
+#[ cfg( feature = "quantity_parse" ) ]
+#[ test ]
+fn parse_duration_rejects_empty_and_garbage()
+{
+  assert_eq!( parse_duration( "" ), Err( DurationError::Empty ) );
+  assert_eq!( parse_duration( "soon" ), Err( DurationError::InvalidFormat( "soon".to_string() ) ) );
+  assert_eq!( parse_duration( "1x" ), Err( DurationError::InvalidFormat( "1x".to_string() ) ) );
 }

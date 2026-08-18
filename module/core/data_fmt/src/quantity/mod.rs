@@ -14,6 +14,10 @@
 //! environment variable, so consumers share a single policy instead of each
 //! re-deriving it.
 //!
+//! Under the opt-in `quantity_parse` feature, `parse_duration` provides the
+//! inverse of `duration_human` — reading a compact human duration string
+//! (`"1h30m"`, `"7d"`) back into a `core::time::Duration`.
+//!
 //! # Examples
 //!
 //! ```
@@ -34,6 +38,8 @@ mod duration;
 mod number;
 
 pub use duration::{ duration_6ch, duration_human, duration_ms };
+#[ cfg( feature = "quantity_parse" ) ]
+pub use duration::{ parse_duration, DurationError };
 pub use number::{ number_compact, bytes_iec, bytes_human };
 
 use color_tools::DecoratedText;

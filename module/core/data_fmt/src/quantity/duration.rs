@@ -2,6 +2,11 @@
 
 use super::{ QuantityStyle, styled_unit };
 
+#[ cfg( feature = "quantity_parse" ) ]
+use core::time::Duration;
+#[ cfg( feature = "quantity_parse" ) ]
+use error_tools::dependency::thiserror;
+
 const MINUTE : u64 = 60;
 const HOUR : u64 = 60 * MINUTE;
 const DAY : u64 = 24 * HOUR;
@@ -181,4 +186,69 @@ pub fn duration_ms( ms : u64, style : QuantityStyle ) -> String
   {
     duration_human( ms / 1_000, style )
   }
+}
+
+// ── parsing: the inverse of the duration formatters (opt-in `quantity_parse`) ──
+
+/// Errors returned by [`parse_duration`].
+#[ cfg( feature = "quantity_parse" ) ]
+#[ derive( thiserror::Error, Debug, Clone, PartialEq, Eq ) ]
+pub enum DurationError
+{
+  /// The input string was empty.
+  #[ error( "Duration string cannot be empty" ) ]
+  Empty,
+  /// The input was not a recognizable duration (e.g. `"soon"`, `"1x"`).
+  #[ error( "Invalid duration '{0}': expected a form like '1h', '30m', '1d6h', '1w'" ) ]
+  InvalidFormat( String ),
+  /// The parsed duration exceeded the supported range (`> u64::MAX / 2` seconds).
+  #[ error( "Duration '{0}' is too large (overflow)" ) ]
+  Overflow( String ),
+}
+
+/// Parse a human-readable duration string into a [`core::time::Duration`] —
+/// the inverse of [`duration_human`].
+///
+/// Accepts the compact forms a CLI user types (`"1h"`, `"30m"`, `"7d"`, `"2w"`),
+/// including combined units (`"1d6h30m"`) and long-form units (`"90 seconds"`,
+/// `"1hour 30min"`). Unit letters follow the `humantime` grammar: `s`, `m`
+/// (minutes), `h`, `d`, `w`.
+///
+/// # Errors
+///
+/// - [`DurationError::Empty`] — the input string was empty.
+/// - [`DurationError::InvalidFormat`] — the input was not a recognizable duration.
+/// - [`DurationError::Overflow`] — the value exceeded `u64::MAX / 2` seconds.
+///
+/// # Examples
+///
+/// ```
+/// # #[ cfg( feature = "quantity_parse" ) ]
+/// # {
+/// use data_fmt::parse_duration;
+/// use core::time::Duration;
+///
+/// assert_eq!( parse_duration( "1h" ).unwrap(), Duration::from_secs( 3600 ) );
+/// assert_eq!( parse_duration( "30m" ).unwrap(), Duration::from_secs( 1800 ) );
+/// assert_eq!( parse_duration( "1d6h" ).unwrap(), Duration::from_secs( 86_400 + 21_600 ) );
+/// # }
+/// ```
+#[ cfg( feature = "quantity_parse" ) ]
+pub fn parse_duration( s : &str ) -> Result< Duration, DurationError >
+{
+  if s.is_empty()
+  {
+    return Err( DurationError::Empty );
+  }
+
+  let duration = humantime::parse_duration( s )
+    .map_err( | _ | DurationError::InvalidFormat( s.to_string() ) )?;
+
+  // humantime can yield very large spans; cap well below u64 overflow territory.
+  if duration.as_secs() > u64::MAX / 2
+  {
+    return Err( DurationError::Overflow( s.to_string() ) );
+  }
+
+  Ok( duration )
 }

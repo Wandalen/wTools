@@ -189,7 +189,7 @@ pub use config::{
   HEADING_FIELD_SEP, HEADING_RULE_CHAR, HEADING_LEAD_WIDTH,
 };
 #[ cfg( feature = "enabled" ) ]
-pub use ansi_str::{ visual_len, pad_to_width, truncate_cell };
+pub use ansi_str::{ visual_len, pad_to_width, truncate_cell, strip_ansi };
 #[ cfg( feature = "enabled" ) ]
 pub use wrap::{ WrapConfig, WrapFormatter, BreakStrategy, Overflow };
 #[ cfg( feature = "enabled" ) ]
@@ -268,4 +268,8 @@ pub use themes::{ ColorTheme, ColorThemeBuilder };
 // Quantity formatters (feature-gated)
 #[ cfg( feature = "quantity" ) ]
 pub use quantity::{ QuantityStyle, duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_human };
+
+// Human-readable duration parsing — inverse of the formatters (opt-in `quantity_parse`)
+#[ cfg( feature = "quantity_parse" ) ]
+pub use quantity::{ parse_duration, DurationError };
 
