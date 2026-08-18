@@ -46,13 +46,13 @@ input text
 
 #### Hard
 
-Split text at exactly `width` characters per line, ignoring word boundaries.
+Split text at exactly `width` display columns per line, ignoring word boundaries.
 
 ```
 while remaining is not empty:
   indent = indent_for(line_idx)
   avail = width - char_count(indent)
-  take first `avail` chars → line
+  take first `avail` display columns → line  (Fix BUG-023: display width, not char count)
   trim leading spaces from remainder  (Fix BUG-002)
 ```
 
@@ -88,14 +88,22 @@ flush any remaining pending
 
 ### Overlong Word Handling — `push_overlong_word`
 
-When `break_strategy` is `WordThenHard` or `break_long_words` is true, the word is sliced character-by-character across multiple lines. Available width is recomputed per line (Fix BUG-002: `initial_indent` and `subsequent_indent` may differ).
+When `break_strategy` is `WordThenHard` or `break_long_words` is true, the word is sliced by display column across multiple lines. Available width is recomputed per line (Fix BUG-002: `initial_indent` and `subsequent_indent` may differ).
 
 ```
 while remaining is not empty:
   avail = width - char_count(indent_for(line_idx))
-  take first `avail` chars → line
+  take first `avail` display columns → line  (Fix BUG-023: display width, not char count)
   remaining = rest
 ```
+
+**Fix BUG-023**: both slicing sites above compute the byte offset via
+`unicode_visual_byte_offset` (display-width-aware, `unicode_width`-based), not
+`char_indices().nth(avail)` (character-count-based). CJK/emoji characters have
+display width 2; slicing by character count let up to `2 * avail` display columns
+onto one line. Same invariant as BUG-001 (`ansi_str.rs::truncate_single_line`, see
+`task/bug/closed/001_unicode_display_width.md`), regressed independently at this
+hard-break call site.
 
 When neither condition holds, the word is emitted as-is on a single line (may exceed `width`).
 

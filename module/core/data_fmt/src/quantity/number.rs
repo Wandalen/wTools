@@ -158,6 +158,74 @@ pub fn bytes_human( bytes : u64, style : QuantityStyle ) -> String
   }
 }
 
+/// Format a byte count as a **verbose, variable-width** decimal size: a value and
+/// a spelled-out unit separated by a space, with 1000-based magnitudes labelled
+/// `KB`/`MB`/`GB`/`TB` (SI style) and two fixed fractional digits at `KB` and
+/// above.
+///
+/// The SI/decimal sibling of [`bytes_human`] (base-1024): identical formatting
+/// policy — sub-`KB` values render as an exact count (singular `1 byte`, plural
+/// `N bytes`), `>= 1 KB` renders 2-decimal with the SI unit — but the divisor is
+/// 1000, not 1024, so the same raw byte count can render differently (e.g.
+/// `1_500_000` is `"1.50 MB"` here vs `"1.43 MB"` under [`bytes_human`]). Unlike
+/// `bytes_human`, magnitudes extend to `TB` rather than topping out at `GB`. With
+/// [`QuantityStyle::Colored`] the unit is dimmed and the digits and separating
+/// space are left unstyled.
+///
+/// | Range      | Layout    | Example                          |
+/// |------------|-----------|-----------------------------------|
+/// | `0`        | `0 bytes` | `0` → `0 bytes`                   |
+/// | `1`        | `1 byte`  | `1` → `1 byte`                    |
+/// | `< 1 KB`   | `N bytes` | `512` → `512 bytes`               |
+/// | `< 1 MB`   | `N.NN KB` | `1_500` → `1.50 KB`               |
+/// | `< 1 GB`   | `N.NN MB` | `1_500_000` → `1.50 MB`           |
+/// | `< 1 TB`   | `N.NN GB` | `2_304_000_000` → `2.30 GB`       |
+/// | `>= 1 TB`  | `N.NN TB` | `1_000_000_000_000` → `1.00 TB`   |
+///
+/// # Examples
+///
+/// ```
+/// # #[ cfg( feature = "quantity" ) ]
+/// # {
+/// use data_fmt::{ bytes_si, QuantityStyle };
+/// assert_eq!( bytes_si( 1, QuantityStyle::Plain ), "1 byte" );
+/// assert_eq!( bytes_si( 1_500_000, QuantityStyle::Plain ), "1.50 MB" );
+/// assert_eq!( bytes_si( 2_304_000_000, QuantityStyle::Plain ), "2.30 GB" );
+/// # }
+/// ```
+pub fn bytes_si( bytes : u64, style : QuantityStyle ) -> String
+{
+  const KB : u64 = 1_000;
+  const MB : u64 = KB * 1_000;
+  const GB : u64 = MB * 1_000;
+  const TB : u64 = GB * 1_000;
+
+  if bytes >= TB
+  {
+    format!( "{:.2} {}", bytes as f64 / TB as f64, styled_unit( "TB", style ) )
+  }
+  else if bytes >= GB
+  {
+    format!( "{:.2} {}", bytes as f64 / GB as f64, styled_unit( "GB", style ) )
+  }
+  else if bytes >= MB
+  {
+    format!( "{:.2} {}", bytes as f64 / MB as f64, styled_unit( "MB", style ) )
+  }
+  else if bytes >= KB
+  {
+    format!( "{:.2} {}", bytes as f64 / KB as f64, styled_unit( "KB", style ) )
+  }
+  else if bytes == 1
+  {
+    format!( "1 {}", styled_unit( "byte", style ) )
+  }
+  else
+  {
+    format!( "{bytes} {}", styled_unit( "bytes", style ) )
+  }
+}
+
 /// Render `value` with `decimals` fractional digits, dropping a trailing `.0`.
 fn format_mantissa( value : f64, decimals : usize ) -> String
 {

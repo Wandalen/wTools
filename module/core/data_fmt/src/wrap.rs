@@ -247,7 +247,7 @@ impl Default for WrapFormatter
 
 // --- private helpers ---
 
-use crate::ansi_str::unicode_visual_len;
+use crate::ansi_str::{ unicode_visual_len, unicode_visual_byte_offset };
 
 fn char_count( s : &str ) -> usize
 {
@@ -274,7 +274,16 @@ fn expand_tabs( text : &str, tab_width : usize ) -> String
   text.replace( '\t', &" ".repeat( tab_width ) )
 }
 
-/// Hard-break `text` at `width` chars per line, prepending the appropriate indent.
+/// Hard-break `text` at `width` display columns per line, prepending the appropriate indent.
+///
+/// # Fix(BUG-023)
+///
+/// Root cause: sliced at `avail` characters (`.char_indices().nth(avail)`) instead of
+/// `avail` display columns, so CJK/emoji text (width=2 per char) produced lines up to
+/// 2x the configured budget.
+///
+/// Pitfall: character count ≠ display width — always slice via a display-width-aware
+/// byte offset (`unicode_visual_byte_offset`) when the boundary comes from a width budget.
 fn hard_break_str( text : &str, config : &WrapConfig, first_line_idx : usize ) -> Vec< String >
 {
   let mut lines = Vec::new();
@@ -289,10 +298,7 @@ fn hard_break_str( text : &str, config : &WrapConfig, first_line_idx : usize ) -
       lines.push( indent.to_string() );
       break;
     }
-    let byte_end = remaining
-      .char_indices()
-      .nth( avail )
-      .map_or( remaining.len(), | ( i, _ ) | i );
+    let byte_end = unicode_visual_byte_offset( remaining, avail );
     lines.push( format!( "{indent}{}", &remaining[ ..byte_end ] ) );
     // Fix(BUG-002): trim leading spaces after extracting each chunk.
     // Root cause: `words.join(" ")` inserts inter-word spaces; after slicing out
@@ -322,6 +328,11 @@ fn push_overlong_word(
     // then passed the same chunk size to `hard_chunks`; continuation chunks landed on
     // lines with `subsequent_indent`, so `indent + chunk` exceeded `width`.
     // Pitfall: only visible when `initial_indent != subsequent_indent`.
+    //
+    // Fix(BUG-023): slice via `unicode_visual_byte_offset` (display-width-aware),
+    // not `.char_indices().nth(avail)` (character-count-based).
+    // Root cause: character count ≠ display width for CJK/emoji (width=2 per char).
+    // Pitfall: see `hard_break_str`'s own `Fix(BUG-023)` note — identical mechanism.
     let mut remaining = word;
     while !remaining.is_empty()
     {
@@ -333,10 +344,7 @@ fn push_overlong_word(
         lines.push( indent.to_string() );
         break;
       }
-      let byte_end = remaining
-        .char_indices()
-        .nth( avail )
-        .map_or( remaining.len(), | ( i, _ ) | i );
+      let byte_end = unicode_visual_byte_offset( remaining, avail );
       lines.push( format!( "{indent}{}", &remaining[ ..byte_end ] ) );
       remaining = &remaining[ byte_end.. ];
     }

@@ -767,3 +767,95 @@ fn tab_at_wrap_boundary_expanded_before_split_ac13()
   assert!( joined.contains( "hello" ), "word 'hello' must appear in output: {result:?}" );
   assert!( joined.contains( "world" ), "word 'world' must appear in output: {result:?}" );
 }
+
+/// Reproduces hard-break slicing using character count instead of display width
+/// on wide (CJK/emoji) characters, producing lines up to 2x the configured width (BUG-023).
+///
+/// ## Root Cause
+/// `hard_break_str` sliced hard-break boundaries via
+/// `remaining.char_indices().nth(avail)` — walking `avail` CHARACTERS to find a byte
+/// offset, when `avail` is actually a DISPLAY-WIDTH budget (columns). For CJK/emoji
+/// content (`unicode_width` = 2 per char), a budget of 4 columns let 4 *characters*
+/// (8 display columns) onto one line — double the intended width.
+///
+/// ## Why Not Caught
+/// T16/AC-6 covered `BreakStrategy::Hard` exact-boundary splitting but only with
+/// ASCII input, where char count and display width are numerically identical — the
+/// bug is invisible on any pure-ASCII fixture.
+///
+/// ## Fix Applied
+/// `hard_break_str` now slices via `unicode_visual_byte_offset(remaining, avail)`,
+/// which walks display width (via `unicode_width`) rather than character count.
+///
+/// ## Prevention
+/// Any hard-break boundary computation driven by a width budget must walk display
+/// width, never `char_indices().nth(n)` — mirrors the same fix already applied once
+/// in `ansi_str.rs::truncate_single_line` (BUG-001).
+///
+/// ## Pitfall
+/// Character count ≠ display width for CJK, emoji, combining marks — this is the
+/// second call site in this crate to regress on that exact invariant (see BUG-001).
+// test_kind: bug_reproducer(BUG-023)
+#[ test ]
+fn hard_break_str_respects_visual_width_not_char_count()
+{
+  let fmt = WrapFormatter::with_config(
+    WrapConfig::new()
+      .width( 4 )
+      .break_strategy( BreakStrategy::Hard )
+  );
+  let result = fmt.wrap( "你好世界" );
+  for line in &result
+  {
+    assert!(
+      unicode_width::UnicodeWidthStr::width( line.as_str() ) <= 4,
+      "hard-broken line must be <= 4 display columns, got {line:?} (visual width {})",
+      unicode_width::UnicodeWidthStr::width( line.as_str() ),
+    );
+  }
+  assert_eq!( result.join( "" ), "你好世界", "no characters may be lost or reordered" );
+  assert!( result.len() >= 2, "width=4 with 8-column content must span at least 2 lines: {result:?}" );
+}
+
+/// Reproduces the same char-count-vs-display-width bug as
+/// `hard_break_str_respects_visual_width_not_char_count`, in `push_overlong_word`'s
+/// hard-break path for a single overlong CJK/emoji token under the default
+/// `WordThenHard` strategy (BUG-023).
+///
+/// ## Root Cause
+/// `push_overlong_word` contained the identical `.char_indices().nth(avail)` slicing
+/// pattern as `hard_break_str` — same root cause, second call site.
+///
+/// ## Why Not Caught
+/// The existing `push_overlong_word` BUG-002 reproducer
+/// (`push_overlong_word_bug_subsequent_indent_overflow`) uses a pure-ASCII overlong
+/// word, where character count and display width coincide.
+///
+/// ## Fix Applied
+/// `push_overlong_word` now slices via `unicode_visual_byte_offset(remaining, avail)`,
+/// identical to the `hard_break_str` fix.
+///
+/// ## Prevention
+/// See `hard_break_str_respects_visual_width_not_char_count`'s Prevention note —
+/// applies identically here.
+///
+/// ## Pitfall
+/// See `hard_break_str_respects_visual_width_not_char_count`'s Pitfall note —
+/// applies identically here.
+// test_kind: bug_reproducer(BUG-023)
+#[ test ]
+fn push_overlong_word_respects_visual_width_not_char_count()
+{
+  let fmt = WrapFormatter::with_config( WrapConfig::new().width( 4 ) );
+  let result = fmt.wrap( "你好世界你好" );
+  for line in &result
+  {
+    assert!(
+      unicode_width::UnicodeWidthStr::width( line.as_str() ) <= 4,
+      "hard-broken overlong word line must be <= 4 display columns, got {line:?} (visual width {})",
+      unicode_width::UnicodeWidthStr::width( line.as_str() ),
+    );
+  }
+  assert_eq!( result.join( "" ), "你好世界你好", "no characters may be lost or reordered" );
+  assert!( result.len() >= 2, "width=4 with 12-column content must span at least 2 lines: {result:?}" );
+}

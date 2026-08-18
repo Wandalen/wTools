@@ -1,18 +1,18 @@
 //! Golden tests for the feature-gated `quantity` formatting module.
 //!
-//! Covers the six formatter families — fixed-width `duration_6ch`,
+//! Covers the seven formatter families — fixed-width `duration_6ch`,
 //! `number_compact`, `bytes_iec` and variable-width `duration_human`,
-//! `duration_ms`, `bytes_human` — plus the `QuantityStyle::resolve` policy and,
-//! under the opt-in `quantity_parse` feature, the `parse_duration` inverse. The
-//! load-bearing invariant for `duration_6ch` is that its **visible** width (ANSI
-//! escapes stripped, measured via the crate's public `visual_len`) is always
-//! exactly 6 columns, in both `Plain` and `Colored` styles; the variable-width
-//! formatters instead assert per-band golden strings and colored/plain glyph
-//! parity.
+//! `duration_ms`, `bytes_human`, `bytes_si` — plus the `QuantityStyle::resolve`
+//! policy and, under the opt-in `quantity_parse` feature, the `parse_duration`
+//! inverse. The load-bearing invariant for `duration_6ch` is that its
+//! **visible** width (ANSI escapes stripped, measured via the crate's public
+//! `visual_len`) is always exactly 6 columns, in both `Plain` and `Colored`
+//! styles; the variable-width formatters instead assert per-band golden
+//! strings and colored/plain glyph parity.
 
 #![ cfg( feature = "quantity" ) ]
 
-use data_fmt::{ duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_human, QuantityStyle, visual_len };
+use data_fmt::{ duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_human, bytes_si, QuantityStyle, visual_len };
 
 // ── duration_6ch: band-selection golden values (Plain) ────────────────────────
 
@@ -59,6 +59,8 @@ fn duration_clamps_at_99w06d()
   assert_eq!( duration_6ch( 60_480_000, QuantityStyle::Plain ), "99w06d" );
   assert_eq!( duration_6ch( 100_000_000, QuantityStyle::Plain ), "99w06d" );
   assert_eq!( duration_6ch( u64::MAX, QuantityStyle::Plain ), "99w06d" );
+  // Task 016 Test Matrix row 8's exact literal.
+  assert_eq!( duration_6ch( 60_566_400, QuantityStyle::Plain ), "99w06d" );
 }
 
 #[ test ]
@@ -178,6 +180,24 @@ fn resolve_non_tty_is_always_plain()
 {
   // Non-TTY forces Plain regardless of ambient NO_COLOR — deterministic.
   assert_eq!( QuantityStyle::resolve( false ), QuantityStyle::Plain );
+}
+
+// Guards `NO_COLOR` mutation from other threads in the same process — same pattern
+// as `tests/terminal_width_test.rs`'s `COLUMNS_TEST_MUTEX` (cargo nextest spawns one
+// process per test so this is redundant there; retained for cargo test compatibility).
+static NO_COLOR_TEST_MUTEX : std::sync::Mutex< () > = std::sync::Mutex::new( () );
+
+#[ test ]
+fn resolve_tty_honors_no_color_override()
+{
+  let _guard = NO_COLOR_TEST_MUTEX.lock().unwrap_or_else( std::sync::PoisonError::into_inner );
+
+  std::env::remove_var( "NO_COLOR" );
+  assert_eq!( QuantityStyle::resolve( true ), QuantityStyle::Colored );
+
+  std::env::set_var( "NO_COLOR", "1" );
+  assert_eq!( QuantityStyle::resolve( true ), QuantityStyle::Plain );
+  std::env::remove_var( "NO_COLOR" );
 }
 
 // ── duration_6ch: band-edge carries and exact boundaries ──────────────────────
@@ -399,6 +419,47 @@ fn bytes_human_scales_with_two_decimals()
   assert_eq!( bytes_human( 1_610_612_736, QuantityStyle::Plain ), "1.50 GB" );
 }
 
+// ── bytes_si: verbose SI decimal sizes (Plain) ─────────────────────────────────
+
+#[ test ]
+fn bytes_si_sub_kb_counts()
+{
+  assert_eq!( bytes_si( 0, QuantityStyle::Plain ), "0 bytes" );
+  assert_eq!( bytes_si( 1, QuantityStyle::Plain ), "1 byte" );   // singular special case
+  assert_eq!( bytes_si( 2, QuantityStyle::Plain ), "2 bytes" );
+  assert_eq!( bytes_si( 512, QuantityStyle::Plain ), "512 bytes" );
+  assert_eq!( bytes_si( 999, QuantityStyle::Plain ), "999 bytes" );
+}
+
+#[ test ]
+fn bytes_si_scales_with_two_decimals()
+{
+  assert_eq!( bytes_si( 1_000, QuantityStyle::Plain ), "1.00 KB" );
+  assert_eq!( bytes_si( 1_500_000, QuantityStyle::Plain ), "1.50 MB" );
+  assert_eq!( bytes_si( 2_304_000_000, QuantityStyle::Plain ), "2.30 GB" );
+  assert_eq!( bytes_si( 1_000_000_000_000, QuantityStyle::Plain ), "1.00 TB" );
+  assert_eq!( bytes_si( 2_500_000_000_000, QuantityStyle::Plain ), "2.50 TB" );
+}
+
+#[ test ]
+fn bytes_si_diverges_from_bytes_human_on_same_input()
+{
+  // Same raw byte count, different base (1000 vs 1024) -> different rendered value.
+  assert_eq!( bytes_si( 1_500_000, QuantityStyle::Plain ), "1.50 MB" );
+  assert_eq!( bytes_human( 1_500_000, QuantityStyle::Plain ), "1.43 MB" );
+}
+
+#[ test ]
+fn bytes_si_plain_has_no_ansi_regardless_of_no_color()
+{
+  // Plain never emits ANSI — the formatter itself never consults the
+  // environment (only `QuantityStyle::resolve` does), so this holds
+  // unconditionally, independent of whether `NO_COLOR` is set.
+  let plain = bytes_si( 1_500_000, QuantityStyle::Plain );
+  assert_eq!( plain, "1.50 MB" );
+  assert!( !plain.contains( '\x1b' ), "plain form must not carry ANSI escapes" );
+}
+
 // ── prose formatters: colored/plain parity + unit dimming ─────────────────────
 
 #[ test ]
@@ -436,6 +497,17 @@ fn prose_formatters_colored_stripped_equals_plain()
       "bytes_human n={n}"
     );
   }
+
+  let si_sizes : [ u64; 6 ] = [ 0, 1, 999, 1_500_000, 2_304_000_000, 1_000_000_000_000 ];
+  for n in si_sizes
+  {
+    assert_eq!
+    (
+      strip_ansi( &bytes_si( n, QuantityStyle::Colored ) ),
+      bytes_si( n, QuantityStyle::Plain ),
+      "bytes_si n={n}"
+    );
+  }
 }
 
 #[ test ]
@@ -456,6 +528,14 @@ fn prose_formatters_colored_dims_units_only()
   assert!( b.contains( '\x1b' ), "bytes_human unit must be dimmed" );
   assert!( b.starts_with( "1.50 " ), "digits and separating space are not dimmed" );
   assert_eq!( strip_ansi( &b ), "1.50 KB" );
+
+  // SI decimal bytes: spelled-out unit dimmed, count + separating space left
+  // plain; stripped-visible width equals the Plain rendering's width.
+  let si = bytes_si( 1_500_000, QuantityStyle::Colored );
+  assert!( si.contains( '\x1b' ), "bytes_si unit must be dimmed" );
+  assert!( si.starts_with( "1.50 " ), "digits and separating space are not dimmed" );
+  assert_eq!( strip_ansi( &si ), "1.50 MB" );
+  assert_eq!( visual_len( &si ), bytes_si( 1_500_000, QuantityStyle::Plain ).chars().count() );
 }
 
 // ── parse_duration: inverse of the formatters (opt-in `quantity_parse`) ───────
