@@ -267,7 +267,7 @@ pub use themes::{ ColorTheme, ColorThemeBuilder };
 
 // Quantity formatters (feature-gated)
 #[ cfg( feature = "quantity" ) ]
-pub use quantity::{ QuantityStyle, duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_human, bytes_si };
+pub use quantity::{ QuantityStyle, duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_compact_si, bytes_human, bytes_si };
 
 // Human-readable duration parsing — inverse of the formatters (opt-in `quantity_parse`)
 #[ cfg( feature = "quantity_parse" ) ]

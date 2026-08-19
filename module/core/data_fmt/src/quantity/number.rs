@@ -226,6 +226,92 @@ pub fn bytes_si( bytes : u64, style : QuantityStyle ) -> String
   }
 }
 
+/// Format a byte count as a **compact, single-letter** decimal size: a bare value
+/// immediately followed by a one-letter SI magnitude (`K`, `M`, `G`, `T`, each
+/// 1000× the previous), with no separating space.
+///
+/// The decimal/compact sibling of [`bytes_iec`] (which is binary) and the compact
+/// counterpart of [`bytes_si`] (which is verbose): the same tight, space-free,
+/// single-letter shape as `bytes_iec` for dense displays (disk-usage trees, status
+/// columns), but scaled by 1000 rather than 1024. Fractional digits adapt to
+/// magnitude for a roughly two-significant-figure width — a scaled value below 10
+/// shows one decimal (`5.6G`, and `5.0G` keeps its `.0`), a value of 10 or more
+/// shows none (`17G`, `684M`) — so wide values stay narrow. Sub-`K` values render
+/// as a bare `NB` count. A rounding roll-over promotes to the next magnitude rather
+/// than showing a four-digit mantissa. With [`QuantityStyle::Colored`] the unit
+/// letter is dimmed.
+///
+/// This magnitude-adaptive precision intentionally differs from [`bytes_iec`]'s
+/// trailing-`.0`-drop policy: `bytes_iec` renders `17_301` bytes as `16.9K` but
+/// `5120` as `5K`, whereas this formatter renders large values with **no** decimal
+/// (`17K`, not `16.9K`) and small round values **with** one (`5.0K`, not `5K`) —
+/// the compact-SI target is width-stable columns, not maximal precision.
+///
+/// | Range     | Layout | Example                        |
+/// |-----------|--------|--------------------------------|
+/// | `< 1 K`   | `NB`   | `512` → `512B`                 |
+/// | `< 10 ×`  | `N.NX` | `5_600_000_000` → `5.6G`       |
+/// | `>= 10 ×` | `NX`   | `17_000_000_000` → `17G`       |
+///
+/// # Examples
+///
+/// ```
+/// # #[ cfg( feature = "quantity" ) ]
+/// # {
+/// use data_fmt::{ bytes_compact_si, QuantityStyle };
+/// assert_eq!( bytes_compact_si( 512, QuantityStyle::Plain ), "512B" );
+/// assert_eq!( bytes_compact_si( 5_600_000_000, QuantityStyle::Plain ), "5.6G" );
+/// assert_eq!( bytes_compact_si( 17_000_000_000, QuantityStyle::Plain ), "17G" );
+/// assert_eq!( bytes_compact_si( 684_000_000, QuantityStyle::Plain ), "684M" );
+/// # }
+/// ```
+pub fn bytes_compact_si( n : u64, style : QuantityStyle ) -> String
+{
+  if n < 1_000
+  {
+    return format!( "{n}{}", styled_unit( "B", style ) );
+  }
+
+  const UNITS : [ &str; 4 ] = [ "K", "M", "G", "T" ];
+  let mut value = n as f64 / 1_000.0;
+  let mut idx = 0usize;
+  while value >= 1_000.0 && idx + 1 < UNITS.len()
+  {
+    value /= 1_000.0;
+    idx += 1;
+  }
+
+  // Magnitude-adaptive precision (~2 significant figures): one fractional digit
+  // below 10 (the `.0` is kept, unlike `format_mantissa`), none at 10 and above —
+  // keeping wide values width-stable in compact columns.
+  let mut rendered = render_compact_mantissa( value );
+
+  // 0-decimal rounding can push e.g. 999.6 up to "1000"; promote to the next unit
+  // so the mantissa never reaches four digits (when a larger unit exists). The
+  // promoted value is always ~1, so it re-renders with one decimal.
+  if rendered.starts_with( "1000" ) && idx + 1 < UNITS.len()
+  {
+    idx += 1;
+    rendered = render_compact_mantissa( value / 1_000.0 );
+  }
+
+  format!( "{rendered}{}", styled_unit( UNITS[ idx ], style ) )
+}
+
+/// Render a scaled magnitude for [`bytes_compact_si`]: one fractional digit below
+/// 10 (trailing `.0` preserved), none at 10 and above.
+fn render_compact_mantissa( value : f64 ) -> String
+{
+  if value < 10.0
+  {
+    format!( "{value:.1}" )
+  }
+  else
+  {
+    format!( "{value:.0}" )
+  }
+}
+
 /// Render `value` with `decimals` fractional digits, dropping a trailing `.0`.
 fn format_mantissa( value : f64, decimals : usize ) -> String
 {

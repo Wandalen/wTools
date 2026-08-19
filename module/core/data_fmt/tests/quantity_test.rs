@@ -1,8 +1,8 @@
 //! Golden tests for the feature-gated `quantity` formatting module.
 //!
-//! Covers the seven formatter families — fixed-width `duration_6ch`,
-//! `number_compact`, `bytes_iec` and variable-width `duration_human`,
-//! `duration_ms`, `bytes_human`, `bytes_si` — plus the `QuantityStyle::resolve`
+//! Covers the eight formatter families — fixed-width `duration_6ch`,
+//! `number_compact`, `bytes_iec`, `bytes_compact_si` and variable-width
+//! `duration_human`, `duration_ms`, `bytes_human`, `bytes_si` — plus the `QuantityStyle::resolve`
 //! policy and, under the opt-in `quantity_parse` feature, the `parse_duration`
 //! inverse. The load-bearing invariant for `duration_6ch` is that its
 //! **visible** width (ANSI escapes stripped, measured via the crate's public
@@ -12,7 +12,7 @@
 
 #![ cfg( feature = "quantity" ) ]
 
-use data_fmt::{ duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_human, bytes_si, QuantityStyle, visual_len };
+use data_fmt::{ duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_compact_si, bytes_human, bytes_si, QuantityStyle, visual_len };
 
 // ── duration_6ch: band-selection golden values (Plain) ────────────────────────
 
@@ -171,6 +171,63 @@ fn bytes_colored_dims_unit_only()
   assert_eq!( visual_len( &colored ), "1.5K".chars().count() );
   assert!( colored.contains( '\x1b' ), "colored form must carry ANSI escapes" );
   assert!( colored.starts_with( "1.5" ), "digits are not dimmed" );
+}
+
+// ── bytes_compact_si: compact decimal magnitude golden values ─────────────────
+
+#[ test ]
+fn compact_si_below_1000_is_verbatim()
+{
+  assert_eq!( bytes_compact_si( 0, QuantityStyle::Plain ), "0B" );
+  assert_eq!( bytes_compact_si( 512, QuantityStyle::Plain ), "512B" );
+  assert_eq!( bytes_compact_si( 999, QuantityStyle::Plain ), "999B" );
+}
+
+#[ test ]
+fn compact_si_scales_to_decimal_magnitude()
+{
+  assert_eq!( bytes_compact_si( 1_000, QuantityStyle::Plain ), "1.0K" );
+  assert_eq!( bytes_compact_si( 1_500, QuantityStyle::Plain ), "1.5K" );
+  assert_eq!( bytes_compact_si( 684_000_000, QuantityStyle::Plain ), "684M" );
+  assert_eq!( bytes_compact_si( 5_600_000_000, QuantityStyle::Plain ), "5.6G" );
+  assert_eq!( bytes_compact_si( 1_000_000_000_000, QuantityStyle::Plain ), "1.0T" );
+}
+
+// Magnitude-adaptive precision: one decimal below 10 (round values keep their
+// `.0`), none at 10 and above. The deliberate contrast with `bytes_iec`, which
+// drops a trailing `.0` (rendering an exact 5× as "5K", not "5.0K").
+#[ test ]
+fn compact_si_precision_is_magnitude_adaptive()
+{
+  assert_eq!( bytes_compact_si( 5_000_000_000, QuantityStyle::Plain ), "5.0G" );
+  assert_eq!( bytes_compact_si( 9_900_000_000, QuantityStyle::Plain ), "9.9G" );
+  assert_eq!( bytes_compact_si( 10_000_000_000, QuantityStyle::Plain ), "10G" );
+  assert_eq!( bytes_compact_si( 17_000_000_000, QuantityStyle::Plain ), "17G" );
+  assert_eq!( bytes_compact_si( 50_000_000, QuantityStyle::Plain ), "50M" );
+}
+
+#[ test ]
+fn compact_si_rounding_rollover_promotes()
+{
+  // 999_999_999_999 rounds up out of the G tier -> "1.0T", never "1000G".
+  assert_eq!( bytes_compact_si( 999_999_999_999, QuantityStyle::Plain ), "1.0T" );
+}
+
+#[ test ]
+fn compact_si_huge_counts_widen_at_top_tier()
+{
+  // Beyond the T tier there is no larger unit, so the mantissa simply widens.
+  assert_eq!( bytes_compact_si( 2_000_000_000_000_000, QuantityStyle::Plain ), "2000T" );
+}
+
+#[ test ]
+fn compact_si_colored_dims_unit_only()
+{
+  let colored = bytes_compact_si( 5_600_000_000, QuantityStyle::Colored );
+  println!( "colored compact_si: {colored:?}" );
+  assert_eq!( visual_len( &colored ), "5.6G".chars().count() );
+  assert!( colored.contains( '\x1b' ), "colored form must carry ANSI escapes" );
+  assert!( colored.starts_with( "5.6" ), "digits are not dimmed" );
 }
 
 // ── QuantityStyle::resolve policy ─────────────────────────────────────────────
