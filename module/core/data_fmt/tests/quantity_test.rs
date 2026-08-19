@@ -12,7 +12,7 @@
 
 #![ cfg( feature = "quantity" ) ]
 
-use data_fmt::{ duration_6ch, duration_human, duration_ms, number_compact, bytes_iec, bytes_compact_si, bytes_human, bytes_si, QuantityStyle, visual_len };
+use data_fmt::{ duration_6ch, duration_human, duration_human_hours, duration_ms, number_compact, bytes_iec, bytes_compact_si, bytes_human, bytes_si, QuantityStyle, visual_len };
 
 // ── duration_6ch: band-selection golden values (Plain) ────────────────────────
 
@@ -426,6 +426,24 @@ fn duration_human_hours_and_days()
   assert_eq!( duration_human( 86_400, QuantityStyle::Plain ), "1d" );     // 0h dropped
   assert_eq!( duration_human( 90_000, QuantityStyle::Plain ), "1d 1h" );
   assert_eq!( duration_human( 90_061, QuantityStyle::Plain ), "1d 1h" );  // sub-hour tiers dropped
+}
+
+// ── duration_human_hours: like duration_human but hours never promote to days ──
+
+#[ test ]
+fn duration_human_hours_suppresses_day_tier()
+{
+  // Below one day: identical to duration_human.
+  assert_eq!( duration_human_hours( 45, QuantityStyle::Plain ), "45s" );
+  assert_eq!( duration_human_hours( 90, QuantityStyle::Plain ), "1m 30s" );
+  assert_eq!( duration_human_hours( 120, QuantityStyle::Plain ), "2m" );        // 0s dropped
+  assert_eq!( duration_human_hours( 3600, QuantityStyle::Plain ), "1h" );       // 0m dropped
+  assert_eq!( duration_human_hours( 3665, QuantityStyle::Plain ), "1h 1m" );    // sub-minute tier dropped
+  assert_eq!( duration_human_hours( 86_399, QuantityStyle::Plain ), "23h 59m" );
+  // At or above one day: hours keep accumulating instead of promoting to a day tier.
+  assert_eq!( duration_human_hours( 86_400, QuantityStyle::Plain ), "24h" );    // duration_human would give "1d"
+  assert_eq!( duration_human_hours( 90_061, QuantityStyle::Plain ), "25h 1m" ); // duration_human would give "1d 1h"
+  assert_eq!( duration_human_hours( 172_800, QuantityStyle::Plain ), "48h" );   // two days -> 48 hours
 }
 
 // ── duration_ms: sub-second precision + human fallback (Plain) ────────────────

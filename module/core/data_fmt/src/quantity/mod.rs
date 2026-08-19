@@ -3,7 +3,7 @@
 //! Renders durations/ages, humanized counts, and byte sizes as compact strings
 //! for CLI output — fixed-width forms for aligned columns ([`duration_6ch`],
 //! [`bytes_iec`], [`bytes_compact_si`]) and variable-width forms for inline prose
-//! ([`duration_human`], [`duration_ms`], [`bytes_human`], [`bytes_si`]). Each formatter takes a
+//! ([`duration_human`], [`duration_human_hours`], [`duration_ms`], [`bytes_human`], [`bytes_si`]). Each formatter takes a
 //! [`QuantityStyle`] deciding whether unit letters are dimmed with ANSI color
 //! ([`QuantityStyle::Colored`]) or emitted as plain ASCII
 //! ([`QuantityStyle::Plain`]); the visible glyphs are identical either way.
@@ -39,7 +39,7 @@
 mod duration;
 mod number;
 
-pub use duration::{ duration_6ch, duration_human, duration_ms };
+pub use duration::{ duration_6ch, duration_human, duration_human_hours, duration_ms };
 #[ cfg( feature = "quantity_parse" ) ]
 pub use duration::{ parse_duration, DurationError };
 pub use number::{ number_compact, bytes_iec, bytes_compact_si, bytes_human, bytes_si };

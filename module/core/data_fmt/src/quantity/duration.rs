@@ -141,6 +141,61 @@ pub fn duration_human( secs : u64, style : QuantityStyle ) -> String
   }
 }
 
+/// Format a whole-second span like [`duration_human`], but with **hours as the
+/// largest tier** — the day tier is never introduced, so a multi-day span keeps
+/// accumulating hours rather than rolling over into days.
+///
+/// Identical to [`duration_human`] below one day; at or above one day the two
+/// diverge: [`duration_human`] switches to a `Dd Hh` form (`90_061` → `1d 1h`)
+/// while this keeps counting hours (`86_400` → `24h`, `90_061` → `25h 1m`).
+/// Prefer it wherever an unbroken hour count reads better than a day/hour split —
+/// countdowns, "time-to-full" estimates, uptimes rendered in hours.
+///
+/// | Range   | Layout  | Example             |
+/// |---------|---------|---------------------|
+/// | `< 1m`  | `Ss`    | `45` → `45s`        |
+/// | `< 1h`  | `Mm Ss` | `90` → `1m 30s`     |
+/// | `>= 1h` | `Hh Mm` | `90_061` → `25h 1m` |
+///
+/// A lower tier that is exactly zero is dropped (`120` → `2m`, `3600` → `1h`,
+/// `86_400` → `24h`), so the result carries at most two tiers and never a
+/// trailing `0`-unit. With [`QuantityStyle::Colored`] the unit letters are dimmed
+/// and the digits and separating space are left unstyled.
+///
+/// # Examples
+///
+/// ```
+/// # #[ cfg( feature = "quantity" ) ]
+/// # {
+/// use data_fmt::{ duration_human_hours, QuantityStyle };
+/// assert_eq!( duration_human_hours( 45, QuantityStyle::Plain ), "45s" );
+/// assert_eq!( duration_human_hours( 3600, QuantityStyle::Plain ), "1h" );
+/// assert_eq!( duration_human_hours( 86_400, QuantityStyle::Plain ), "24h" );
+/// assert_eq!( duration_human_hours( 90_061, QuantityStyle::Plain ), "25h 1m" );
+/// # }
+/// ```
+pub fn duration_human_hours( secs : u64, style : QuantityStyle ) -> String
+{
+  let hours = secs / HOUR;
+  let minutes = ( secs % HOUR ) / MINUTE;
+  let seconds = secs % MINUTE;
+
+  if hours > 0
+  {
+    if minutes > 0 { format!( "{} {}", seg( hours, "h", style ), seg( minutes, "m", style ) ) }
+    else { seg( hours, "h", style ) }
+  }
+  else if minutes > 0
+  {
+    if seconds > 0 { format!( "{} {}", seg( minutes, "m", style ), seg( seconds, "s", style ) ) }
+    else { seg( minutes, "m", style ) }
+  }
+  else
+  {
+    seg( seconds, "s", style )
+  }
+}
+
 /// Format a millisecond span with **sub-second precision** at the low end,
 /// falling back to [`duration_human`] tiers once it reaches a minute.
 ///

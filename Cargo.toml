@@ -152,7 +152,7 @@ path             = "module/core/color_tools"
 default-features = false
 
 [workspace.dependencies.data_fmt]
-version = "~0.13.1"
+version = "~0.13.2"
 path = "module/core/data_fmt"
 default-features = false
 
