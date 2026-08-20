@@ -1,6 +1,6 @@
 [package]
 name = "data_fmt"
-version = "0.8.1"
+version = "0.13.2"
 edition = "2021"
 authors = [ "wandalen <wandalen@obox.systems>" ]
 license = "MIT"
@@ -21,6 +21,8 @@ strs_tools    = { workspace = true, features = [ "ansi" ], optional = true }
 color_tools   = { workspace = true, features = [ "enabled" ], optional = true }
 unicode-width = { workspace = true, optional = true }
 terminal_size = { workspace = true, optional = true }
+# Human-readable duration parsing — pulled only by the opt-in `quantity_parse` feature.
+humantime     = { workspace = true, optional = true }
 
 # Optional dependencies for data format serialization
 serde = { workspace = true, features = ["derive"], optional = true }
@@ -35,7 +37,7 @@ serde_yaml_ng = { workspace = true }
 toml = { workspace = true }
 
 [features]
-default = [ "enabled" ]
+default = [ "enabled", "quantity" ]
 full          = [ "enabled", "all_formats", "terminal_size" ]
 terminal_size = [ "dep:terminal_size" ]
 enabled = [
@@ -108,6 +110,14 @@ sql_sqlite = []
 
 # Color themes (optional enhancement)
 themes = []
+
+# Quantity formatters — duration/age, number, byte size (feature-gated)
+quantity = [ "enabled" ]
+
+# Human-readable duration *parsing* (`parse_duration`) — the inverse of the
+# duration formatters. Opt-in so its `humantime` dep stays out of the default
+# feature set, keeping data_fmt's default dependency footprint lean.
+quantity_parse = [ "quantity", "dep:humantime" ]
 
 # Meta-features for convenience
 format_table_visual = [ "enabled", "table_plain", "table_minimal", "table_bordered", "table_markdown", "table_grid", "table_unicode", "table_compact", "dep:terminal_size" ]

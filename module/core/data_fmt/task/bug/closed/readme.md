@@ -28,3 +28,4 @@
 | `015_heading_cjk_display_width.md` | BUG-015: Heading CJK display width uses char count instead of display columns |
 | `016_heading_newline_multiline.md` | BUG-016: Heading newline in title/fields breaks single-line invariant |
 | `017_padding_undercount_in_width.md` | BUG-017: compute_total_row_width padding undercount for bordered styles |
+| `023_hard_break_display_width_mismatch.md` | BUG-023: hard-break slicing used char count instead of display width for CJK/emoji |

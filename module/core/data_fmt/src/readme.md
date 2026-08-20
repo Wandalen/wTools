@@ -17,3 +17,4 @@ Library source files. Each file owns one cohesive responsibility; `lib.rs` re-ex
 | `wrap.rs` | Word-wrap utility: `WrapFormatter`, `WrapConfig`, `BreakStrategy`, `Overflow` |
 | `themes.rs` | Visual theme definitions for HTML and table formatters |
 | `formatters/` | One formatter module per output format family |
+| `quantity/` | Fixed-width quantity formatters: duration/age, number, byte size |

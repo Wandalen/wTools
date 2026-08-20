@@ -24,6 +24,7 @@
 | AC-11 | WordThenHard falls through to hard-break when word exceeds budget | ✅ |
 | AC-12 | no leading space on continuation line after hard break (BUG-002) | ✅ |
 | AC-13 | tab character at the wrap boundary — tab expanded before split, not stranded on continuation | ✅ |
+| AC-14 | hard-break boundary uses display width, not character count, for CJK/emoji content (BUG-023) | ✅ |
 
 ---
 
@@ -180,6 +181,29 @@
   resulting space sequence does not appear at the start of the continuation line
   (leading whitespace from `split_whitespace()` normalisation); the tab is never
   passed as a literal `\t` to the word-split pass; both words appear in output.
+
+---
+
+### AC-14: hard-break boundary uses display width, not character count, for CJK/emoji content (BUG-023)
+
+- **Given:** A `WrapFormatter` with `break_strategy(BreakStrategy::Hard)` and
+  `width(4)`; input `"你好世界"` (4 CJK characters, each display width 2, total
+  visual width 8). Separately, the same budget with the default `WordThenHard`
+  strategy and an unspaced overlong token `"你好世界你好"` (6 CJK characters,
+  total visual width 12).
+- **When:** `wrap()` is called.
+- **Then:** Every returned line has visual width (`unicode_width::UnicodeWidthStr::width`)
+  `<= 4`, never character count `<= 4`; the hard-break boundary is computed by walking
+  display columns, not characters — a budget of 4 columns admits at most 2 CJK
+  characters (width 2 each) per line, not 4.
+- **Note:** Regression guard for BUG-023; the bug sliced hard-break boundaries via
+  `remaining.char_indices().nth(avail)`, which walks `avail` characters instead of
+  `avail` display columns, letting CJK/emoji lines run up to 2x the configured width.
+  Same invariant as BUG-001 (`ansi_str.rs::truncate_single_line`), regressed at a
+  second call site (`hard_break_str`, `push_overlong_word` in `src/wrap.rs`). Covered by
+  `hard_break_str_respects_visual_width_not_char_count` and
+  `push_overlong_word_respects_visual_width_not_char_count` (`bug_reproducer` BUG-023)
+  in `tests/word_wrap.rs`.
 
 ---
 

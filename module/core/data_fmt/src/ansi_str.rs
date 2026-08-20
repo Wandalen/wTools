@@ -79,6 +79,24 @@ use unicode_width::{ UnicodeWidthStr, UnicodeWidthChar };
 pub use strs_tools::ansi::visual_len;
 pub use strs_tools::ansi::pad_to_width;
 
+/// Strip every ANSI escape sequence from `s`, returning plain text — the
+/// companion to [`visual_len`] for callers that need the plain string itself
+/// (piped / non-TTY output), not just its display width.
+///
+/// Re-exported from `strs_tools::ansi`.
+///
+/// # Examples
+///
+/// ```
+/// # #[ cfg( feature = "enabled" ) ]
+/// # {
+/// use data_fmt::strip_ansi;
+/// assert_eq!( strip_ansi( "\x1b[90mhi\x1b[0m" ), "hi" );
+/// assert_eq!( strip_ansi( "plain" ), "plain" );
+/// # }
+/// ```
+pub use strs_tools::ansi::strip as strip_ansi;
+
 /// Returns the display width of `s`, stripping ANSI escape sequences.
 ///
 /// Measures terminal display columns using `UnicodeWidthChar::width()`.
@@ -101,6 +119,44 @@ pub( crate ) fn unicode_visual_len( s : &str ) -> usize
     len += ch.width().unwrap_or( 1 );
   }
   len
+}
+
+/// Returns the byte offset in `s` at which cumulative display width would first
+/// exceed `max_width`, skipping ANSI escape sequences (same rules as
+/// [`unicode_visual_len`]). Returns `s.len()` when the whole string fits.
+///
+/// Used to slice a string at a display-width boundary rather than a character-count
+/// boundary — required for CJK/emoji text where one `char` can occupy 2 display columns.
+///
+/// # Fix(BUG-023)
+///
+/// Root cause: hard-break slicing used `.char_indices().nth(avail)` — counting
+/// `avail` characters instead of `avail` display columns — so a word/text needing
+/// a hard break on wide characters (CJK, emoji; width=2 per char) produced lines up
+/// to 2x the configured budget.
+///
+/// Pitfall: character count ≠ display width; any byte-offset computation driven by
+/// a width budget must walk display width per `unicode_width`, not `char_indices().nth(n)`.
+pub( crate ) fn unicode_visual_byte_offset( s : &str, max_width : usize ) -> usize
+{
+  let mut width = 0usize;
+  let mut in_esc = false;
+  for ( i, ch ) in s.char_indices()
+  {
+    if ch == '\x1b' { in_esc = true; continue; }
+    if in_esc
+    {
+      if ch.is_ascii_alphabetic() { in_esc = false; }
+      continue;
+    }
+    let w = ch.width().unwrap_or( 1 );
+    if width + w > max_width
+    {
+      return i;
+    }
+    width += w;
+  }
+  s.len()
 }
 
 /// Pads `s` to at least `width` display columns.

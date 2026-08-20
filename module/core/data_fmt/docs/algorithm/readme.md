@@ -4,7 +4,7 @@
 
 - **Purpose**: Document non-trivial algorithms used by formatters with pseudocode and complexity.
 - **Responsibility**: Registry and overview of all algorithm doc instances.
-- **In Scope**: Multiline cell rendering, word wrapping, tree column alignment, budget allocation, fold detection, CLI help alignment, heading rendering.
+- **In Scope**: Multiline cell rendering, word wrapping, tree column alignment, budget allocation, fold detection, CLI help alignment, heading rendering, quantity formatting.
 - **Out of Scope**: Simple formatting logic, configuration details (see `api/config_types`).
 
 ### Overview Table
@@ -18,3 +18,4 @@
 | 005 | [Column Fold Detection](005_column_fold_detection.md) | Fold point detection and continuation line partitioning | ✅ |
 | 006 | [CLI Help Alignment](006_cli_help_alignment.md) | Two-pass section detection and description alignment for CLI help output | ✅ |
 | 007 | [Heading Rendering](007_heading_rendering.md) | Four-step titled-rule assembly with lead prefix and clamped trailing rule width | ✅ |
+| 008 | [Quantity Formatting](008_quantity_formatting.md) | Fixed 6-column duration bands + SI/IEC magnitude scaling with dimmed unit letters | ✅ |
