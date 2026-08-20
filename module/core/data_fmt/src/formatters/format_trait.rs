@@ -1,7 +1,6 @@
 //! Unified format trait for all formatters
 
 use crate::TableView;
-use error_tools::dependency::thiserror;
 
 /// Error type for formatting operations
 #[ derive( thiserror::Error, Debug ) ]

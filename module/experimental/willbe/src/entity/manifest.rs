@@ -47,8 +47,8 @@ mod private
   // pub manifest_file: AbsolutePath,
   pub manifest_file: ManifestFile,
   /// Strict type of `Cargo.toml` manifest.
-  pub data: toml_edit ::Document,
-  // pub data: Option< toml_edit ::Document >,
+  pub data: toml_edit ::DocumentMut,
+  // pub data: Option< toml_edit ::DocumentMut >,
  }
 
   impl TryFrom< ManifestFile > for Manifest
@@ -59,7 +59,7 @@ mod private
   {
 
    let read = fs ::read_to_string( &manifest_file )?;
-   let data = read.parse :: < toml_edit ::Document >()
+   let data = read.parse :: < toml_edit ::DocumentMut >()
    .map_err( | e | io ::Error ::new( io ::ErrorKind ::InvalidData, e ) )?;
 
    Result ::Ok
@@ -93,7 +93,7 @@ mod private
   /// # Returns
   ///
   /// A mutable reference to the TOML document.
-  pub fn data( &mut self ) -> &mut toml_edit ::Document
+  pub fn data( &mut self ) -> &mut toml_edit ::DocumentMut
   {
    // if self.data.is_none() { self.load().unwrap() }
    // self.data.as_mut().unwrap()
@@ -190,7 +190,7 @@ mod private
   if workspace_manifest.exists()
   {
    let workspace_content = fs ::read_to_string( workspace_manifest )?;
-   let workspace_doc = workspace_content.parse :: < toml_edit ::Document >()
+   let workspace_doc = workspace_content.parse :: < toml_edit ::DocumentMut >()
    .map_err( | e | io ::Error ::new( io ::ErrorKind ::InvalidData, e ) )?;
 
    // Check if this is a workspace manifest
@@ -278,7 +278,7 @@ mod private
   {
    let mut contents = String ::new();
    fs ::File ::open( path )?.read_to_string( &mut contents )?;
-   let doc = contents.parse :: < toml_edit ::Document >()?;
+   let doc = contents.parse :: < toml_edit ::DocumentMut >()?;
 
    let repo_url = doc
    .get( "package" )

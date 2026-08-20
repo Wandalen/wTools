@@ -48,10 +48,10 @@ error_tools = { workspace = true, features = [ "error_untyped" ], optional = tru
 itertools = { workspace = true, features = [ "use_std" ], optional = true }
 
 ## external
-duct = { version = "0.13.7", optional = true }
+duct = { workspace = true, optional = true }
 libc = { workspace = true, optional = true }
 
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
-assert_fs = { version = "1.1.1" }
+assert_fs = { workspace = true }

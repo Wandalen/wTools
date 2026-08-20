@@ -18,8 +18,8 @@ mod private
   fs,
   path ::PathBuf,
  };
-  use toml_edit ::Document;
-  use rustdoc_md ::rustdoc_json_types ::Crate as RustdocCrate;
+  use toml_edit ::DocumentMut;
+  use rustdoc_types ::Crate as RustdocCrate;
   use rustdoc_md ::rustdoc_json_to_markdown;
   // Explicit import for Result and its variants for pattern matching
   use core ::result ::Result :: { Ok, Err };
@@ -127,7 +127,7 @@ mod private
   .map_err( CrateDocError ::Io )
   .context( format!( "Failed to read Cargo.toml at {}", manifest_path_for_name.display() ) )
   .err_with_report( &report )?;
-  let manifest_toml_for_name = manifest_content_for_name.parse :: < Document >()
+  let manifest_toml_for_name = manifest_content_for_name.parse :: < DocumentMut >()
   .map_err( CrateDocError ::Toml )
   .context( format!( "Failed to parse Cargo.toml at {}", manifest_path_for_name.display() ) )
   .err_with_report( &report )?;

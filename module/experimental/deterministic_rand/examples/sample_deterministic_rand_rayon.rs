@@ -10,13 +10,13 @@
 
 // Import necessary traits and modules from the `rayon` and `deterministic_rand` crates.
 use rayon ::prelude :: *;
-use deterministic_rand :: { distributions ::Uniform, Rng, Hrng };
+use deterministic_rand :: { distr ::Uniform, RngExt, Hrng };
 
 #[ allow(clippy ::float_cmp) ]
 fn main() 
 {
   // Define a range for random number generation between -1.0 and 1.0.
-  let range = Uniform ::new(-1.0f64, 1.0);
+  let range = Uniform ::new(-1.0f64, 1.0).unwrap();
 
   // Create a master hierarchical random number generator (HRNG).
   let manager = Hrng ::master();

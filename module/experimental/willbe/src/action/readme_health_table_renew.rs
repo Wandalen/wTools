@@ -11,7 +11,7 @@ mod private
  };
   use std ::path :: { Path, PathBuf };
   use convert_case ::Casing;
-  use toml_edit ::Document;
+  use toml_edit ::DocumentMut;
   use regex ::bytes ::Regex;
   use std ::collections ::HashMap;
 
@@ -96,7 +96,7 @@ mod private
   {
    let mut contents = String ::new();
    File ::open( path )?.read_to_string( &mut contents )?;
-   let doc = contents.parse :: < Document >()?;
+   let doc = contents.parse :: < DocumentMut >()?;
 
    let stable_status = doc
    .get( "package" )
@@ -195,7 +195,7 @@ mod private
 
    let mut contents = String ::new();
    File ::open( cargo_toml_path )?.read_to_string( &mut contents )?;
-   let doc = contents.parse :: < Document >()?;
+   let doc = contents.parse :: < DocumentMut >()?;
 
    let core_url =
    doc

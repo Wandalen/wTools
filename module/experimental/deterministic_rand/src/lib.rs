@@ -23,7 +23,8 @@ pub use hrng_non_deterministic as hrng;
 
 pub use rand;
 pub use rand::Rng;
-pub use rand::distributions;
+pub use rand::RngExt;
+pub use rand::distr;
 
 // xxx: mod_interface v0.61.0 regression: `use super::hrng` inside mod_interface! tries to
 // access inaccessible `private` sub-modules of the aliased module. Re-export directly until

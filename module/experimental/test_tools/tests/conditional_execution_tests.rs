@@ -10,6 +10,7 @@
 #[cfg(test)]
 mod conditional_execution_tests 
 {
+  #[cfg(feature = "process_environment_is_cicd")]
   use test_tools::process::environment;
   use std::env;
   use std::sync::Mutex;
@@ -119,6 +120,7 @@ mod conditional_execution_tests
   /// Test CI/CD environment detection with actual environment variables
   /// This test verifies proper detection of various CI/CD environment indicators
   #[test]
+  #[cfg(feature = "process_environment_is_cicd")]
   fn test_cicd_environment_detection_variants()
   {
     let _lock = ENV_MUTEX.lock().unwrap();
@@ -228,10 +230,12 @@ mod conditional_execution_tests
     }
     
     // Test 1: No conditions - should not run
+    #[cfg(feature = "process_environment_is_cicd")]
     assert!(!environment::is_cicd(), "Should not detect CI in clean environment");
     
     // Test 2: Set CI variable - should detect CI
     env::set_var("CI", "true");
+    #[cfg(feature = "process_environment_is_cicd")]
     assert!(environment::is_cicd(), "Should detect CI when CI=true");
     env::remove_var("CI");
     

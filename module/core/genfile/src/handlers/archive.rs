@@ -2,7 +2,7 @@
 //!
 //! Implementation of archive lifecycle operations.
 
-// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// Handler functions are registered via unilang::CommandRegistry::register_with_routine,
 // which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
 #![ allow( clippy::needless_pass_by_value ) ]
 

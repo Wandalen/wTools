@@ -2,7 +2,6 @@
 //! as a replacement for `thiserror`.
 
 use error_tools ::typed ::Error;
-use error_tools ::dependency ::thiserror;
 use std ::path ::PathBuf;
 
 // Define a custom error type using the derive macro from error_tools.

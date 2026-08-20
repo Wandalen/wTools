@@ -55,8 +55,8 @@ The most trivial use case. Just generating a random number.
 ```rust
 #[ cfg( not( feature = "no_std" ) ) ]
 {
-  // `Rng`` is re-exported from `rand` and `Hrng` stands for hierarchical random number generators.
-  use deterministic_rand::{ Rng, Hrng };
+  // `RngExt` is re-exported from `rand` and `Hrng` stands for hierarchical random number generators.
+  use deterministic_rand::{ RngExt, Hrng };
   // Make master random number generator with a seed.
   let hrng = Hrng::master_with_seed( "master1".into() );
   // Get a reference to the current random number generator using a reference counter and mutex.
@@ -64,7 +64,7 @@ The most trivial use case. Just generating a random number.
   // Lock it producing a guard.
   let mut rng = rng_ref.lock().unwrap();
   // Generate a number.
-  let got : u64 = rng.gen();
+  let got : u64 = rng.random();
   // If determinism is enabled then sequence of generated rundom numbers will be the same.
   #[ cfg( feature = "determinism" ) ]
   assert_eq!( got, 8185996568056992464 );
@@ -82,10 +82,10 @@ If you don't have batch ID consider enumerating your items to and use key as bat
 ```rust
 // Import necessary traits and modules from the `rayon` and `deterministic_rand` crates.
 use rayon::prelude::*;
-use deterministic_rand::{ distributions::Uniform, Rng, Hrng };
+use deterministic_rand::{ distr::Uniform, RngExt, Hrng };
 
 // Define a range for random number generation between -1.0 and 1.0.
-let range = Uniform::new( -1.0f64, 1.0 );
+let range = Uniform::new( -1.0f64, 1.0 ).unwrap();
 
 // Create a master hierarchical random number generator (HRNG).
 let manager = Hrng::master();

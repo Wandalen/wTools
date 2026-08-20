@@ -6,7 +6,6 @@ mod private
   use std ::collections ::HashMap;
   use parser :: { Program, ParsedCommand };
   use error_tools ::untyped ::Result;
-  use error_tools ::dependency ::thiserror;
 
   // use error :: { return_err };
 

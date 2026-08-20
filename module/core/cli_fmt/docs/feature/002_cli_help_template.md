@@ -17,7 +17,7 @@
 
 **TTY-conditional output:** Colors are active only when the TTY detection flag is enabled and stdout is a terminal. When output is piped or redirected, all color codes are suppressed. This follows CLI convention for machine-readable output.
 
-**Column padding:** Name columns use minimum-width padding — names shorter than the configured width are padded; names longer are not truncated. This ensures alignment across entries without clipping long names.
+**Column padding:** Configured name-column widths are floors, not fixed widths — the effective column width is the larger of the configured value and the longest name in the section. Names shorter than the column are padded; a name longer than the configured width widens the whole column instead of overflowing its own line. Alignment therefore holds for every configuration, and long names are never truncated.
 
 **Conditional sections:** Options and Examples sections are omitted entirely when their content lists are empty, producing cleaner output for simple tools.
 

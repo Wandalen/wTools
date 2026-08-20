@@ -1583,7 +1583,7 @@ impl AsSecure for String
 
   fn into_secure( self ) -> Self::Secure
   {
-  SecretString::new( self )
+  SecretString::new( self.into() )
   }
 }
 
@@ -1595,7 +1595,7 @@ impl AsSecure for HashMap< String, String >
   fn into_secure( self ) -> Self::Secure
   {
   self.into_iter()
-   .map( | ( key, value ) | ( key, SecretString::new( value ) ) )
+   .map( | ( key, value ) | ( key, SecretString::new( value.into() ) ) )
    .collect()
   }
 }
@@ -1708,7 +1708,7 @@ impl Workspace
   #[ must_use ]
   pub fn env_secret( &self, key: &str ) -> Option< SecretString >
   {
-  env ::var( key ).ok().map( SecretString ::new )
+  env ::var( key ).ok().map( | value | SecretString ::new( value.into() ) )
   }
 
   /// validate secret strength and security requirements
@@ -1882,7 +1882,7 @@ impl Workspace
   // inject each secret into the configuration
   for ( key, secret_value ) in secrets
   {
-   config.inject_secret( &key, secret_value.expose_secret().clone() )?;
+   config.inject_secret( &key, secret_value.expose_secret().to_string() )?;
   }
 
   // validate the final configuration
@@ -2077,7 +2077,7 @@ impl Workspace
   for package in metadata.workspace_packages()
   {
    members.push( CargoPackage {
-  name: package.name.clone(),
+  name: package.name.to_string(),
   version: package.version.to_string(),
   manifest_path: package.manifest_path.clone().into(),
   package_root: package.manifest_path
@@ -2502,11 +2502,11 @@ impl Workspace
     schema: &Validator
   ) -> Result< () >
   {
-    if let Err( validation_errors ) = schema.validate( json_value )
+    let errors: Vec< String > = schema.iter_errors( json_value )
+      .map( | error | format!( "{}: {}", error.instance_path(), error ) )
+      .collect();
+    if !errors.is_empty()
     {
-      let errors: Vec< String > = validation_errors
-        .map( | error | format!( "{}: {}", error.instance_path, error ) )
-        .collect();
       return Err( WorkspaceError::ValidationError(
         format!( "validation failed: {}", errors.join( "; " ) )
       ) );

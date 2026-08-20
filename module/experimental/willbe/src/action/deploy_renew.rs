@@ -306,7 +306,7 @@ mod private
   {
   let param_file = path.join( ".deploy_template.toml" );
   let data = fs ::read_to_string( param_file ).ok()?;
-  let document = data.parse :: < toml_edit ::Document >().ok()?;
+  let document = data.parse :: < toml_edit ::DocumentMut >().ok()?;
   let template_table = document.get( "deploy" )?;
 
   // Clone parameter names to avoid borrow checker issues

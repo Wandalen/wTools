@@ -53,39 +53,42 @@ progress_bar = [ "dep:indicatif" ]
 [dependencies]
 
 ## external
-cargo_metadata = "~0.18.1"
-convert_case = "0.6.0"
-flate2 = "~1.0"
-globwalk = "~0.8"
-toml_edit = "~0.14"
-petgraph = "~0.6"
+cargo_metadata = { workspace = true }
+convert_case = { workspace = true, default-features = true }
+flate2 = { workspace = true }
+globwalk = { workspace = true }
+toml_edit = { workspace = true }
+petgraph = { workspace = true }
 #ptree = "~0.4"
-rayon = "1.8.0"
-semver = "~1.0.0"
-similar = "~2.4"
-regex = "1.10.2"
+rayon = { workspace = true }
+semver = { workspace = true }
+similar = { workspace = true }
+regex = { workspace = true }
 #sha-1 = "~0.10"
-tar = "~0.4"
-handlebars = "4.5.0"
-ureq = "~3"
-colored = "2.1.0"
-duct = "0.13.7"
-tracing = { version = "0.1", features = [ "log-always" ], optional = true }
-tracing-subscriber = { version = "0.3", optional = true }
-indicatif = { version = "0.17", optional = true }
-prettytable-rs = "0.10"
-serde_json = "1.0" # for CargoMetadata::Package::metadata (need serde_json::Value)
-serde = "1.0" # for CargoMetadata::Package
-parse-display = "0.9" # need because derive_tools don't reexport this correctly
-walkdir = "2.3"
-camino = "1.1.7" # UTF-8 paths (Utf8Path, Utf8PathBuf)
-rustdoc-md = "0.1.0"
-assert_fs = "1.1.3"
+tar = { workspace = true }
+handlebars = { workspace = true }
+ureq = { workspace = true }
+colored = { workspace = true }
+duct = { workspace = true }
+tracing = { workspace = true, features = [ "log-always" ], optional = true }
+tracing-subscriber = { workspace = true, optional = true }
+indicatif = { workspace = true, optional = true }
+prettytable-rs = { workspace = true }
+serde_json = { workspace = true } # for CargoMetadata::Package::metadata (need serde_json::Value)
+serde = { workspace = true } # for CargoMetadata::Package
+parse-display = { workspace = true, default-features = true } # need because derive_tools don't reexport this correctly
+walkdir = { workspace = true }
+camino = { workspace = true } # UTF-8 paths (Utf8Path, Utf8PathBuf)
+rustdoc-md = { workspace = true }
+rustdoc-types = { workspace = true } # same minor as rustdoc-md's own dep — Crate type identity
+assert_fs = { workspace = true }
 
 ## internal
 # qqq : optimize features
 crates_tools = { workspace = true }
 error_tools = { workspace = true, features = [ "error_typed", "error_untyped" ] }
+# direct edge required by thiserror 2 derive expansion (::thiserror absolute paths); error_tools stays the API facade
+thiserror = { workspace = true }
 genfile_core = { workspace = true, features = [ "enabled" ] }
 former = { workspace = true, features = [ "default" ] }
 component_model = { workspace = true, features = [ "default" ] }
@@ -95,7 +98,7 @@ wca = { workspace = true, features = [ "default" ] }
 pth = { workspace = true, features = [ "default", "path_utf8", "path_unique_folder_name" ] }
 process_tools = { workspace = true, features = [ "enabled" ] }
 derive_tools = { workspace = true, features = [ "default" ] }  # derive_tools is a basic dependency required for compilation.
-either = { version = "~1.6" }
+either = { workspace = true }
 collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
 macro_tools = { workspace = true, features = [ "default" ] }
 
@@ -105,9 +108,9 @@ required-features = [ "enabled" ]
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-assert_fs = "1.0"
-serde_yaml = "0.9"
-serde_json = "1.0.114"
-serde = "1.0"
-assert_cmd = "2.0"
-predicates = "3.1.0"
+assert_fs = { workspace = true }
+serde_yaml = { workspace = true }
+serde_json = { workspace = true }
+serde = { workspace = true }
+assert_cmd = { workspace = true }
+predicates = { workspace = true }

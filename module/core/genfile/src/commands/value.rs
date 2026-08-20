@@ -60,7 +60,7 @@ fn register_set( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::value::set_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::value::set_handler ) )?;
   Ok( () )
 }
 
@@ -94,7 +94,7 @@ fn register_list( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::value::list_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::value::list_handler ) )?;
   Ok( () )
 }
 
@@ -128,6 +128,6 @@ fn register_clear( registry : &mut CommandRegistry ) -> Result< (), Box< dyn cor
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::value::clear_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::value::clear_handler ) )?;
   Ok( () )
 }

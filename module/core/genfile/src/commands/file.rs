@@ -67,7 +67,7 @@ fn register_add( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::file::add_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::file::add_handler ) )?;
   Ok( () )
 }
 
@@ -102,7 +102,7 @@ fn register_remove( registry : &mut CommandRegistry ) -> Result< (), Box< dyn co
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::file::remove_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::file::remove_handler ) )?;
   Ok( () )
 }
 
@@ -136,7 +136,7 @@ fn register_list( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::file::list_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::file::list_handler ) )?;
   Ok( () )
 }
 
@@ -171,6 +171,6 @@ fn register_show( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::file::show_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::file::show_handler ) )?;
   Ok( () )
 }

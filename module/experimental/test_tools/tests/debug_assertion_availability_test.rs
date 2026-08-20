@@ -1,6 +1,7 @@
 //! Simple test to verify debug assertion functions are available
 
 #[ test ]
+#[ cfg( feature = "standalone_build" ) ] // the four debug_assert_* macros are defined only in standalone mode
 fn test_debug_assertion_functions_available()
 {
   // Test that debug assertion functions can be called

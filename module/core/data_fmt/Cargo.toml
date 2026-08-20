@@ -14,6 +14,8 @@ workspace = true
 
 [dependencies]
 error_tools   = { workspace = true, optional = true }
+# direct edge required by thiserror 2 derive expansion (::thiserror absolute paths); error_tools stays the API facade
+thiserror     = { workspace = true, optional = true }
 # ANSI-aware string utilities (from strs_tools)
 strs_tools    = { workspace = true, features = [ "ansi" ], optional = true }
 color_tools   = { workspace = true, features = [ "enabled" ], optional = true }
@@ -38,6 +40,7 @@ full          = [ "enabled", "all_formats", "terminal_size" ]
 terminal_size = [ "dep:terminal_size" ]
 enabled = [
   "dep:error_tools",
+  "dep:thiserror",
   "error_tools/enabled",
   "error_tools/error_typed",
   "dep:strs_tools",

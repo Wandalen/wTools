@@ -8,12 +8,14 @@ use workspace_tools ::WorkspaceError;
 #[ cfg( feature = "testing" ) ]
 use workspace_tools ::testing :: { create_test_workspace, create_test_workspace_with_structure };
 
+// without the `testing` feature the fallible calls compile out, leaving no Err path
+#[ cfg_attr( not( feature = "testing" ), allow( clippy ::unnecessary_wraps ) ) ]
 fn main() -> Result< (), WorkspaceError >
 {
   println!( "🧪 testing integration with workspace_tools\n" );
   
   // this example demonstrates testing patterns rather than actual tests
-  // the testing utilities require the "testing" feature (which is in default features)
+  // the testing utilities require the "testing" feature ( not in default features — enable with --features testing )
   
   #[ cfg( feature = "testing" ) ]
   {
@@ -27,7 +29,7 @@ fn main() -> Result< (), WorkspaceError >
   #[ cfg( not( feature = "testing" ) ) ]
   {
   println!( "🚨 testing utilities require the 'testing' feature" );
-  println!( "the 'testing' feature is in default features, so this should normally work" );
+  println!( "run with : cargo run --example 006_testing_integration --features testing" );
  }
   
   println!( "\n🧪 testing best practices: " );

@@ -21,26 +21,13 @@ mod impls_index_test;
 // mod mem_test;  // Disabled due to unsafe code requirements
 mod try_build_test;
 
-/// Error tools.
-/// Excluded: the standalone ErrWith in test_tools has a different signature
-/// (FnOnce() -> String) than the real error_tools ErrWith (generic ReportErr).
-/// error_tools tests run correctly in the error_tools crate directly.
-// #[ path = "../../../../core/error_tools/tests/inc/mod.rs" ]
-// pub mod error_tests;
+// Error tools aggregation excluded : the standalone ErrWith in test_tools has a different
+// signature ( FnOnce() -> String ) than the real error_tools ErrWith ( generic ReportErr );
+// error_tools tests run correctly in the error_tools crate directly.
 
-/// Collection tools.
-/// NOTE: collection_tools namespace_test uses vec! and into_heap!/into_vecd! which
-/// test_tools intentionally does not re-export (vec! causes std::vec! ambiguity).
-// #[ path = "../../../../core/collection_tools/tests/inc/mod.rs" ]
-// pub mod collection_tests;
-
-/// impl and index macros.
-/// NOTE: impls_index tests require impls_index crate which is not available in standalone_build mode
-/// due to circular dependency: test_tools → impls_index → impls_index_meta → macro_tools → ... → test_tools
-#[ cfg( not( feature = "standalone_build" ) ) ]
-#[ allow( unused_imports ) ]
-#[ path = "../../../../core/impls_index/tests/inc/mod.rs" ]
-pub mod impls_index_tests;
+// Collection tools aggregation excluded : collection_tools namespace_test uses vec! and
+// into_heap!/into_vecd! which test_tools intentionally does not re-export ( vec! causes
+// std ::vec! ambiguity ).
 
 /// Memory tools.
 #[ allow( unused_imports ) ]

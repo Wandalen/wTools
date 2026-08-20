@@ -78,17 +78,6 @@ mod private
  }
  }
 
-  /// Returns a reference to the mutability of the item.
-  #[ must_use ]
-  pub fn mutability( &self ) -> Option< &syn ::FieldMutability >
-  {
-   match self 
-   {
-  FieldOrVariant ::Field(e) => Some(&e.mutability),
-  FieldOrVariant ::Variant(_) => None,
- }
- }
-
   /// Returns a reference to the identifier of the item.
   #[ must_use ]
   pub fn ident( &self ) -> Option< &syn ::Ident >

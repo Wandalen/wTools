@@ -96,12 +96,12 @@ parameter_discovery = [
 ]
 
 [dependencies]
-handlebars = { version = "4.5.0", optional = true }
-serde = { version = "1.0", features = [ "derive" ], optional = true }
-serde_json = { version = "1.0", optional = true }
-serde_yaml = { version = "0.9", optional = true }
-base64 = { version = "0.22", optional = true }
-regex = { version = "1.11", optional = true }
+handlebars = { workspace = true, optional = true }
+serde = { workspace = true, features = [ "derive" ], optional = true }
+serde_json = { workspace = true, optional = true }
+serde_yaml = { workspace = true, optional = true }
+base64 = { workspace = true, optional = true }
+regex = { workspace = true, optional = true }
 
 [dev-dependencies]
 

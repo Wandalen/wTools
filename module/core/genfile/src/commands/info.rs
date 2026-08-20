@@ -60,7 +60,7 @@ fn register_info( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::analysis::info_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::analysis::info_handler ) )?;
   Ok( () )
 }
 
@@ -94,7 +94,7 @@ fn register_discover_parameters( registry : &mut CommandRegistry ) -> Result< ()
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::analysis::discover_parameters_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::analysis::discover_parameters_handler ) )?;
   Ok( () )
 }
 
@@ -128,7 +128,7 @@ fn register_status( registry : &mut CommandRegistry ) -> Result< (), Box< dyn co
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::analysis::status_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::analysis::status_handler ) )?;
   Ok( () )
 }
 
@@ -162,6 +162,6 @@ fn register_analyze( registry : &mut CommandRegistry ) -> Result< (), Box< dyn c
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::analysis::analyze_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::analysis::analyze_handler ) )?;
   Ok( () )
 }

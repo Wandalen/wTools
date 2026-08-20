@@ -84,10 +84,10 @@ chrono = { workspace = true, features = [ "serde" ], optional = true }
 criterion = { workspace = true, features = [ "html_reports" ], optional = true }
 
 # Feature-gated dependencies - not in workspace, use direct versions
-pulldown-cmark = { version = "0.13", optional = true }
-tera = { version = "1.20", optional = true }
-statistical = { version = "1.0", optional = true }
-plotters = { version = "0.3.7", optional = true, default-features = false, features = ["svg_backend", "bitmap_backend"] }
+pulldown-cmark = { workspace = true, optional = true }
+tera = { workspace = true, optional = true }
+statistical = { workspace = true, optional = true }
+plotters = { workspace = true, optional = true, features = ["svg_backend", "bitmap_backend"] }
 
 [dev-dependencies]
 tempfile = { workspace = true }

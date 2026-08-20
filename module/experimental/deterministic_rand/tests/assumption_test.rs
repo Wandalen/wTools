@@ -1,32 +1,33 @@
 #![allow(missing_docs)]
 
-use rand ::Rng;
+use rand ::RngExt;
 use deterministic_rand ::Hrng;
 
 #[ test ]
-fn assumption_gen() 
+#[ allow(clippy ::used_underscore_binding) ] // `_got` is unused when `determinism` is off; the cfg-gated asserts use it when on
+fn assumption_gen()
 {
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
-  let _got: u64 = rng.gen();
+  let _got: u64 = rng.random();
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
-  assert_eq!(_got, 6165676721551962567);
-  let _got: u64 = rng.gen();
+  assert_eq!(_got, 6_165_676_721_551_962_567);
+  let _got: u64 = rng.random();
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
-  assert_eq!(_got, 15862033778988354993);
+  assert_eq!(_got, 15_862_033_778_988_354_993);
 
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
-  let _got: u64 = rng.gen();
+  let _got: u64 = rng.random();
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
-  assert_eq!(_got, 6165676721551962567);
-  let _got: u64 = rng.gen();
+  assert_eq!(_got, 6_165_676_721_551_962_567);
+  let _got: u64 = rng.random();
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
-  assert_eq!(_got, 15862033778988354993);
+  assert_eq!(_got, 15_862_033_778_988_354_993);
 }
 
 #[ test ]
@@ -39,11 +40,11 @@ fn assumption_choose()
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let got = (1..1000).choose(&mut *rng).unwrap();
-  assert_eq!(got, 334);
+  assert_eq!(got, 640);
   let got = (1..1000).choose(&mut *rng).unwrap();
-  assert_eq!(got, 421);
-  let got: u64 = rng.gen();
-  assert_eq!(got, 11385630238607229870);
+  assert_eq!(got, 334);
+  let got: u64 = rng.random();
+  assert_eq!(got, 15_862_033_778_988_354_993);
  }
 }
 
@@ -57,11 +58,11 @@ fn assumption_choose_stable()
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let got = (1..1000).choose_stable(&mut *rng).unwrap();
-  assert_eq!(got, 704);
+  assert_eq!(got, 256);
   let got = (1..1000).choose_stable(&mut *rng).unwrap();
-  assert_eq!(got, 511);
-  let got: u64 = rng.gen();
-  assert_eq!(got, 18025856250180898108);
+  assert_eq!(got, 598);
+  let got: u64 = rng.random();
+  assert_eq!(got, 16_297_902_690_204_926_191);
  }
 }
 
@@ -71,28 +72,28 @@ fn assumption_choose_multiple()
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
   {
-  use rand ::seq :: { IteratorRandom, SliceRandom };
+  use rand ::seq :: { IteratorRandom, IndexedRandom };
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
-  let got = (1..1000).choose_multiple(&mut *rng, 10);
-  assert_eq!(got, vec![704, 2, 359, 578, 198, 219, 884, 649, 696, 532]);
+  let got = (1..1000).sample(&mut *rng, 10);
+  assert_eq!(got, vec![552, 39, 715, 532, 832, 46, 388, 308, 104, 911]);
 
-  let got = (1..1000).choose_multiple(&mut *rng, 10);
-  assert_eq!(got, vec![511, 470, 835, 820, 26, 776, 261, 278, 828, 765]);
-
-  let got = (1..1000)
-   .collect :: < Vec<_ >>()
-   .choose_multiple(&mut *rng, 10)
-   .copied()
-   .collect :: < Vec<_ >>();
-  assert_eq!(got, vec![141, 969, 122, 311, 926, 11, 987, 184, 888, 423]);
+  let got = (1..1000).sample(&mut *rng, 10);
+  assert_eq!(got, vec![764, 464, 96, 16, 181, 142, 302, 824, 453, 341]);
 
   let got = (1..1000)
    .collect :: < Vec<_ >>()
-   .choose_multiple(&mut *rng, 10)
+   .sample(&mut *rng, 10)
    .copied()
    .collect :: < Vec<_ >>();
-  assert_eq!(got, vec![637, 798, 886, 412, 652, 688, 71, 854, 639, 282]);
+  assert_eq!(got, vec![590, 157, 722, 863, 902, 790, 159, 749, 416, 314]);
+
+  let got = (1..1000)
+   .collect :: < Vec<_ >>()
+   .sample(&mut *rng, 10)
+   .copied()
+   .collect :: < Vec<_ >>();
+  assert_eq!(got, vec![187, 273, 778, 456, 513, 154, 294, 118, 965, 471]);
  }
 }
 
@@ -102,7 +103,7 @@ fn assumption_choose_weighted()
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
   {
-  use rand ::seq ::SliceRandom;
+  use rand ::seq ::IndexedRandom;
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let got = (1..1000)
@@ -129,31 +130,31 @@ fn assumption_choose_multiple_weighted()
   #[ cfg(not(feature = "no_std")) ]
   #[ cfg(feature = "determinism") ]
   {
-  use rand ::seq ::SliceRandom;
+  use rand ::seq ::IndexedRandom;
   let rng = Hrng ::master().rng_ref();
   let mut rng = rng.lock().unwrap();
   let got = (1..10)
    .zip((1..10).rev())
    .collect :: < Vec<_ >>()
-   .choose_multiple_weighted(&mut *rng, 10, |w| w.0)
+   .sample_weighted(&mut *rng, 10, |w| w.0)
    .unwrap()
    .map(|(i, j)| (*i, *j))
    .collect :: < Vec<_ >>();
   assert_eq!(
    got,
-   vec![(8, 2), (7, 3), (9, 1), (5, 5), (2, 8), (3, 7), (4, 6), (6, 4), (1, 9)]
+   vec![(1, 9), (4, 6), (6, 4), (2, 8), (5, 5), (3, 7), (7, 3), (8, 2), (9, 1)]
  );
 
   let got = (1..10)
    .zip((1..10).rev())
    .collect :: < Vec<_ >>()
-   .choose_multiple_weighted(&mut *rng, 10, |w| w.0)
+   .sample_weighted(&mut *rng, 10, |w| w.0)
    .unwrap()
    .map(|(i, j)| (*i, *j))
    .collect :: < Vec<_ >>();
   assert_eq!(
    got,
-   vec![(5, 5), (6, 4), (8, 2), (7, 3), (2, 8), (3, 7), (9, 1), (4, 6), (1, 9)]
+   vec![(1, 9), (4, 6), (3, 7), (9, 1), (5, 5), (6, 4), (7, 3), (8, 2), (2, 8)]
  );
  }
 }
@@ -162,7 +163,7 @@ fn assumption_choose_multiple_weighted()
 #[ test ]
 fn assumption_streams_switching() 
 {
-  use rand :: { RngCore, SeedableRng };
+  use rand :: { Rng, SeedableRng };
   use rand_chacha ::ChaCha8Rng;
 
   let a = 6_234_031_553_773_679_537;
@@ -193,7 +194,7 @@ fn assumption_streams_switching()
 #[ test ]
 fn assumption_streams_same_source() 
 {
-  use rand :: { RngCore, SeedableRng };
+  use rand :: { Rng, SeedableRng };
   use rand_chacha ::ChaCha8Rng;
 
   let a = 6_234_031_553_773_679_537;

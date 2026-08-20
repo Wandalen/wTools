@@ -20,7 +20,6 @@ mod private
   use grammar ::Dictionary;
   use executor ::Context;
   use input :: { Input, IntoInput };
-  use error_tools ::dependency ::thiserror;
 
   use std ::
   {

@@ -59,7 +59,7 @@ fn register_internalize( registry : &mut CommandRegistry ) -> Result< (), Box< d
       .with_optional( Some( "0" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::content::internalize_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::content::internalize_handler ) )?;
   Ok( () )
 }
 
@@ -99,7 +99,7 @@ fn register_externalize( registry : &mut CommandRegistry ) -> Result< (), Box< d
       .with_optional( Some( "0" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::content::externalize_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::content::externalize_handler ) )?;
   Ok( () )
 }
 
@@ -137,6 +137,6 @@ fn register_list( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::content::list_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::content::list_handler ) )?;
   Ok( () )
 }

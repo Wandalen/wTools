@@ -12,7 +12,7 @@ mod private
   use std ::path ::Path;
   use collection_tools ::collection ::BTreeMap;
   use handlebars :: { RenderError, TemplateError };
-  use toml_edit ::Document;
+  use toml_edit ::DocumentMut;
 
   use entity :: { PathError, WorkspaceInitError };
   // Explicit import for Result and its variants for pattern matching
@@ -249,7 +249,7 @@ mod private
   {
    let mut contents = String ::new();
    File ::open( cargo_toml_path )?.read_to_string( &mut contents )?;
-   let doc = contents.parse :: < Document >()?;
+   let doc = contents.parse :: < DocumentMut >()?;
    let url =
    doc
    .get( "workspace" )

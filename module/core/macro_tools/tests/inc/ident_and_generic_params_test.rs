@@ -8,7 +8,7 @@ use macro_tools :: { syn, quote, format_ident };
 use convert_case ::Case;
 
 // Test Matrix for ident ::cased_ident_from_ident
-// Factors: Original Ident (normal, raw), Target Case (Snake, Camel, Pascal, Kebab, ScreamingSnake)
+// Factors: Original Ident (normal, raw), Target Case (Snake, Camel, Pascal, Kebab, UpperSnake)
 // Combinations :
 // | ID    | Original Ident | Case           | Expected Output                                           |
 // |-------|----------------|----------------|-----------------------------------------------------------|
@@ -16,12 +16,12 @@ use convert_case ::Case;
 // | I1.2  | `my_var`       | Camel          | `myVar`                                                   |
 // | I1.3  | `my_var`       | Pascal         | `MyVar`                                                   |
 // | I1.4  | `my_var`       | Kebab          | `my_var`  (* "my-var" invalid ident; original returned)   |
-// | I1.5  | `my_var`       | ScreamingSnake | `MY_VAR`                                                  |
+// | I1.5  | `my_var`       | UpperSnake | `MY_VAR`                                                  |
 // | I1.6  | `r#fn`         | Snake          | `r#fn`    (* raw prefix always preserved)                 |
 // | I1.7  | `r#fn`         | Camel          | `r#fn`    (* raw prefix always preserved)                 |
 // | I1.8  | `r#fn`         | Pascal         | `r#Fn`    (* raw prefix always preserved)                 |
 // | I1.9  | `r#fn`         | Kebab          | `r#fn`    (* raw prefix always preserved)                 |
-// | I1.10 | `r#fn`         | ScreamingSnake | `r#FN`    (* raw prefix always preserved)                 |
+// | I1.10 | `r#fn`         | UpperSnake | `r#FN`    (* raw prefix always preserved)                 |
 // | I1.11 | `r#struct`     | Pascal         | `r#Struct` (* raw prefix always preserved)                |
 // | I1.12 | `MyStruct`     | Snake          | `my_struct`                                               |
 
@@ -50,7 +50,7 @@ fn test_cased_ident_from_ident()
 
   // Test Matrix Row: I1.5
   let original = format_ident!( "my_var" );
-  let got = macro_tools ::ident ::cased_ident_from_ident( &original, Case ::ScreamingSnake );
+  let got = macro_tools ::ident ::cased_ident_from_ident( &original, Case ::UpperSnake );
   assert_eq!( got.to_string(), "MY_VAR" );
 
   // Test Matrix Row: I1.6
@@ -75,7 +75,7 @@ fn test_cased_ident_from_ident()
 
   // Test Matrix Row: I1.10
   let original = format_ident!( "r#fn" );
-  let got = macro_tools ::ident ::cased_ident_from_ident( &original, Case ::ScreamingSnake );
+  let got = macro_tools ::ident ::cased_ident_from_ident( &original, Case ::UpperSnake );
   assert_eq!( got.to_string(), "r#FN" );
 
   // Test Matrix Row: I1.11 -- raw prefix is preserved in the cased output.

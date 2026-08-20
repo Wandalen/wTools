@@ -105,7 +105,7 @@ mod private
   return String ::new();
  }
    let t = self.trait_.as_ref().unwrap();
-   t.1.name()
+   t.0.name()
  }
  }
 

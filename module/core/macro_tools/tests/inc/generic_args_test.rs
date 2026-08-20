@@ -186,6 +186,7 @@ fn into_generic_args_mixed_parameters()
   // Manually construct the exp value
   let mut args = Punctuated ::new();
   let t_type: GenericArgument = GenericArgument ::Type(Type ::Path(TypePath {
+  attrs: vec![],
   qself: None,
   path: Ident ::new("T", proc_macro2 ::Span ::call_site()).into(),
  }));

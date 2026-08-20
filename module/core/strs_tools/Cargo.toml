@@ -141,7 +141,7 @@ strs_tools_meta = { workspace = true, optional = true }
 memchr = { workspace = true, optional = true }
 aho-corasick = { workspace = true, optional = true }
 bytecount = { workspace = true, optional = true }
-lazy_static = { version = "1.4", optional = true }
+lazy_static = { workspace = true, optional = true }
 
 # ANSI utilities Unicode support (optional)
 unicode-segmentation = { workspace = true, optional = true }
@@ -153,7 +153,7 @@ unicode-width = { workspace = true }
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
 benchkit = { workspace = true, features = [ "enabled" ] }
-ctor = { version = "0.2" }
+ctor = { workspace = true }
 
 [[bench]]
 name = "simple_specialized_benchmark"

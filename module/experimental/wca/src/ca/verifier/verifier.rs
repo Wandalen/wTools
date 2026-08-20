@@ -7,7 +7,6 @@ mod private
   use grammar :: { Dictionary, Command, command ::ValueDescription, types ::TryCast };
   use executor :: { Args, Props };
   use error_tools ::untyped ::Result;
-  use error_tools ::dependency ::thiserror;
   use std ::collections ::HashMap;
   use indexmap ::IndexMap;
   use verifier ::VerifiedCommand;

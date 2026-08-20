@@ -1,4 +1,3 @@
-#![ cfg( feature = "standalone_build" ) ]
 //! Tests for standalone build mode functionality (Task 038)
 //!
 //! These tests verify that `standalone_build` mode removes circular dependencies 
@@ -10,7 +9,8 @@
 //! implementation in Task 039.
 
 #[ cfg(test) ]
-mod standalone_build_tests 
+#[ cfg(feature = "standalone_build") ]
+mod standalone_build_tests
 {
   /// Test that `standalone_build` feature disables normal Cargo dependencies
   /// This test verifies US-4 requirement for dependency cycle breaking
@@ -25,9 +25,6 @@ mod standalone_build_tests
   {
    // In standalone mode, we should NOT have access to normal dependency re-exports
    // Instead we should have access to the standalone module inclusions
-   
-   // Test that standalone modules are available
-   let _standalone_available = true;
    
    // Test basic functionality is available through standalone mode
    // This should work even without normal Cargo dependencies
@@ -59,7 +56,7 @@ mod standalone_build_tests
   {
    // Test that error tools are available through direct inclusion
    // This should work without depending on error_tools crate
-   let _error_msg = format!("Test error message");
+   let _error_msg = "Test error message".to_string();
    
    // Test that collection tools are available through direct inclusion  
    // This should work without depending on collection_tools crate
@@ -232,6 +229,7 @@ mod standalone_build_tests
   /// Test standalone mode compilation success
   /// This test verifies US-4 requirement for successful standalone compilation
   #[ test ]
+  #[ allow(clippy ::no_effect_underscore_binding) ] // cfg! feature probes : check-cfg fails the build if a feature name drifts
   fn test_standalone_mode_compilation()
   {
   // This test verifies that the standalone mode actually compiles successfully
@@ -264,6 +262,7 @@ mod standalone_build_tests
   /// Test feature flag isolation
   /// This test verifies US-4 requirement for proper feature isolation
   #[ test ]
+  #[ allow(clippy ::no_effect_underscore_binding) ] // cfg! feature probes : check-cfg fails the build if a feature name drifts
   fn test_feature_flag_isolation()
   {
   // Test that standalone_build and normal_build features are properly isolated
@@ -282,8 +281,8 @@ mod standalone_build_tests
   #[ cfg(all(feature = "standalone_build", not(feature = "normal_build"))) ]
   {
    // In standalone mode, verify standalone features are enabled
-   assert!(cfg!(feature = "standalone_build"), "standalone_build feature should be enabled");
-   assert!(!cfg!(feature = "normal_build"), "normal_build feature should be disabled in standalone mode");
+   const { assert!(cfg!(feature = "standalone_build"), "standalone_build feature should be enabled"); }
+   const { assert!(!cfg!(feature = "normal_build"), "normal_build feature should be disabled in standalone mode"); }
    
    // Test that standalone sub-features can be enabled
    let _error_tools_standalone = cfg!(feature = "standalone_error_tools");

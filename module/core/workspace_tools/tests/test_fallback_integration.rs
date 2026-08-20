@@ -13,7 +13,6 @@ static ENV_TEST_MUTEX : Mutex< () > = Mutex ::new( () );
 
 #[ test ]
 #[ cfg( feature = "secrets" ) ]
-#[ ignore = "depends on environment setup" ]
 fn test_fallback_to_pro_workspace()
 {
   let _lock = ENV_TEST_MUTEX.lock().unwrap();

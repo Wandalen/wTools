@@ -10,7 +10,7 @@ mod private
 {
 
   use crate :: *;
-  use rand :: { RngCore, SeedableRng };
+  use rand :: { Rng, SeedableRng };
   #[ cfg(not(feature = "no_std")) ]
   use std ::sync :: { Arc, Mutex, RwLock };
   use rand_chacha ::ChaCha8Rng;
@@ -50,11 +50,11 @@ mod private
   ///
   /// ### Example
   /// ```
-  /// use deterministic_rand :: { Hrng, Rng };
+  /// use deterministic_rand :: { Hrng, RngExt };
   /// let hrng = Hrng ::master();
   /// let rng_ref = hrng.rng_ref();
   /// let mut rng = rng_ref.lock().unwrap();
-  /// let got: u64 = rng.gen();
+  /// let got: u64 = rng.random();
   /// ```
   #[ must_use ] pub fn master() -> Self {
    Self ::master_with_seed(Seed ::default())
@@ -64,17 +64,17 @@ mod private
   ///
   /// ### Example
   /// ```
-  /// use deterministic_rand :: { Hrng, Rng };
+  /// use deterministic_rand :: { Hrng, RngExt };
   /// let hrng = Hrng ::master_with_seed( "master1".into() );
   /// let rng_ref = hrng.rng_ref();
   /// let mut rng = rng_ref.lock().unwrap();
-  /// let got: u64 = rng.gen();
+  /// let got: u64 = rng.random();
   /// ```
   #[ must_use ] 
   #[ allow(clippy ::used_underscore_binding) ]
   pub fn master_with_seed(seed: Seed) -> Self
   {
-   let mut _generator: ChaCha8Rng = rand_seeder ::Seeder ::from(seed.into_inner()).make_rng();
+   let mut _generator: ChaCha8Rng = rand_seeder ::Seeder ::from(seed.into_inner()).into_rng();
    let _children_generator = ChaCha8Rng ::seed_from_u64(_generator.next_u64());
    let generator = Arc ::new(Mutex ::new(_generator));
 #[ allow(clippy ::used_underscore_binding) ]
@@ -121,11 +121,11 @@ mod private
   /// ### Example
   ///
   /// ```
-  /// # use deterministic_rand :: { Hrng, Rng };
+  /// # use deterministic_rand :: { Hrng, RngExt };
   /// # let hrng = Hrng ::default();
   /// let rng_ref = hrng.rng_ref();
   /// let mut rng = rng_ref.lock().unwrap();
-  /// let got: u64 = rng.gen();
+  /// let got: u64 = rng.random();
   /// ```
   #[ inline(always) ]
   #[ must_use ] pub fn rng_ref( &self ) -> SharedGenerator {

@@ -149,7 +149,6 @@ pub mod orphan
     repeat_n,
     rev,
     sorted,
-    unfold,
     // zip,
     zip_eq,
     Itertools,

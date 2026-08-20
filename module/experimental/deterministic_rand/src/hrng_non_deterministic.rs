@@ -50,7 +50,7 @@ mod private
   #[ allow(clippy ::unused_self) ]
   pub fn unwrap(self) -> DerefRng
   {
-   DerefRng(rand ::thread_rng())
+   DerefRng(rand ::rng())
  }
  }
 
@@ -89,7 +89,7 @@ mod private
   /// Placeholder of a deterministic hierarchical random number generator
   /// for then the `determinism` feature is not enabled
   ///
-  /// Always returns `rand ::thread_rng`
+  /// Always returns `rand ::rng()`
   #[ derive(Debug, Clone) ]
   pub struct Hrng;
 
@@ -99,11 +99,11 @@ mod private
   ///
   /// ### Example
   /// ```
-  /// use deterministic_rand :: { Hrng, Rng };
+  /// use deterministic_rand :: { Hrng, RngExt };
   /// let hrng = Hrng ::master();
   /// let rng_ref = hrng.rng_ref();
   /// let mut rng = rng_ref.lock().unwrap();
-  /// let got: u64 = rng.gen();
+  /// let got: u64 = rng.random();
   /// ```
   #[ inline(always) ]
   #[ must_use ]
@@ -116,11 +116,11 @@ mod private
   ///
   /// ### Example
   /// ```
-  /// use deterministic_rand :: { Hrng, Rng };
+  /// use deterministic_rand :: { Hrng, RngExt };
   /// let hrng = Hrng ::master_with_seed( "master1".into() );
   /// let rng_ref = hrng.rng_ref();
   /// let mut rng = rng_ref.lock().unwrap();
-  /// let got: u64 = rng.gen();
+  /// let got: u64 = rng.random();
   /// ```
   #[ cfg(not(feature = "no_std")) ]
   #[ inline(always) ]
@@ -136,11 +136,11 @@ mod private
   /// ### Example
   ///
   /// ```
-  /// # use deterministic_rand :: { Hrng, Rng };
+  /// # use deterministic_rand :: { Hrng, RngExt };
   /// # let hrng = Hrng ::default();
   /// let rng_ref = hrng.rng_ref();
   /// let mut rng = rng_ref.lock().unwrap();
-  /// let got: u64 = rng.gen();
+  /// let got: u64 = rng.random();
   /// ```
   #[ inline(always) ]
   #[ must_use ]

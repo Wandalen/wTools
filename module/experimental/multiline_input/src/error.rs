@@ -1,6 +1,5 @@
 //! Error types for multiline input collection
 
-use error_tools::dependency::thiserror;
 
 /// Errors that can occur during multiline input collection
 #[ derive( thiserror::Error, Debug ) ]

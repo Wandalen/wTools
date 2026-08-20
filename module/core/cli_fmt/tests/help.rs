@@ -48,6 +48,8 @@
 //! | T-B14 | opt_name_width=18 (default), 9-char option name | tty_detect=false | padding+col_gap+desc contiguous for legacy options path (FT-34) |
 //! | T-B15 | all 8 help-template types referenced via `cli_fmt::prelude::*` only | tty_detect=false | prelude re-export renders correctly; isolated nested module (AP-10) |
 //! | T-B16 | one option_group, entries of length 2 and 10 | tty_detect=false | shorter entry pads to group's own max length, not a global constant (FT-35) |
+//! | T-B17 | 2 groups: 19-char and 5-char names, cmd_name_width=10 | custom style | command column grows to 19 across all groups — floor, not fixed width (FT-36) |
+//! | T-B18 | options: 20-char and 3-char names, opt_name_width=10 | custom style | options column grows to 20 — floor, not fixed width (FT-37) |
 
 use cli_fmt::help::*;
 
@@ -1096,5 +1098,72 @@ fn test_option_group_differential_padding_within_group()
   assert!(
     out.contains( "  --extended  long flag" ),
     "FT-35: \"--extended\" (10 chars, this group's max) needs no padding — only the fixed 2-space gap separates it from the description, got:\n{out}",
+  );
+}
+
+// ── T-B17 ─ command column grows past cmd_name_width floor ──────────────────
+
+/// T-B17 (FT-36): `cmd_name_width` is a floor, not a fixed width. A command
+/// name longer than the configured width widens the shared column for ALL
+/// groups, so every sibling entry pads to the longest name and alignment
+/// survives. Before this guarantee, a long name overflowed its own line and
+/// broke the column — a misuse impossible to commit now, since no configured
+/// width can produce misaligned output.
+#[ test ]
+fn test_cmd_column_grows_to_longest_name()
+{
+  let style = CliHelpStyle { cmd_name_width : 10, tty_detect : false, ..CliHelpStyle::default() };
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.groups = vec!
+  [
+    CommandGroup
+    {
+      name    : "G1".into(),
+      entries : vec![ CommandEntry { name : "a-very-long-command".into(), desc : "do long".into() } ],
+    },
+    CommandGroup
+    {
+      name    : "G2".into(),
+      entries : vec![ CommandEntry { name : "short".into(), desc : "do short".into() } ],
+    },
+  ];
+  let out = CliHelpTemplate::new( style, data ).render();
+  assert!(
+    out.contains( "a-very-long-command  do long" ),
+    "FT-36: 19-char name (above the 10 floor) needs no padding — only the 2-space col_gap separates it from the description, got:\n{out}",
+  );
+  assert!(
+    out.contains( "short                do short" ),
+    "FT-36: \"short\" (5 chars) must pad to the longest name across all groups (19) plus the 2-space col_gap — 16 spaces total — not to the 10-char floor, got:\n{out}",
+  );
+}
+
+// ── T-B18 ─ options column grows past opt_name_width floor ──────────────────
+
+/// T-B18 (FT-37): mirrors FT-36 for the legacy options path — `opt_name_width`
+/// is a floor, and an option name longer than it widens the column so every
+/// option pads to the longest name. Alignment holds for any configured width.
+#[ test ]
+fn test_opt_column_grows_to_longest_name()
+{
+  let style = CliHelpStyle { opt_name_width : 10, tty_detect : false, ..CliHelpStyle::default() };
+  let mut data = CliHelpData::default();
+  data.binary = "app".into();
+  data.tagline = "test".into();
+  data.options = vec!
+  [
+    OptionEntry { name : "a-really-long-option".into(), desc : "long opt".into() },
+    OptionEntry { name : "dry".into(),                  desc : "dry run".into() },
+  ];
+  let out = CliHelpTemplate::new( style, data ).render();
+  assert!(
+    out.contains( "a-really-long-option  long opt" ),
+    "FT-37: 20-char name (above the 10 floor) needs no padding — only the 2-space col_gap separates it from the description, got:\n{out}",
+  );
+  assert!(
+    out.contains( "dry                   dry run" ),
+    "FT-37: \"dry\" (3 chars) must pad to the longest option name (20) plus the 2-space col_gap — 19 spaces total — not to the 10-char floor, got:\n{out}",
   );
 }

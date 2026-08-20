@@ -18,13 +18,15 @@ pub struct CliHelpStyle
 {
   /// Left margin (spaces) before command names in group entries.
   pub cmd_indent     : usize,
-  /// Minimum column width for command names (padding only, not truncation).
+  /// Floor for the command-name column width. The column automatically grows to the
+  /// longest entry name, so alignment is preserved regardless of this setting.
   pub cmd_name_width : usize,
   /// Left margin (spaces) before group header lines.
   pub grp_indent     : usize,
   /// Left margin (spaces) before option name entries.
   pub opt_indent     : usize,
-  /// Minimum column width for option names (padding only, not truncation).
+  /// Floor for the option-name column width. The column automatically grows to the
+  /// longest option name, so alignment is preserved regardless of this setting.
   pub opt_name_width : usize,
   /// Gap (spaces) between the name column and the description column.
   pub col_gap        : usize,
@@ -260,12 +262,20 @@ impl CliHelpTemplate
     let gi = " ".repeat( s.grp_indent );
     let ci = " ".repeat( s.cmd_indent );
     let gp = " ".repeat( s.col_gap    );
+    // cmd_name_width is a floor, not a fixed width : the column grows to the longest
+    // entry name so alignment survives names longer than the preset ( misuse-proof )
+    let width = self.data.groups.iter()
+      .flat_map( |g| g.entries.iter() )
+      .map( |e| e.name.len() )
+      .max()
+      .unwrap_or( 0 )
+      .max( s.cmd_name_width );
     for group in &self.data.groups
     {
       let _ = writeln!( out, "\n{gi}{grp_color}{}{rst}", group.name );
       for entry in &group.entries
       {
-        let padded = format!( "{:<width$}", entry.name, width = s.cmd_name_width );
+        let padded = format!( "{:<width$}", entry.name, width = width );
         let _ = writeln!( out, "{ci}{opt_color}{padded}{rst}{gp}{}", entry.desc );
       }
     }
@@ -296,11 +306,18 @@ impl CliHelpTemplate
     let s  = &self.style;
     let oi = " ".repeat( s.opt_indent );
     let gp = " ".repeat( s.col_gap    );
+    // opt_name_width is a floor, not a fixed width : the column grows to the longest
+    // option name so alignment survives names longer than the preset ( misuse-proof )
+    let width = self.data.options.iter()
+      .map( |o| o.name.len() )
+      .max()
+      .unwrap_or( 0 )
+      .max( s.opt_name_width );
     let _ = writeln!( out );
     let _ = writeln!( out, "{bold}Options:{rst}" );
     for opt in &self.data.options
     {
-      let padded = format!( "{:<width$}", opt.name, width = s.opt_name_width );
+      let padded = format!( "{:<width$}", opt.name, width = width );
       let _ = writeln!( out, "{oi}{opt_color}{padded}{rst}{gp}{}", opt.desc );
     }
   }

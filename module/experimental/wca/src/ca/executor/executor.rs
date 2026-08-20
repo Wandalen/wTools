@@ -7,7 +7,6 @@ mod private
   use parser ::Program;
   use grammar ::Dictionary;
   use error_tools ::untyped ::Result;
-  use error_tools ::dependency ::thiserror;
   use executor :: { Routine, Context };
 
   #[ derive( Debug, error_tools ::typed ::Error ) ]

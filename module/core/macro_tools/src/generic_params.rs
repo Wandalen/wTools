@@ -480,7 +480,6 @@ pub fn only_names(generics: &syn ::Generics) -> syn ::Generics
         ident: ident.clone(),
         colon_token: None,
         bounds: Default::default(),
-        eq_token: None,
         default: None,
       }),
       GenericParam::Lifetime(LifetimeParam { lifetime, .. }) => GenericParam::Lifetime(LifetimeParam {
@@ -495,7 +494,6 @@ pub fn only_names(generics: &syn ::Generics) -> syn ::Generics
         ident: ident.clone(),
         colon_token: Default::default(),
         ty: ty.clone(),
-        eq_token: Default::default(),
         default: None,
       }),
     })
@@ -553,7 +551,6 @@ pub fn decompose(
           ident: type_param.ident.clone(),
           colon_token: type_param.colon_token,
           bounds: type_param.bounds.clone(),
-          eq_token: None, // Remove default token
           default: None,  // Remove default value
         });
         generics_for_impl.push_value(impl_param);
@@ -568,7 +565,6 @@ pub fn decompose(
           ident: type_param.ident.clone(),
           colon_token: None,
           bounds: syn ::punctuated ::Punctuated ::new(),
-          eq_token: None,
           default: None,
         });
         generics_for_ty.push_value(ty_param);
@@ -586,7 +582,6 @@ pub fn decompose(
           ident: const_param.ident.clone(),
           colon_token: const_param.colon_token,
           ty: const_param.ty.clone(),
-          eq_token: None,
           default: None,
         });
         generics_for_impl.push_value(impl_param);
@@ -601,7 +596,6 @@ pub fn decompose(
           ident: const_param.ident.clone(),
           colon_token: const_param.colon_token,
           ty: const_param.ty.clone(),
-          eq_token: None,
           default: None,
         });
         generics_for_ty.push_value(ty_param);

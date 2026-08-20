@@ -94,6 +94,8 @@ Validates CLI output processing and help template rendering. Tests are organized
 - **T-B14** 9-char option name at default `opt_name_width=18`: padding+col_gap+desc contiguous for the legacy options path (FT-34)
 - **T-B15** All 8 help-template types referenced via `cli_fmt::prelude::*` only, isolated in a nested module: prelude re-export renders correctly (AP-10)
 - **T-B16** One `option_group` with entries of length 2 and 10: shorter entry pads to the group's own max length, not a global constant (FT-35)
+- **T-B17** Two groups with 19-char and 5-char names at `cmd_name_width=10`: command column grows to 19 across all groups — floor, not fixed width (FT-36)
+- **T-B18** Options with 20-char and 3-char names at `opt_name_width=10`: options column grows to 20 — floor, not fixed width (FT-37)
 
 Compile_fail doc test (in `src/help.rs`):
 - **T-A08** Exhaustive external `CliHelpData` struct literal rejected by `#[non_exhaustive]`

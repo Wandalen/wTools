@@ -34,7 +34,7 @@ enabled = []
 genfile_core = { workspace = true, features = [ "full" ] }
 
 # CLI framework with Multi-YAML support
-unilang = { version = "~0.51.0", features = [
+unilang = { workspace = true, default-features = true, features = [
   "enabled",
   "repl",
   "enhanced_repl",
@@ -49,10 +49,10 @@ mod_interface = { workspace = true, features = [ "enabled" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-assert_cmd = "2.0"
-predicates = "3.0"
-assert_fs = "1.0"
-tempfile = "3.8"
+assert_cmd = { workspace = true }
+predicates = { workspace = true }
+assert_fs = { workspace = true }
+tempfile = { workspace = true }
 
 [[bin]]
 name = "genfile"

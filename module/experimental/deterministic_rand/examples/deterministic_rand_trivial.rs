@@ -4,9 +4,10 @@
 
 // `Rng`` is re-exported from `rand` and `Hrng` stands for hierarchical random number generators.
 #[ cfg(not(feature = "no_std")) ]
-use deterministic_rand :: { Rng, Hrng };
+use deterministic_rand :: { RngExt, Hrng };
 
-fn main() 
+#[ allow(clippy ::used_underscore_binding) ] // `_got` is unused when `determinism` is off; the cfg-gated assert uses it when on
+fn main()
 {
   #[ cfg(not(feature = "no_std")) ]
   {
@@ -17,9 +18,9 @@ fn main()
   // Lock it producing a guard.
   let mut rng = rng_ref.lock().unwrap();
   // Generate a number.
-  let _got: u64 = rng.gen();
+  let _got: u64 = rng.random();
   // If determinism is enabled then sequence of generated rundom numbers will be the same.
   #[ cfg(feature = "determinism") ]
-  assert_eq!(_got, 6165676721551962567);
+  assert_eq!(_got, 6_165_676_721_551_962_567);
  }
 }

@@ -37,6 +37,7 @@ mod private
   .map(|param|  match param 
   {
    syn ::GenericParam ::Type(ty) => syn ::GenericArgument ::Type(syn ::Type ::Path(syn ::TypePath {
+  attrs: vec![],
   qself: None,
   path: ty.ident.clone().into(),
  })),

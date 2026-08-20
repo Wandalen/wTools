@@ -200,10 +200,9 @@ diagnostics_memory_layout = []
 [dependencies]
 
 ## external
-derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false }
-strum = { version = "~0.25", optional = true, default-features = false }
-# strum_macros = { version = "~0.25.3", optional = true, default-features = false }
-parse-display = { version = "~0.8.2", optional = true, default-features = false }
+derive_more = { workspace = true, optional = true }
+strum = { workspace = true, optional = true }
+parse-display = { workspace = true, optional = true }
 
 
 ## internal

@@ -150,15 +150,18 @@ mod private
   path2
  }
    GenericParam ::Lifetime(lifetime_param) => Type ::Reference(syn ::TypeReference {
+  attrs: vec![],
   and_token: Default ::default(),
   lifetime: Some(lifetime_param.lifetime.clone()),
   mutability: None,
   elem: Box ::new(Type ::Tuple(syn ::TypeTuple {
+   attrs: vec![],
    paren_token: syn ::token ::Paren(Span ::call_site()),
    elems: syn ::punctuated ::Punctuated ::new(),
  })),
  }),
    GenericParam ::Const(const_param) => Type ::Path(syn ::TypePath {
+  attrs: vec![],
   qself: None,
   path: const_param.ident.clone().into(),
  }),
@@ -166,6 +169,7 @@ mod private
   .collect :: < syn ::punctuated ::Punctuated<_, syn ::token ::Comma >>();
 
    Type ::Tuple(syn ::TypeTuple {
+  attrs: vec![],
   paren_token: syn ::token ::Paren(Span ::call_site()),
   elems: generics_list,
  })

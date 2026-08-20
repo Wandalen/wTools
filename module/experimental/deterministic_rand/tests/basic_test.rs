@@ -1,13 +1,15 @@
 #![allow(missing_docs)]
 
-use rand ::distributions ::Uniform;
+use rand :: { distr ::Uniform, RngExt };
 use rayon ::prelude :: *;
 
 #[ test ]
-fn test_rng_manager() 
+#[ allow(clippy ::used_underscore_binding) ] // `_got_pi` is unused when `determinism` is off; the cfg-gated assert uses it when on
+#[ allow(clippy ::float_cmp) ] // determinism pin : the estimate must reproduce exactly; an epsilon compare would weaken the pin
+fn test_rng_manager()
 {
-  use deterministic_rand :: { Hrng, Rng };
-  let range = Uniform ::new(-1.0f64, 1.0);
+  use deterministic_rand ::Hrng;
+  let range = Uniform ::new(-1.0f64, 1.0).unwrap();
 
   let hrng = Hrng ::master();
   let got = (0..100)
@@ -40,7 +42,7 @@ fn test_rng_manager()
 #[ test ]
 fn test_reusability() 
 {
-  use deterministic_rand :: { Hrng, Rng };
+  use deterministic_rand ::Hrng;
   let mut expected: [u64; 4] = [0; 4];
 
   let hrng = Hrng ::master();
@@ -48,18 +50,18 @@ fn test_reusability()
   let child1 = hrng.child(0);
   let child1_ref = child1.rng_ref();
   let mut rng1 = child1_ref.lock().unwrap();
-  let got = rng1.gen :: < u64 >();
+  let got = rng1.random :: < u64 >();
   expected[0] = got;
-  let got = rng1.gen :: < u64 >();
+  let got = rng1.random :: < u64 >();
   expected[1] = got;
  }
   {
   let child1 = hrng.child(0);
   let child1_ref = child1.rng_ref();
   let mut rng1 = child1_ref.lock().unwrap();
-  let got = rng1.gen :: < u64 >();
+  let got = rng1.random :: < u64 >();
   expected[2] = got;
-  let got = rng1.gen :: < u64 >();
+  let got = rng1.random :: < u64 >();
   expected[3] = got;
  }
   #[ cfg(not(feature = "no_std")) ]
@@ -73,18 +75,18 @@ fn test_reusability()
   let child1 = hrng.child(0);
   let child1_ref = child1.rng_ref();
   let mut rng1 = child1_ref.lock().unwrap();
-  let got = rng1.gen :: < u64 >();
+  let got = rng1.random :: < u64 >();
   assert_eq!(got, expected[0]);
-  let got = rng1.gen :: < u64 >();
+  let got = rng1.random :: < u64 >();
   assert_eq!(got, expected[1]);
  }
   {
   let child1 = hrng.child(0);
   let child1_ref = child1.rng_ref();
   let mut rng1 = child1_ref.lock().unwrap();
-  let got = rng1.gen :: < u64 >();
+  let got = rng1.random :: < u64 >();
   assert_eq!(got, expected[2]);
-  let got = rng1.gen :: < u64 >();
+  let got = rng1.random :: < u64 >();
   assert_eq!(got, expected[3]);
  }
   #[ cfg(feature = "determinism") ]
@@ -99,13 +101,14 @@ fn test_reusability()
 fn test_par() 
 {
   use std ::sync :: { Arc, Mutex };
-  use deterministic_rand :: { Hrng, Rng };
-  let expected: (Arc< Mutex<(u64, u64) >>, Arc< Mutex<(u64, u64) >>) = (Arc ::new(Mutex ::new((0, 0))), Arc ::new(Mutex ::new((0, 0))));
+  use deterministic_rand ::Hrng;
+  type SharedPair = Arc< Mutex< (u64, u64) > >;
+  let expected: (SharedPair, SharedPair) = (Arc ::new(Mutex ::new((0, 0))), Arc ::new(Mutex ::new((0, 0))));
 
   let hrng = Hrng ::master();
   (1..=2).into_par_iter().map(|i| (i, hrng.child(i))).for_each(|(i, child)| {
-  let got1 = child.rng_ref().lock().unwrap().gen :: < u64 >();
-  let got2 = child.rng_ref().lock().unwrap().gen :: < u64 >();
+  let got1 = child.rng_ref().lock().unwrap().random :: < u64 >();
+  let got2 = child.rng_ref().lock().unwrap().random :: < u64 >();
   match i 
   {
    1 => *expected.0.lock().unwrap() = (got1, got2),
@@ -116,8 +119,8 @@ fn test_par()
 
   let hrng = Hrng ::master();
   (1..=2).into_par_iter().map(|i| (i, hrng.child(i))).for_each(|(i, child)| {
-  let got1 = child.rng_ref().lock().unwrap().gen :: < u64 >();
-  let got2 = child.rng_ref().lock().unwrap().gen :: < u64 >();
+  let got1 = child.rng_ref().lock().unwrap().random :: < u64 >();
+  let got2 = child.rng_ref().lock().unwrap().random :: < u64 >();
   match i 
   {
    1 => assert_eq!((got1, got2), *expected.0.lock().unwrap()),
@@ -135,5 +138,5 @@ fn seed()
   use deterministic_rand ::Seed;
   let seed = Seed ::random();
   println!("{seed:?}");
-  assert!(seed.into_inner().len() == 16);
+  assert_eq!(seed.into_inner().len(), 16);
 }

@@ -30,6 +30,7 @@ default = [ "enabled" ]
 full = [ "enabled", "on_unknown_suggest" ]
 enabled = [
   "dep:error_tools",
+  "dep:thiserror",
   "dep:mod_interface",
   "dep:itertools",
   "dep:former",
@@ -75,17 +76,19 @@ required-features = [ "enabled", "on_unknown_suggest" ]
 
 ## internal
 error_tools = { workspace = true, optional = true, features = [ "enabled", "error_typed", "error_untyped" ] }
+# direct edge required by thiserror 2 derive expansion (::thiserror absolute paths); error_tools stays the API facade
+thiserror = { workspace = true, optional = true }
 mod_interface = { workspace = true, optional = true, features = [ "enabled" ] }
 itertools = { workspace = true, optional = true, features = [ "use_std" ] }
 former = { workspace = true, optional = true, features = [ "enabled", "derive_former" ] }
 
 ## external
-log = { version = "0.4", optional = true }
+log = { workspace = true, optional = true }
 #closure = "0.3"
-textdistance = { version = "1.0", optional = true } # fuzzy commands search
-indexmap = { version = "2.2.6", optional = true }
+textdistance = { workspace = true, optional = true } # fuzzy commands search
+indexmap = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full", "standalone_build" ] }
-assert_fs = "1.0"
-criterion = "0.5"
+assert_fs = { workspace = true }
+criterion = { workspace = true }

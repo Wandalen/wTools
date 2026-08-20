@@ -34,8 +34,8 @@ mod private
   /// Random string as seed.
   pub fn random() -> Self
   {
-   use rand :: { distributions ::Alphanumeric, Rng };
-   let str: String = rand ::thread_rng()
+   use rand :: { distr ::Alphanumeric, RngExt };
+   let str: String = rand ::rng()
    .sample_iter( &Alphanumeric )
    .take( 16 )
    .map(char ::from)

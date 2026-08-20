@@ -118,7 +118,6 @@ process_environment_is_cicd = []
 ## external
 
 # xxx : make sure we use workspace dependencies only
-# trybuild = { version = "1.0.85", features = [ "diff" ] }
 trybuild = { workspace = true, features = [ "diff" ] }
 rustversion = { workspace = true }
 num-traits = { workspace = true }
@@ -156,5 +155,9 @@ pretty_assertions = { workspace = true, optional = true }
 # impls_index_meta - COMPLETELY REMOVED to break circular dependency cycles throughout workspace
 # Even in dev-dependencies, it creates cycles because test ordering requires tracking dev-deps
 
+# self dev-dependency : test targets build the lib with the same feature set the workspace
+# unifies ( full + standalone_build ), so `cargo nextest run -p test_tools` compiles standalone
+test_tools = { path = ".", features = [ "full", "standalone_build" ] }
+
 [build-dependencies]
-rustc_version = "0.4"
+rustc_version = { workspace = true }

@@ -17,7 +17,7 @@
 //! Dry run mode previews what would be done without creating files, preventing
 //! accidental overwrites. Critical for user confidence.
 
-// Handler functions are registered via unilang::CommandRegistry::command_add_runtime,
+// Handler functions are registered via unilang::CommandRegistry::register_with_routine,
 // which requires fn(VerifiedCommand, ExecutionContext) -> ... by value.
 #![ allow( clippy::needless_pass_by_value ) ]
 

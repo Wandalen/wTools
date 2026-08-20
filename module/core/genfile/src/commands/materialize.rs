@@ -61,7 +61,7 @@ fn register_materialize( registry : &mut CommandRegistry ) -> Result< (), Box< d
       .with_optional( Some( "0" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::materialize::materialize_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::materialize::materialize_handler ) )?;
   Ok( () )
 }
 
@@ -101,6 +101,6 @@ fn register_unpack( registry : &mut CommandRegistry ) -> Result< (), Box< dyn co
       .with_optional( Some( "0" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::materialize::unpack_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::materialize::unpack_handler ) )?;
   Ok( () )
 }

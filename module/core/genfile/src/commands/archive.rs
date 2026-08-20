@@ -61,7 +61,7 @@ fn register_new( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core:
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::archive::new_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::archive::new_handler ) )?;
   Ok( () )
 }
 
@@ -97,7 +97,7 @@ fn register_load( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::archive::load_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::archive::load_handler ) )?;
   Ok( () )
 }
 
@@ -142,7 +142,7 @@ fn register_save( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
       .with_optional( Some( "0" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::archive::save_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::archive::save_handler ) )?;
   Ok( () )
 }
 
@@ -190,6 +190,6 @@ fn register_from_directory( registry : &mut CommandRegistry ) -> Result< (), Box
       .with_optional( Some( "1" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::archive::from_directory_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::archive::from_directory_handler ) )?;
   Ok( () )
 }

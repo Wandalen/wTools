@@ -1,4 +1,4 @@
 //! Typed error handling, a facade for `thiserror`.
 //!
-//! **Note: ** When using `#[ derive( Error ) ]` or other `thiserror` macros, `thiserror` must be explicitly present in the namespace. This can be achieved by adding `use error_tools ::dependency ::thiserror;` or `use thiserror;` in your module, depending on your project's setup.
+//! **Note: ** `thiserror` 2 derive macros expand to absolute `::thiserror` paths, so every crate using `#[ derive( Error ) ]` needs `thiserror` as a direct dependency in its `Cargo.toml`. A `use error_tools ::dependency ::thiserror;` alias is no longer sufficient.
 pub use ::thiserror ::Error;

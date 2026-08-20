@@ -104,7 +104,7 @@ path.
 6. If `data.option_groups` is empty and `data.options` is non-empty: emits `"{bold}Options:{rst}"` section with names padded to `opt_name_width` (backward compat).
 7. If `data.examples` is non-empty: emits `"{bold}Examples:{rst}"` section; each entry with a present desc appends `  # {text}`; entries without desc emit the invocation bare.
 
-Column padding uses minimum-width alignment. For commands (step 4) and legacy options (step 6), the column width equals the style-configured field width plus the column gap. For arguments (step 3) and option groups (step 5), the column width equals the maximum entry name length in that section or group only, followed by a 2-space separator — the gap is not included in this width. Padding is a minimum — names longer than the computed width are not truncated.
+Column padding uses minimum-width alignment. For commands (step 4) and legacy options (step 6), the column width equals the larger of the style-configured field width and the longest entry name in that section — the configured value is a floor — plus the column gap. For arguments (step 3) and option groups (step 5), the column width equals the maximum entry name length in that section or group only, followed by a 2-space separator — the gap is not included in this width. Padding is a minimum — a name longer than the configured floor widens the column rather than being truncated or overflowing.
 
 ### Error Handling
 

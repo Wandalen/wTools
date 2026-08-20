@@ -945,6 +945,7 @@ fn hashmap_full_api_surface()
   assert_eq!( removed, Some( "two" ) );
   assert_eq!( m.len(), 2 );
   // iter — count key-value pairs remaining
+  #[ allow( clippy ::iter_count ) ] // deliberate : exercises the iter() API surface; len() is asserted above
   let pair_count = m.iter().count();
   assert_eq!( pair_count, 2 );
 }

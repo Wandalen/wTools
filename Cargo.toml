@@ -352,7 +352,7 @@ path = "module/core/strs_tools"
 default-features = false
 
 [workspace.dependencies.cli_fmt]
-version = "~0.13.1"
+version = "~0.13.2"
 path = "module/core/cli_fmt"
 default-features = false
 
@@ -396,14 +396,14 @@ default-features = false
 
 
 [workspace.dependencies.assert_cmd]
-version = "~2.0"
+version = "~2.2.2"
 
 [workspace.dependencies.unilang]
-version = "~0.51.0"
+version = "~0.59.1"
 default-features = false
 
 [workspace.dependencies.unilang_parser]
-version = "~0.33.0"
+version = "~0.39.2"
 default-features = false
 
 
@@ -453,11 +453,6 @@ path = "module/experimental/willbe"
 
 ## unsorted
 
-
-[workspace.dependencies.unitore]
-version = "~0.1.0"
-path = "module/experimental/unitore"
-default-features = false
 
 [workspace.dependencies.deterministic_rand]
 version = "~0.12.1"
@@ -514,125 +509,125 @@ default-features = true
 ## External
 
 [workspace.dependencies.async-trait]
-version = "0.1.83"
+version = "0.1.92"
 
 [workspace.dependencies.tokio]
-version = "1.41.0"
+version = "1.53.1"
 default-features = false
 
 # Note: anyhow and thiserror are included here ONLY for bootstrap builds
 # of test_tools to avoid cyclic dependencies with error_tools.
 # All other crates MUST use error_tools exclusively for error handling.
 [workspace.dependencies.anyhow]
-version = "~1.0"
+version = "~1.0.104"
 
 [workspace.dependencies.thiserror]
-version = "~1.0"
+version = "~2.0.20"
 
 [workspace.dependencies.pretty_assertions]
-version = "~1.4.0"
+version = "~1.4.1"
 # features = []
 # default-features = false
 
 [workspace.dependencies.hashbrown]
-version = "~0.14.3"
+version = "~0.17.1"
 # optional = true
 default-features = false
 # features = [ "default" ]
 
 [workspace.dependencies.paste]
-version = "~1.0.14"
+version = "~1.0.15"
 default-features = false
 
 [workspace.dependencies.tempdir]
 version = "~0.3.7"
 
 [workspace.dependencies.rustversion]
-version = "~1.0"
+version = "~1.0.23"
 
 [workspace.dependencies.num-traits]
-version = "~0.2"
+version = "~0.2.19"
 
 [workspace.dependencies.rand]
-version = "0.8.5"
+version = "0.10.2"
 
 [workspace.dependencies.rand_chacha]
-version = "0.3.1"
+version = "0.10.0"
 
 [workspace.dependencies.rand_seeder]
-version = "0.3.0"
-
-[workspace.dependencies.sealed]
 version = "0.5.0"
 
+[workspace.dependencies.sealed]
+version = "0.7.0"
+
 [workspace.dependencies.rayon]
-version = "1.8.0"
+version = "1.12.0"
 
 [workspace.dependencies.trybuild]
-version = "1.0.85"
+version = "1.0.120"
 
 [workspace.dependencies.futures-core]
-version = "0.3.31"
+version = "0.3.34"
 
 [workspace.dependencies.futures-util]
-version = "0.3.31"
+version = "0.3.34"
 
 [workspace.dependencies.futures]
-version = "0.3"
+version = "0.3.34"
 
 [workspace.dependencies.regex]
-version = "1.11.1"
+version = "1.13.1"
 
 [workspace.dependencies.jsonschema]
-version = "0.20"
+version = "0.49.9"
 
 [workspace.dependencies.schemars]
-version = "0.8"
+version = "1.2.2"
 
 [workspace.dependencies.secrecy]
-version = "0.8"
+version = "0.10.3"
 
 [workspace.dependencies.zeroize]
-version = "1.7"
+version = "1.9.0"
 
 [workspace.dependencies.serde]
-version = "^1.0"
+version = "^1.0.229"
 
 [workspace.dependencies.camino]
-version = "1.1.9"
+version = "1.2.5"
 
 [workspace.dependencies.serde_with]
-version = "3.12.0"
+version = "3.22.0"
 
 [workspace.dependencies.serde_json]
-version = "^1.0"
+version = "^1.0.151"
 
 [workspace.dependencies.serde_yaml_ng]
-version = "^0.10"
+version = "^0.10.0"
 
 [workspace.dependencies.bytemuck]
-version = "1.21.0"
+version = "1.25.2"
 
 [workspace.dependencies.convert_case]
-version = "0.6.0"
+version = "0.11.0"
 default-features = false
 
 ## External - parse
 
 [workspace.dependencies.proc-macro2]
-version = "~1.0.78"
+version = "~1.0.107"
 default-features = false
 
 [workspace.dependencies.quote]
-version = "~1.0.35"
+version = "~1.0.47"
 default-features = false
 
 [workspace.dependencies.syn]
-version = "~2.0.100"
+version = "~3.0.3"
 default-features = false
 
 [workspace.dependencies.const_format]
-version = "~0.2.35"
+version = "~0.2.36"
 default-features = false
 # proc-macro2 = { version = "~1.0.78", default-features = false, features = [] }
 # quote = { version = "~1.0.35", default-features = false, features = [] }
@@ -641,49 +636,49 @@ default-features = false
 ## External - SIMD optimization dependencies for strs_tools
 
 [workspace.dependencies.lexical]
-version = "7.0.4"
+version = "7.0.5"
 
 [workspace.dependencies.memchr]
-version = "2.7"
+version = "2.8.3"
 default-features = false
 
 [workspace.dependencies.aho-corasick]
-version = "1.1"
+version = "1.1.5"
 default-features = false
 
 [workspace.dependencies.bytecount]
-version = "0.6"
+version = "0.6.9"
 
 ## External - Unicode support for strs_tools ANSI utilities
 
 [workspace.dependencies.unicode-segmentation]
-version = "1.10"
+version = "1.13.3"
 
 ## workspace_tools dependencies
 
 [workspace.dependencies.tempfile]
-version = "3.20.0"
+version = "3.27.0"
 
 [workspace.dependencies.glob]
-version = "0.3.2"
+version = "0.3.4"
 
 [workspace.dependencies.cargo_metadata]
-version = "0.18.1"
+version = "0.23.1"
 
 [workspace.dependencies.toml]
-version = "^1.1"
+version = "^1.1.4"
 
 [workspace.dependencies.chrono]
-version = "0.4.34"
+version = "0.4.45"
 
 [workspace.dependencies.fs2]
 version = "0.4.3"
 
 [workspace.dependencies.serial_test]
-version = "3.2.0"
+version = "4.0.1"
 
 [workspace.dependencies.criterion]
-version = "0.5.1"
+version = "0.8.2"
 
 [workspace.dependencies.workspace_tools]
 version = "~0.17.1"
@@ -693,56 +688,162 @@ default-features = false
 ## Missing dependencies from crate audit
 
 [workspace.dependencies.itertools]
-version = "~0.11.0"
+version = "~0.15.0"
 
 [workspace.dependencies.uuid]
-version = "1.11"
+version = "1.24.1"
 
 [workspace.dependencies.flate2]
-version = "~1.0"
+version = "~1.1.9"
 
 [workspace.dependencies.tar]
-version = "~0.4"
+version = "~0.4.46"
 
 [workspace.dependencies.ureq]
-version = "^3"
+version = "^3.4.0"
 
 [workspace.dependencies.strip-ansi-escapes]
-version = "0.1.1"
+version = "0.2.1"
 
 [workspace.dependencies.cfg_aliases]
-version = "0.1.1"
+version = "0.2.2"
 
 ## Missing dependencies from unilang_benchmarks audit
 
 [workspace.dependencies.clap]
-version = "4.4"
+version = "4.6.6"
 
 [workspace.dependencies.pico-args]
-version = "0.5"
+version = "0.5.0"
 
 [workspace.dependencies.num_cpus]
-version = "1.16"
+version = "1.17.0"
 
 [workspace.dependencies.sysinfo]
-version = "0.30"
+version = "0.39.6"
 
 ## process_tools dependencies
 
 [workspace.dependencies.libc]
-version = "~0.2"
+version = "~0.2.189"
 
 [workspace.dependencies.phf]
-version = "0.11"
+version = "0.14.0"
 
 [workspace.dependencies.crossterm]
 version = "0.29.0"
 
 [workspace.dependencies.terminal_size]
-version = "^0.4"
+version = "^0.4.4"
 
 [workspace.dependencies.unicode-width]
-version = "^0.2"
+version = "^0.2.2"
+
+## Promoted from member manifests
+
+[workspace.dependencies.assert_fs]
+version = "1.1.4"
+
+[workspace.dependencies.base64]
+version = "0.23.1"
+
+[workspace.dependencies.colored]
+version = "3.1.1"
+
+[workspace.dependencies.ctor]
+version = "1.0.13"
+
+[workspace.dependencies.derive_more]
+version = "2.1.1"
+default-features = false
+
+[workspace.dependencies.duct]
+version = "1.1.1"
+
+[workspace.dependencies.either]
+version = "1.17.0"
+
+[workspace.dependencies.globwalk]
+version = "0.9.1"
+
+[workspace.dependencies.handlebars]
+version = "6.4.4"
+
+[workspace.dependencies.indexmap]
+version = "2.14.0"
+
+[workspace.dependencies.indicatif]
+version = "0.18.6"
+
+[workspace.dependencies.lazy_static]
+version = "1.5.0"
+
+[workspace.dependencies.log]
+version = "0.4.33"
+
+[workspace.dependencies.parse-display]
+version = "0.11.0"
+default-features = false
+
+[workspace.dependencies.petgraph]
+version = "0.8.3"
+
+[workspace.dependencies.plotters]
+version = "0.3.7"
+default-features = false
+
+[workspace.dependencies.predicates]
+version = "3.1.4"
+
+[workspace.dependencies.prettytable-rs]
+version = "0.10.0"
+
+[workspace.dependencies.pulldown-cmark]
+version = "0.13.4"
+
+[workspace.dependencies.rustc_version]
+version = "0.4.1"
+
+[workspace.dependencies.rustdoc-md]
+version = "0.2.0"
+
+# pinned to the exact minor rustdoc-md 0.2 itself depends on — Crate must be one type across both
+[workspace.dependencies.rustdoc-types]
+version = "0.56"
+
+[workspace.dependencies.semver]
+version = "1.0.28"
+
+[workspace.dependencies.serde_yaml]
+version = "0.9.34"
+
+[workspace.dependencies.similar]
+version = "3.2.0"
+
+[workspace.dependencies.statistical]
+version = "1.0.0"
+
+[workspace.dependencies.strum]
+version = "0.28.0"
+default-features = false
+
+[workspace.dependencies.tera]
+version = "2.1.1"
+
+[workspace.dependencies.textdistance]
+version = "1.1.1"
+
+[workspace.dependencies.toml_edit]
+version = "0.25.13"
+
+[workspace.dependencies.tracing]
+version = "0.1.44"
+
+[workspace.dependencies.tracing-subscriber]
+version = "0.3.23"
+
+[workspace.dependencies.walkdir]
+version = "2.5.0"
 
 [patch.crates-io]
 former_meta = { path = "module/core/former_meta" }

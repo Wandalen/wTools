@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.13.2 | 2026-08-19] Help template: name-column widths become floors (misuse-proof)
+
+**Fix:** `cmd_name_width` and `opt_name_width` were fixed widths — a name longer than the configured value overflowed its own line and broke column alignment for every caller whose data outgrew the preset. Both are now floors: `emit_groups()` and `emit_options()` compute the effective width as the larger of the configured value and the longest entry name, so alignment holds for any configuration and no caller can misuse the style settings into misaligned output.
+- `src/help.rs` — `emit_groups()`/`emit_options()` grow the column to the longest name; `CliHelpStyle` field docs state the floor semantics
+- `tests/help.rs` — T-B17/T-B18 (`test_cmd_column_grows_to_longest_name`, `test_opt_column_grows_to_longest_name`) pin the growth behavior
+- `tests/docs/feature/002_cli_help_template.md` — FT-36/FT-37 added; In Scope and test matrix updated
+- `docs/feature/002_cli_help_template.md`, `docs/api/002_help_api.md` — Column padding paragraphs updated to floor semantics
+
 ## [v0.9.2 | 2026-06-23] Docs: formatting consistency fixes
 
 **Docs:** Two formatting violations found by code_hyg_l1 round 4 and fixed.

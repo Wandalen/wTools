@@ -57,8 +57,8 @@ mod private {
       use rand::prelude::*;
 
       let test_postfix = "_smoke_test";
-      let mut rng = rand::thread_rng();
-      let y: f64 = rng.gen();
+      let mut rng = rand::rng();
+      let y: f64 = rng.random();
 
       let smoke_test_path = format!("{dependency_name}{test_postfix}_{y}");
       let mut test_path = std::env::temp_dir();
@@ -92,8 +92,8 @@ mod private {
       use rand::prelude::*;
 
       self.test_postfix = test_postfix;
-      let mut rng = rand::thread_rng();
-      let y: f64 = rng.gen();
+      let mut rng = rand::rng();
+      let y: f64 = rng.random();
 
       let smoke_test_path = format!(
         "{dependency_name}{test_postfix}_{y}",

@@ -62,6 +62,6 @@ fn register_pack( registry : &mut CommandRegistry ) -> Result< (), Box< dyn core
       .with_optional( Some( "0" ) ),
   ] );
 
-  registry.command_add_runtime( &cmd, Box::new( crate::handlers::pack::pack_handler ) )?;
+  registry.register_with_routine( &cmd, Box::new( crate::handlers::pack::pack_handler ) )?;
   Ok( () )
 }

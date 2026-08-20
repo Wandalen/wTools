@@ -78,7 +78,7 @@ mod private
   /// assert_eq!( got_pascal_raw.to_string(), "r#Struct" ); // Raw prefix is always preserved.
   /// ```
   #[ must_use ]
-  pub fn cased_ident_from_ident(original: &syn ::Ident, case: convert_case ::Case) -> syn ::Ident
+  pub fn cased_ident_from_ident(original: &syn ::Ident, case: convert_case ::Case< '_ >) -> syn ::Ident
   {
   let original_str = original.to_string();
   let had_raw_prefix = original_str.starts_with("r#");

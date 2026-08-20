@@ -95,7 +95,7 @@ fn bug_reproducer_seed_import_non_deterministic()
   // It reproduces the original compilation error that occurred when building with
   // --no-default-features (which disables determinism and uses hrng_non_deterministic).
 
-  use deterministic_rand :: { Hrng, Rng };
+  use deterministic_rand :: { Hrng, RngExt };
 
   // This line would fail to compile before the fix because hrng_non_deterministic
   // didn't import the Seed type, even though master_with_seed() used it.
@@ -103,15 +103,15 @@ fn bug_reproducer_seed_import_non_deterministic()
 
   let rng_ref = hrng.rng_ref();
   let mut rng = rng_ref.lock().unwrap();
-  let _got: u64 = rng.gen();
+  let _got: u64 = rng.random();
 
   // In non-deterministic mode, we can't assert a specific value,
   // but we can verify the code compiles and runs without panic.
   #[ cfg(not(feature = "determinism")) ]
   {
     // Verify we can generate multiple values without panic
-    let _v1: u64 = rng.gen();
-    let _v2: u64 = rng.gen();
+    let _v1: u64 = rng.random();
+    let _v2: u64 = rng.random();
   }
 
   // In deterministic mode, verify we still get deterministic values
@@ -121,13 +121,13 @@ fn bug_reproducer_seed_import_non_deterministic()
     let hrng2 = Hrng ::master_with_seed("test_seed".into());
     let rng_ref2 = hrng2.rng_ref();
     let mut rng2 = rng_ref2.lock().unwrap();
-    let got2: u64 = rng2.gen();
+    let got2: u64 = rng2.random();
 
     // Verify determinism by creating another generator with the same seed
     let hrng3 = Hrng ::master_with_seed("test_seed".into());
     let rng_ref3 = hrng3.rng_ref();
     let mut rng3 = rng_ref3.lock().unwrap();
-    let got3: u64 = rng3.gen();
+    let got3: u64 = rng3.random();
 
     assert_eq!(got2, got3, "Same seed should produce same first value");
   }
