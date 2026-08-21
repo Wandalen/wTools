@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.13.3 | 2026-08-20] Detail page template for single-subject help
+
+**Added:** `DetailPageTemplate` — a second, generic template rendering a detail page about one subject (a command or a parameter), alongside the whole-binary overview `CliHelpTemplate`. Domain-free: frameworks decide what the sections mean.
+- `DetailPageData` (`#[non_exhaustive]` + `Default`) — `label`, `name`, `usage: Vec<String>`, `description: Vec<String>`, `sections: Vec<DetailSection>`, `examples: Vec<ExampleEntry>`
+- `DetailSection` (`#[non_exhaustive]` + `Default` + `new(title, entries)`) — titled block of `OptionEntry` rows
+- `DetailPageTemplate::new(style, data).render()` — infallible; header degrades by `(label, name)` emptiness (`{label}: {name}` / bare name / `{label}:` with no trailing space / nothing); empty-entry sections skipped; untitled sections render bare; per-section content-driven padding; empty-desc entries emit name-only with no trailing whitespace; fully empty data renders `""`
+- Examples section shares the overview template's emitter (extracted `emit_examples_section`) — annotation and indentation byte-identical across both templates
+- All three types re-exported via `cli_fmt::prelude::*`
+
+**Tests:** 12 new integration tests + 3 new doc tests (one compile_fail). Total: 114 nextest + 9 doc tests, clippy clean.
+- `tests/help.rs` — T-C01..T-C13 (golden full page FT-38, ANSI suppression, empty-data emptiness FT-39, header degradation, section skip FT-40, untitled section FT-41, per-section padding FT-42, no-trailing-whitespace FT-43, example parity, constructor, prelude isolation, usage lines)
+- `src/help.rs` — T-C14 compile_fail doctest (`DetailPageData` exhaustive literal rejected)
+- `tests/docs/feature/002_cli_help_template.md` — FT-38..FT-43 added; In Scope and test matrix updated
+- `docs/feature/002_cli_help_template.md`, `docs/api/002_help_api.md` — detail page design paragraphs, type tables, and render procedure added
+
 ## [v0.13.2 | 2026-08-19] Help template: name-column widths become floors (misuse-proof)
 
 **Fix:** `cmd_name_width` and `opt_name_width` were fixed widths — a name longer than the configured value overflowed its own line and broke column alignment for every caller whose data outgrew the preset. Both are now floors: `emit_groups()` and `emit_options()` compute the effective width as the larger of the configured value and the longest entry name, so alignment holds for any configuration and no caller can misuse the style settings into misaligned output.

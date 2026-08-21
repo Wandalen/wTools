@@ -50,6 +50,20 @@
 //! | T-B16 | one option_group, entries of length 2 and 10 | tty_detect=false | shorter entry pads to group's own max length, not a global constant (FT-35) |
 //! | T-B17 | 2 groups: 19-char and 5-char names, cmd_name_width=10 | custom style | command column grows to 19 across all groups — floor, not fixed width (FT-36) |
 //! | T-B18 | options: 20-char and 3-char names, opt_name_width=10 | custom style | options column grows to 20 — floor, not fixed width (FT-37) |
+//! | T-C01 | full DetailPageData (label, name, usage, description, 2 sections, examples) | tty_detect=false | byte-exact golden output (FT-38) |
+//! | T-C02 | full DetailPageData | tty_detect=false | zero ANSI escape sequences |
+//! | T-C03 | DetailPageData::default() | tty_detect=false | render() returns exactly "" — infallible, truly empty (FT-39) |
+//! | T-C04 | label empty, name set | tty_detect=false | header line is the bare name |
+//! | T-C05 | label set, name empty | tty_detect=false | header line is `Label:` with no trailing space |
+//! | T-C06 | section with empty entries | tty_detect=false | section skipped entirely — title absent (FT-40) |
+//! | T-C07 | section with empty title | tty_detect=false | no header line; entries still render aligned (FT-41) |
+//! | T-C08 | two sections, different max name lengths | tty_detect=false | per-section independent padding (FT-42) |
+//! | T-C09 | entry with empty desc | tty_detect=false | name-only line with no trailing whitespace (FT-43) |
+//! | T-C10 | examples desc=Some vs None | tty_detect=false | `# text` inline vs plain — parity with CliHelpTemplate emitter |
+//! | T-C11 | DetailSection::new construction | N/A | title and entries stored as given |
+//! | T-C12 | detail-page types via `cli_fmt::prelude::*` only | tty_detect=false | prelude re-exports render correctly (isolated module) |
+//! | T-C13 | two usage lines | tty_detect=false | both indented by example_indent, in order, directly under header |
+//! | T-C14 | compile_fail doctest | N/A | exhaustive DetailPageData literal rejected by #[non_exhaustive] |
 
 use cli_fmt::help::*;
 
@@ -1165,5 +1179,281 @@ fn test_opt_column_grows_to_longest_name()
   assert!(
     out.contains( "dry                   dry run" ),
     "FT-37: \"dry\" (3 chars) must pad to the longest option name (20) plus the 2-space col_gap — 19 spaces total — not to the 10-char floor, got:\n{out}",
+  );
+}
+
+// ── helpers (detail page) ─────────────────────────────────────────────────────
+
+fn full_detail_page() -> DetailPageData
+{
+  let mut page = DetailPageData::default();
+  page.label = "Parameter".into();
+  page.name  = "scope".into();
+  page.usage = vec![ ".projects scope::<value>".into() ];
+  page.description = vec![ "Discovery strategy selector.".into() ];
+  page.sections = vec!
+  [
+    DetailSection::new( "", vec!
+    [
+      OptionEntry { name : "Type".into(),    desc : "Enum".into()   },
+      OptionEntry { name : "Default".into(), desc : "around".into() },
+    ] ),
+    DetailSection::new( "Possible values", vec!
+    [
+      OptionEntry { name : "local".into(),  desc : "current directory only".into()     },
+      OptionEntry { name : "around".into(), desc : "bidirectional anchor walk".into()  },
+    ] ),
+  ];
+  page.examples = vec!
+  [
+    ExampleEntry { invocation : ".projects scope::local".into(),  desc : Some( "restrict to cwd".into() ) },
+    ExampleEntry { invocation : ".projects scope::global".into(), desc : None                             },
+  ];
+  page
+}
+
+// ── T-C01 ─ golden full detail page ───────────────────────────────────────────
+
+/// T-C01 (FT-38): the complete detail page — header, usage, description, an
+/// untitled facts section, a titled values section, and examples — renders
+/// byte-for-byte to the specified layout under the default style with
+/// `tty_detect=false`. Golden equality, not substring checks: any spacing or
+/// section-order drift fails this test.
+#[ test ]
+fn test_detail_page_golden_full_output()
+{
+  let out = DetailPageTemplate::new( no_tty_style(), full_detail_page() ).render();
+  let expected = "\
+Parameter: scope\n  .projects scope::<value>\n\nDiscovery strategy selector.\n\n  Type     Enum\n  Default  around\n\nPossible values:\n  local   current directory only\n  around  bidirectional anchor walk\n\nExamples:\n  .projects scope::local  # restrict to cwd\n  .projects scope::global\n";
+  assert_eq!( out, expected, "detail page must match the golden layout byte-for-byte" );
+}
+
+// ── T-C02 ─ no ANSI on detail page ────────────────────────────────────────────
+
+/// T-C02: with `tty_detect=false`, the detail page emits zero ANSI escape
+/// sequences regardless of how many colored spans the layout defines.
+#[ test ]
+fn test_detail_page_no_ansi_codes()
+{
+  let out = DetailPageTemplate::new( no_tty_style(), full_detail_page() ).render();
+  assert!( !out.contains( "\x1b[" ), "no ANSI codes in no-TTY mode, got:\n{out}" );
+}
+
+// ── T-C03 ─ empty data renders empty ──────────────────────────────────────────
+
+/// T-C03 (FT-39): a default (fully empty) `DetailPageData` renders to exactly
+/// the empty string — no stray headers, no blank lines, no panic. This differs
+/// deliberately from `CliHelpTemplate`, which always emits Usage/Commands
+/// scaffolding: a detail page with no subject has nothing to say.
+#[ test ]
+fn test_detail_page_empty_data_renders_empty()
+{
+  let out = DetailPageTemplate::new( no_tty_style(), DetailPageData::default() ).render();
+  assert_eq!( out, "", "empty DetailPageData must render to an empty string, got:\n{out:?}" );
+}
+
+// ── T-C04 ─ name without label ────────────────────────────────────────────────
+
+/// T-C04: when `label` is empty and `name` is set, the header line is the bare
+/// name — no orphaned `":"` separator.
+#[ test ]
+fn test_detail_page_name_without_label()
+{
+  let mut page = DetailPageData::default();
+  page.name = "scope".into();
+  let out = DetailPageTemplate::new( no_tty_style(), page ).render();
+  assert_eq!( out, "scope\n", "bare-name header expected, got:\n{out:?}" );
+}
+
+// ── T-C05 ─ label without name ────────────────────────────────────────────────
+
+/// T-C05: when `label` is set and `name` is empty, the header line is
+/// `"Label:"` with no trailing space after the colon.
+#[ test ]
+fn test_detail_page_label_without_name()
+{
+  let mut page = DetailPageData::default();
+  page.label = "Parameter".into();
+  let out = DetailPageTemplate::new( no_tty_style(), page ).render();
+  assert_eq!( out, "Parameter:\n", "label-only header must carry no trailing space, got:\n{out:?}" );
+}
+
+// ── T-C06 ─ empty section skipped ─────────────────────────────────────────────
+
+/// T-C06 (FT-40): a section whose `entries` is empty is skipped entirely — its
+/// title must not appear and no blank line is emitted for it.
+#[ test ]
+fn test_detail_page_empty_section_skipped()
+{
+  let mut page = DetailPageData::default();
+  page.name = "x".into();
+  page.sections = vec![ DetailSection::new( "Ghost Section", vec![] ) ];
+  let out = DetailPageTemplate::new( no_tty_style(), page ).render();
+  assert_eq!( out, "x\n", "empty section must leave no trace, got:\n{out:?}" );
+}
+
+// ── T-C07 ─ untitled section ──────────────────────────────────────────────────
+
+/// T-C07 (FT-41): a section with an empty title renders its entries as a bare
+/// aligned block — preceded by a blank line but with no header line.
+#[ test ]
+fn test_detail_page_untitled_section()
+{
+  let mut page = DetailPageData::default();
+  page.name = "x".into();
+  page.sections = vec!
+  [
+    DetailSection::new( "", vec!
+    [
+      OptionEntry { name : "Kind".into(), desc : "String".into() },
+    ] ),
+  ];
+  let out = DetailPageTemplate::new( no_tty_style(), page ).render();
+  assert_eq!( out, "x\n\n  Kind  String\n", "untitled section: blank line then bare entries, got:\n{out:?}" );
+}
+
+// ── T-C08 ─ per-section independent padding ───────────────────────────────────
+
+/// T-C08 (FT-42): each section pads names to its OWN longest entry — a long
+/// name in one section must not widen another section's column.
+#[ test ]
+fn test_detail_page_per_section_padding()
+{
+  let mut page = DetailPageData::default();
+  page.name = "x".into();
+  page.sections = vec!
+  [
+    DetailSection::new( "A", vec!
+    [
+      OptionEntry { name : "a-very-long-name".into(), desc : "wide".into() },
+      OptionEntry { name : "ab".into(),               desc : "padded to 16".into() },
+    ] ),
+    DetailSection::new( "B", vec!
+    [
+      OptionEntry { name : "cd".into(), desc : "padded to 2 only".into() },
+    ] ),
+  ];
+  let out = DetailPageTemplate::new( no_tty_style(), page ).render();
+  assert!(
+    out.contains( "  ab                padded to 16" ),
+    "section A: \"ab\" pads to section A's own max (16) plus the 2-space col_gap, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  a-very-long-name  wide" ),
+    "section A: the longest name takes no padding — only the col_gap, got:\n{out}",
+  );
+  assert!(
+    out.contains( "  cd  padded to 2 only" ),
+    "section B: 2-char name pads only to section B's max (2) — not to section A's 16, got:\n{out}",
+  );
+}
+
+// ── T-C09 ─ empty desc leaves no trailing whitespace ──────────────────────────
+
+/// T-C09 (FT-43): an entry with an empty description renders the name alone —
+/// no padding, no column gap, no trailing whitespace on the line.
+#[ test ]
+fn test_detail_page_empty_desc_no_trailing_whitespace()
+{
+  let mut page = DetailPageData::default();
+  page.name = "x".into();
+  page.sections = vec!
+  [
+    DetailSection::new( "Values", vec!
+    [
+      OptionEntry { name : "bare".into(),      desc : String::new()          },
+      OptionEntry { name : "described".into(), desc : "has a desc".into()    },
+    ] ),
+  ];
+  let out = DetailPageTemplate::new( no_tty_style(), page ).render();
+  assert!( out.contains( "\n  bare\n" ), "empty-desc entry must be name-only with no trailing spaces, got:\n{out:?}" );
+  assert!( out.contains( "  described  has a desc" ), "described entry keeps padded layout, got:\n{out}" );
+}
+
+// ── T-C10 ─ example desc parity ───────────────────────────────────────────────
+
+/// T-C10: the detail page's Examples section uses the same emitter as
+/// `CliHelpTemplate` — `desc=Some` renders `  # text` inline, `desc=None`
+/// renders the bare invocation.
+#[ test ]
+fn test_detail_page_example_desc_parity()
+{
+  let mut page = DetailPageData::default();
+  page.name = "x".into();
+  page.examples = vec!
+  [
+    ExampleEntry { invocation : "app x::1".into(), desc : Some( "annotated".into() ) },
+    ExampleEntry { invocation : "app x::2".into(), desc : None                       },
+  ];
+  let out = DetailPageTemplate::new( no_tty_style(), page ).render();
+  assert!( out.contains( "  app x::1  # annotated\n" ), "Some-desc example must render inline annotation, got:\n{out}" );
+  assert!( out.contains( "  app x::2\n" ), "None-desc example must render bare invocation, got:\n{out}" );
+  assert!( !out.contains( "app x::2  #" ), "None-desc example must not emit a # marker, got:\n{out}" );
+}
+
+// ── T-C11 ─ DetailSection::new ────────────────────────────────────────────────
+
+/// T-C11: `DetailSection::new` stores title and entries as given — the
+/// ergonomic constructor is equivalent to Default + field assignment.
+#[ test ]
+fn test_detail_section_new_constructor()
+{
+  let section = DetailSection::new( "Facts", vec!
+  [
+    OptionEntry { name : "Type".into(), desc : "Enum".into() },
+  ] );
+  assert_eq!( section.title, "Facts" );
+  assert_eq!( section.entries.len(), 1 );
+  assert_eq!( section.entries[ 0 ].name, "Type" );
+}
+
+// ── T-C12 ─ prelude re-exports detail types ───────────────────────────────────
+
+mod prelude_reexports_detail_items
+{
+  //! Isolated module: imports ONLY `cli_fmt::prelude::*` to prove the three
+  //! detail-page types are reachable through the prelude alone.
+  use cli_fmt::prelude::*;
+
+  /// T-C12: `DetailSection`, `DetailPageData`, and `DetailPageTemplate` are all
+  /// reachable via `cli_fmt::prelude::*` and render correctly from there.
+  #[ test ]
+  fn test_prelude_reexports_detail_items()
+  {
+    let style = CliHelpStyle { tty_detect : false, ..CliHelpStyle::default() };
+    let mut page = DetailPageData::default();
+    page.label = "Command".into();
+    page.name  = ".run".into();
+    page.sections = vec!
+    [
+      DetailSection::new( "Parameters", vec!
+      [
+        OptionEntry { name : "dry::bool".into(), desc : "Dry-run".into() },
+      ] ),
+    ];
+    let out = DetailPageTemplate::new( style, page ).render();
+    assert!( out.contains( "Command: .run" ) );
+    assert!( out.contains( "Parameters:" ) );
+    assert!( out.contains( "dry::bool" ) );
+  }
+}
+
+// ── T-C13 ─ usage lines under header ──────────────────────────────────────────
+
+/// T-C13: multiple usage lines render in declaration order, each indented by
+/// `example_indent` (2), directly under the header line with no blank line
+/// between header and usage.
+#[ test ]
+fn test_detail_page_usage_lines()
+{
+  let mut page = DetailPageData::default();
+  page.label = "Parameter".into();
+  page.name  = "path".into();
+  page.usage = vec![ "app .run path::<dir>".into(), "app .run <dir>".into() ];
+  let out = DetailPageTemplate::new( no_tty_style(), page ).render();
+  assert_eq!(
+    out,
+    "Parameter: path\n  app .run path::<dir>\n  app .run <dir>\n",
+    "usage lines must follow the header immediately, indented, in order, got:\n{out:?}",
   );
 }

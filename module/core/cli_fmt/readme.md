@@ -16,7 +16,7 @@ for the `cli_fmt` vs `strs_tools` design boundary.
 ## Modules
 
 - `output` — Process command output with head/tail filtering, width truncation, and stream merging
-- `help` — Render structured CLI help text from typed data with configurable style and TTY-conditional ANSI
+- `help` — Render structured CLI help text from typed data with configurable style and TTY-conditional ANSI: a whole-binary overview template (`CliHelpTemplate`) and a single-subject detail page template (`DetailPageTemplate`) for per-command or per-parameter help
 
 ## Usage
 
@@ -35,7 +35,7 @@ println!( "{}", result.content );
 
 - `enabled` — master switch; activates core dependencies
 - `output` — CLI output processing (head/tail filtering, width truncation, stream merging)
-- `cli_help_template` — typed CLI help renderer (`CliHelpStyle`, `CliHelpData`, `CliHelpTemplate`)
+- `cli_help_template` — typed CLI help renderer (`CliHelpStyle`, `CliHelpData`, `CliHelpTemplate`, `DetailPageData`, `DetailPageTemplate`)
 - `ansi_unicode` — grapheme-based Unicode width via `unicode-segmentation` (opt-in)
 - `full` — enables all functionality (`enabled` + `output` + `ansi_unicode` + `cli_help_template`)
 

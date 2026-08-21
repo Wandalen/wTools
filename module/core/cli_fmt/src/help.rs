@@ -173,6 +173,100 @@ pub struct CliHelpData
   pub option_groups : Vec<OptionGroup>,
 }
 
+/// A titled, column-aligned name/description section on a detail page.
+///
+/// `#[non_exhaustive]` blocks external struct literals; construct via
+/// [`DetailSection::new`] or `Default` + field assignment.
+///
+/// ```
+/// use cli_fmt::help::*;
+/// let section = DetailSection::new( "Possible values", vec!
+/// [
+///   OptionEntry { name : "local".into(), desc : "current directory only".into() },
+/// ] );
+/// assert_eq!( section.title, "Possible values" );
+/// ```
+#[ non_exhaustive ]
+#[ derive( Default, Debug, Clone ) ]
+pub struct DetailSection
+{
+  /// Section header text; an empty title renders the entries as a bare aligned block with no header line.
+  pub title   : String,
+  /// Ordered name/description entries; the whole section is omitted when this is empty.
+  pub entries : Vec<OptionEntry>,
+}
+
+impl DetailSection
+{
+  /// Create a section from a title and its entries.
+  #[ inline ]
+  #[ must_use ]
+  pub fn new( title : impl Into<String>, entries : Vec<OptionEntry> ) -> Self
+  {
+    Self { title : title.into(), entries }
+  }
+}
+
+/// Structured content for a single-subject detail page (one parameter, one
+/// command, one topic) — as opposed to `CliHelpData`, which models a full
+/// command-listing page.
+///
+/// The renderer is domain-free: what the subject *is* (a parameter, a command)
+/// lives entirely in the caller's `label`/`sections` content.
+///
+/// `#[non_exhaustive]` blocks all struct expressions from outside the defining
+/// crate. Use `Default` + field assignment:
+///
+/// ```
+/// use cli_fmt::help::*;
+/// let mut page = DetailPageData::default();
+/// page.label = "Parameter".into();
+/// page.name  = "scope".into();
+/// page.description.push( "Discovery strategy selector.".into() );
+/// page.sections.push( DetailSection::new( "Possible values", vec!
+/// [
+///   OptionEntry { name : "local".into(), desc : "current directory only".into() },
+/// ] ) );
+/// let style = CliHelpStyle { tty_detect : false, ..Default::default() };
+/// let text  = DetailPageTemplate::new( style, page ).render();
+/// assert!( text.contains( "Parameter: scope" ) );
+/// assert!( text.contains( "Possible values:" ) );
+/// ```
+///
+/// Struct expressions — including struct update syntax — fail to compile from
+/// external crates (E0639). The doctest below verifies this:
+///
+/// ```compile_fail
+/// use cli_fmt::help::*;
+/// let _page = DetailPageData
+/// {
+///   label       : String::new(),
+///   name        : String::new(),
+///   usage       : vec![],
+///   description : vec![],
+///   sections    : vec![],
+///   examples    : vec![],
+/// };
+/// ```
+#[ non_exhaustive ]
+#[ derive( Default, Debug, Clone ) ]
+pub struct DetailPageData
+{
+  /// Kind label for the page subject (e.g., `"Parameter"`, `"Command"`); rendered as `"{label}: {name}"`.
+  /// When empty, the header line shows `name` alone; when both are empty, no header line is emitted.
+  pub label       : String,
+  /// Subject name (e.g., `"scope"`, `".rollup"`).
+  pub name        : String,
+  /// Usage/syntax lines rendered directly under the header in example color; omitted when empty.
+  pub usage       : Vec<String>,
+  /// Free-form description lines rendered as a plain paragraph; omitted when empty.
+  pub description : Vec<String>,
+  /// Ordered detail sections; sections with no entries are skipped entirely.
+  pub sections    : Vec<DetailSection>,
+  /// Usage examples; the Examples section is omitted when this is empty.
+  pub examples    : Vec<ExampleEntry>,
+}
+
 // ─── Template ────────────────────────────────────────────────────────────────
 
 /// Renders CLI help text from a `CliHelpStyle` and `CliHelpData` pair.
@@ -322,31 +416,130 @@ impl CliHelpTemplate
     }
   }
 
-  // BUG-007 task/bug/closed/007_example_desc_silent_drop.md — desc field ignored in emit_examples
-  // Fix(BUG-007): render ExampleEntry.desc when Some — was silently dropped
-  // Root cause: emit_examples() emitted only ex.invocation unconditionally,
-  //   ignoring desc: Option<String> despite being documented as annotation field
-  // Pitfall: Option-typed renderer fields need a test asserting the Some branch
-  //   appears in output — compiling without error is not proof it renders
   fn emit_examples( &self, out : &mut String, bold : &str, ex_color : &str, rst : &str )
   {
-    let s  = &self.style;
-    let ei = " ".repeat( s.example_indent );
-    let _ = writeln!( out );
-    let _ = writeln!( out, "{bold}Examples:{rst}" );
-    for ex in &self.data.examples
+    emit_examples_section( out, self.style.example_indent, bold, ex_color, rst, &self.data.examples );
+  }
+}
+
+// BUG-007 task/bug/closed/007_example_desc_silent_drop.md — desc field ignored in emit_examples
+// Fix(BUG-007): render ExampleEntry.desc when Some — was silently dropped
+// Root cause: emit_examples() emitted only ex.invocation unconditionally,
+//   ignoring desc: Option<String> despite being documented as annotation field
+// Pitfall: Option-typed renderer fields need a test asserting the Some branch
+//   appears in output — compiling without error is not proof it renders
+fn emit_examples_section( out : &mut String, example_indent : usize, bold : &str, ex_color : &str, rst : &str, examples : &[ ExampleEntry ] )
+{
+  let ei = " ".repeat( example_indent );
+  let _ = writeln!( out );
+  let _ = writeln!( out, "{bold}Examples:{rst}" );
+  for ex in examples
+  {
+    if let Some( ref desc ) = ex.desc
     {
-      if let Some( ref desc ) = ex.desc
-      {
-        let _ = writeln!( out, "{ei}{ex_color}{}  # {desc}{rst}", ex.invocation );
-      }
-      else
-      {
-        let _ = writeln!( out, "{ei}{ex_color}{}{rst}", ex.invocation );
-      }
+      let _ = writeln!( out, "{ei}{ex_color}{}  # {desc}{rst}", ex.invocation );
+    }
+    else
+    {
+      let _ = writeln!( out, "{ei}{ex_color}{}{rst}", ex.invocation );
     }
   }
 }
+
+/// Renders a single-subject detail page from a `CliHelpStyle` and `DetailPageData` pair.
+///
+/// Same style/data separation as `CliHelpTemplate`; the two templates share the
+/// `CliHelpStyle` vocabulary so a binary's listing page and detail pages stay
+/// visually consistent without duplicated configuration.
+#[ derive( Debug ) ]
+pub struct DetailPageTemplate
+{
+  style : CliHelpStyle,
+  data  : DetailPageData,
+}
+
+impl DetailPageTemplate
+{
+  /// Create a new template from style and data parameters.
+  #[ inline ]
+  #[ must_use ]
+  pub fn new( style : CliHelpStyle, data : DetailPageData ) -> Self
+  {
+    Self { style, data }
+  }
+
+  /// Render the full detail page to a `String`.
+  ///
+  /// Infallible: performs no I/O beyond a single TTY probe and cannot fail.
+  /// A fully-empty `DetailPageData` renders to an empty string. When
+  /// `style.tty_detect` is `true` and stdout is not a TTY, all ANSI color
+  /// codes are suppressed; `tty_detect = false` always suppresses them.
+  #[ inline ]
+  #[ must_use ]
+  pub fn render( &self ) -> String
+  {
+    let use_color = self.style.tty_detect && std::io::stdout().is_terminal();
+    let s         = &self.style;
+    let c         = | code : &'static str | -> &str { if use_color { code } else { "" } };
+    let bold      = c( s.color_tagline );
+    let opt       = c( s.color_option  );
+    let ex        = c( s.color_example );
+    let rst       = c( s.color_reset   );
+    let oi        = " ".repeat( s.opt_indent );
+    let ei        = " ".repeat( s.example_indent );
+    let gp        = " ".repeat( s.col_gap );
+    let mut out   = String::new();
+    match ( self.data.label.is_empty(), self.data.name.is_empty() )
+    {
+      ( true, true )   => {},
+      ( true, false )  => { let _ = writeln!( out, "{opt}{}{rst}", self.data.name ); },
+      ( false, true )  => { let _ = writeln!( out, "{bold}{}:{rst}", self.data.label ); },
+      ( false, false ) => { let _ = writeln!( out, "{bold}{}:{rst} {opt}{}{rst}", self.data.label, self.data.name ); },
+    }
+    for line in &self.data.usage
+    {
+      let _ = writeln!( out, "{ei}{ex}{line}{rst}" );
+    }
+    if !self.data.description.is_empty()
+    {
+      let _ = writeln!( out );
+      for line in &self.data.description
+      {
+        let _ = writeln!( out, "{line}" );
+      }
+    }
+    for section in &self.data.sections
+    {
+      if section.entries.is_empty() { continue; }
+      // width is content-driven per section : facts blocks and value lists each
+      // align to their own longest name, never to another section's ( misuse-proof )
+      let width = section.entries.iter().map( |e| e.name.len() ).max().unwrap_or( 0 );
+      let _ = writeln!( out );
+      if !section.title.is_empty()
+      {
+        let _ = writeln!( out, "{bold}{}:{rst}", section.title );
+      }
+      for e in &section.entries
+      {
+        if e.desc.is_empty()
+        {
+          let _ = writeln!( out, "{oi}{opt}{}{rst}", e.name );
+        }
+        else
+        {
+          let _ = writeln!( out, "{oi}{opt}{:<width$}{rst}{gp}{}", e.name, e.desc, width = width );
+        }
+      }
+    }
+    if !self.data.examples.is_empty()
+    {
+      emit_examples_section( &mut out, s.example_indent, bold, ex, rst, &self.data.examples );
+    }
+    out
+  }
+}
+
+// ─── Namespaces ──────────────────────────────────────────────────────────────
 
 // ─── Namespaces ──────────────────────────────────────────────────────────────
 
@@ -398,5 +591,8 @@ pub mod prelude
     CliHelpData,
     CliHelpTemplate,
     OptionGroup,
+    DetailSection,
+    DetailPageData,
+    DetailPageTemplate,
   };
 }

@@ -4,7 +4,7 @@
 
 - **Purpose**: Document the public interface for the CLI help template renderer in `cli_fmt`.
 - **Responsibility**: Reference for all public types, their fields, and the rendering entry point.
-- **In Scope**: CliHelpStyle, CliHelpData, OptionGroup, CommandGroup, CommandEntry, OptionEntry, ExampleEntry, default constructor, and render operation.
+- **In Scope**: CliHelpStyle, CliHelpData, OptionGroup, CommandGroup, CommandEntry, OptionEntry, ExampleEntry, DetailSection, DetailPageData, DetailPageTemplate, default constructors, and render operations.
 - **Out of Scope**: Behavioral rationale and design decisions — see `feature/002_cli_help_template.md`.
 
 ### Abstract
@@ -89,6 +89,24 @@ path.
 | `invocation` | string | Example invocation string shown to the user |
 | `desc` | optional string | Optional annotation; when present, rendered as `  # {text}` after the invocation |
 
+**`DetailSection`** — one named block of a detail page. All fields are public.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `title` | string | Section header displayed as `{title}:`; empty title renders entries without a header line |
+| `entries` | list of option entries | Name/description rows; section omitted entirely when empty |
+
+**`DetailPageData`** — structured content for a single-subject detail page (one command or one parameter). All fields are public. Extensibility-sealed — external callers cannot use struct literal expressions; must use the default constructor followed by field assignment.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `label` | string | Subject category shown before the name (e.g. `Parameter`, `Command`); empty label drops the `{label}: ` prefix |
+| `name` | string | Subject name; empty name renders `{label}:` alone (no trailing space) |
+| `usage` | list of strings | Usage lines rendered indented directly under the header |
+| `description` | list of strings | Free-form description lines, preceded by a blank line |
+| `sections` | list of detail sections | Ordered named blocks; empty-entry sections skipped |
+| `examples` | list of example entries | Usage examples; identical rendering to `CliHelpData.examples` |
+
 ### Operations
 
 **`CliHelpData::default()`** — constructs a `CliHelpData` with `binary` and `tagline` as empty strings and all list fields as empty lists. Construct instances via field assignment. Struct literal expressions from outside the crate are blocked at compile time.
@@ -106,15 +124,31 @@ path.
 
 Column padding uses minimum-width alignment. For commands (step 4) and legacy options (step 6), the column width equals the larger of the style-configured field width and the longest entry name in that section — the configured value is a floor — plus the column gap. For arguments (step 3) and option groups (step 5), the column width equals the maximum entry name length in that section or group only, followed by a 2-space separator — the gap is not included in this width. Padding is a minimum — a name longer than the configured floor widens the column rather than being truncated or overflowing.
 
+**`DetailSection::new(title, entries)`** — constructs a section from a title (any `Into<String>`) and its entries, stored as given.
+
+**`DetailPageData::default()`** — constructs a `DetailPageData` with empty strings and empty lists throughout. Construct instances via field assignment; struct literal expressions from outside the crate are blocked at compile time (same enforcement as `CliHelpData`, validated by the T-C14 compile_fail doctest).
+
+**`DetailPageTemplate::new(style, data)`** — constructs a detail-page template from a `CliHelpStyle` and a `DetailPageData`. Both parameters are consumed; the style's `opt_indent`, `example_indent`, color fields, and `tty_detect` govern the rendering.
+
+**`DetailPageTemplate::render`** — renders the detail page in this order:
+1. ANSI activation follows the same rule as `CliHelpTemplate::render()` (`tty_detect` and stdout TTY probe).
+2. Header line by emptiness of `(label, name)`: both empty → no header; only `name` → bare `{name}`; only `label` → `{label}:` with no trailing space; both → `{label}: {name}`. Rendered in the tagline (bold) color.
+3. Each `usage` line indented by `example_indent`, in the example color, directly under the header.
+4. If `description` is non-empty: a blank line, then each description line verbatim.
+5. Each section from `sections`: skipped entirely when its `entries` is empty; otherwise a blank line, the `{title}:` header in the tagline color (omitted when `title` is empty), then entries indented by `opt_indent` — names padded to that section's own longest name plus a 2-space separator; an entry with an empty description emits the name alone with no trailing whitespace.
+6. If `examples` is non-empty: the same `Examples:` section emitter as `CliHelpTemplate` step 7 — byte-identical annotation and indentation behavior.
+
+A fully empty `DetailPageData` renders exactly `""`.
+
 ### Error Handling
 
-`CliHelpTemplate::render()` is infallible. It performs no file I/O and accepts any valid `CliHelpStyle` and `CliHelpData` value. No error type is returned and no panics occur.
+`CliHelpTemplate::render()` and `DetailPageTemplate::render()` are infallible. They perform no file I/O and accept any valid style and data values. No error type is returned and no panics occur.
 
 ### Compatibility Guarantees
 
 All public struct fields and the `new` / `render` signatures are stable across patch and minor versions. New fields may be added to `CliHelpStyle` or `CliHelpData` in minor versions with backward-compatible defaults. Semantic changes to existing fields require a major version bump.
 
-`CliHelpData` is an extensible structure — struct literals from outside the crate fail to compile. Callers must use the default constructor followed by field assignment; struct update syntax also fails to compile outside the crate. Validated by the T-A08 compile_fail doctest in `src/help.rs`.
+`CliHelpData`, `DetailSection`, and `DetailPageData` are extensible structures — struct literals from outside the crate fail to compile. Callers must use the default constructor followed by field assignment; struct update syntax also fails to compile outside the crate. Validated by the T-A08 (`CliHelpData`) and T-C14 (`DetailPageData`) compile_fail doctests in `src/help.rs`.
 
 ### Features
 
@@ -139,4 +173,4 @@ All public struct fields and the `new` / `render` signatures are stable across p
 | File | Relationship |
 |------|-------------|
 | [`../../tests/docs/api/002_help_api.md`](../../tests/docs/api/002_help_api.md) | Test specification verifying the API contracts defined here |
-| `tests/help.rs` | API contract verification — render infallibility, layout defaults, column padding, section omission, annotation rendering, and OptionGroup construction |
+| `tests/help.rs` | API contract verification — render infallibility, layout defaults, column padding, section omission, annotation rendering, OptionGroup construction, and the detail-page contract (T-C01..T-C14: golden output, header degradation, per-section padding, empty-data emptiness, prelude re-export) |

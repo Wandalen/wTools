@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the behavioral requirements documented in `docs/feature/002_cli_help_template.md`.
 - **Responsibility**: Test spec for column alignment, TTY detection, conditional section omission, ExampleEntry.desc annotation rendering, color field defaults, and edge-case inputs.
-- **In Scope**: FT-1..FT-37 — column padding, ANSI suppression, section omission, example annotation, minimum-width semantics, color defaults, TTY detection, dependency boundary, usage lines override, arguments section, option groups, backward compatibility, infallibility, edge-case inputs, example declaration order, tagline-usage-line separation, col_gap spacing, cmd_indent leading indent, contiguous padding+gap+description for a genuinely short name (both commands and legacy options) at default settings, option_groups within-group differential padding against the group's own longest entry, and floor semantics for `cmd_name_width`/`opt_name_width` (the shared name column grows to the longest entry name, so alignment survives any configured width).
+- **In Scope**: FT-1..FT-43 — column padding, ANSI suppression, section omission, example annotation, minimum-width semantics, color defaults, TTY detection, dependency boundary, usage lines override, arguments section, option groups, backward compatibility, infallibility, edge-case inputs, example declaration order, tagline-usage-line separation, col_gap spacing, cmd_indent leading indent, contiguous padding+gap+description for a genuinely short name (both commands and legacy options) at default settings, option_groups within-group differential padding against the group's own longest entry, floor semantics for `cmd_name_width`/`opt_name_width` (the shared name column grows to the longest entry name, so alignment survives any configured width), and the detail-page template (FT-38..FT-43: golden full-page output, empty-data emptiness, empty-section skip, untitled-section bare block, per-section independent padding, empty-description trailing-whitespace freedom).
 - **Out of Scope**: Style customization beyond default values; description line wrapping (out of scope for this feature).
 
 ### FT-1: Command and option names padded to configured column widths
@@ -229,6 +229,42 @@
 - **When:** `CliHelpTemplate::new(style, data).render()`
 - **Then:** output contains `"a-really-long-option  long opt"` (20-char name, no padding, 2-space `col_gap` only) and `"dry                   dry run"` (`"dry"` padded with 17 trailing spaces to reach 20, plus 2 more for `col_gap`, 19 spaces total); mirrors FT-36 for the legacy options path — `opt_name_width` is likewise a floor, extending FT-8's single-entry non-truncation proof with the sibling-alignment guarantee
 
+### FT-38: Detail page renders header, usage, description, sections, and examples byte-exactly
+
+- **Given:** `CliHelpStyle { tty_detect: false, ..CliHelpStyle::default() }`, a full `DetailPageData` — `label: "Parameter"`, `name: "scope"`, one usage line `.projects scope::<value>`, one description line, a `Type`-less titled section pair (`""`-titled Type/Default block and a `"Possible values"` section), and two examples (one annotated, one bare)
+- **When:** `DetailPageTemplate::new(style, data).render()`
+- **Then:** output equals the golden string exactly — `"Parameter: scope\n"` header, indented usage line, blank line, description, each non-empty section with per-section padding, `"Examples:"` block with `# ` annotation on the first entry only — byte-for-byte
+
+### FT-39: Fully empty DetailPageData renders the empty string
+
+- **Given:** `CliHelpStyle { tty_detect: false, ..CliHelpStyle::default() }`, `DetailPageData::default()` (all fields empty)
+- **When:** `DetailPageTemplate::new(style, data).render()`
+- **Then:** output is exactly `""` — no header, no blank lines, no panic; the template emits nothing it wasn't given
+
+### FT-40: Detail section with empty entries is skipped entirely, title included
+
+- **Given:** `CliHelpStyle { tty_detect: false, ..CliHelpStyle::default() }`, `DetailPageData` with `sections` containing `DetailSection::new("Empty Section", vec![])` and one populated section
+- **When:** `DetailPageTemplate::new(style, data).render()`
+- **Then:** output does NOT contain `"Empty Section"`; the populated section renders normally
+
+### FT-41: Detail section with empty title renders entries as a bare block without a header line
+
+- **Given:** `CliHelpStyle { tty_detect: false, ..CliHelpStyle::default() }`, `DetailPageData` with one section `DetailSection::new("", vec![OptionEntry { name: "Kind", desc: "String" }])`
+- **When:** `DetailPageTemplate::new(style, data).render()`
+- **Then:** output contains the aligned entry line (`"  Kind  String"`) preceded by a blank line but no `":"`-suffixed header line for that section
+
+### FT-42: Each detail section pads names to its OWN longest entry, independently
+
+- **Given:** `CliHelpStyle { tty_detect: false, ..CliHelpStyle::default() }`, two sections — one whose longest name is `"a-very-long-name"` (16 chars) alongside `"ab"`, another whose longest name is `"cd"` (2 chars)
+- **When:** `DetailPageTemplate::new(style, data).render()`
+- **Then:** `"ab"` pads to 16 in its own section (`"  ab                ..."`); `"cd"` pads only to 2 in the other (`"  cd  ..."`) — one section's long name never widens another section's column
+
+### FT-43: Detail entry with empty description renders name-only with no trailing whitespace
+
+- **Given:** `CliHelpStyle { tty_detect: false, ..CliHelpStyle::default() }`, a section entry `OptionEntry { name: "bare", desc: "" }`
+- **When:** `DetailPageTemplate::new(style, data).render()`
+- **Then:** the entry line is exactly `"  bare"` followed by a newline — no padding spaces, no column gap, no trailing whitespace
+
 ### Features
 
 | File | Relationship |
@@ -245,5 +281,5 @@
 
 | File | Relationship |
 |------|-------------|
-| `../../../tests/help.rs` | FT-1: `test_column_alignment`; FT-2: `test_no_ansi_codes`, `test_explicit_tty_detect_false`; FT-3: `test_no_options_section`, `test_no_examples_section`; FT-4: `test_example_desc_rendered`; FT-5: `test_name_not_truncated`; FT-6: `test_style_color_defaults`; FT-7: `test_empty_groups`; FT-8: `test_opt_name_not_truncated`; FT-9: `test_single_group_binary_name`; FT-10: `test_tty_detect_true_suppresses_ansi_in_non_tty`; FT-11: `test_no_data_fmt_dependency`; FT-12/FT-13: `test_usage_lines` (T-A01); FT-14/FT-15: `test_arguments_section` (T-A02); FT-16: `test_option_groups_render` (T-A03); FT-17: `test_option_groups_empty_backward_compat` (T-A04); FT-18: `test_option_groups_suppresses_options` (T-A05); FT-19: `test_option_groups_independent_padding` (T-A06); FT-20: `test_cli_help_data_default` (T-A07); T-A08: compile_fail doctest in `src/help.rs`; T-A09: `test_examples_compile` (construction pattern under `#[non_exhaustive]`); FT-21: `test_multiple_usage_lines` (T-B01); FT-22: `test_arguments_multi_entry_padding` (T-B02); FT-23: `test_command_group_empty_entries` (T-B03); FT-24: `test_render_empty_data_infallible` (T-B04); FT-25: `test_example_empty_desc_some_renders_marker` (T-B05); FT-26: `test_option_group_empty_entries_skipped` (T-B06); FT-27: `test_empty_option_group_suppresses_legacy_options` (T-B07); FT-28: `test_arguments_before_groups_in_output` (T-B08); FT-29: `test_examples_declaration_order` (T-B09); FT-30: `test_tagline_blank_line_separator` (T-B10); FT-31: `test_col_gap_custom`; FT-32: `test_cmd_indent_custom`; FT-33: `test_padded_name_contiguous_with_gap_and_description` (T-B13); FT-34: `test_padded_opt_name_contiguous_with_gap_and_description` (T-B14); FT-35: `test_option_group_differential_padding_within_group` (T-B16); FT-36: `test_cmd_column_grows_to_longest_name` (T-B17); FT-37: `test_opt_column_grows_to_longest_name` (T-B18) |
+| `../../../tests/help.rs` | FT-1: `test_column_alignment`; FT-2: `test_no_ansi_codes`, `test_explicit_tty_detect_false`; FT-3: `test_no_options_section`, `test_no_examples_section`; FT-4: `test_example_desc_rendered`; FT-5: `test_name_not_truncated`; FT-6: `test_style_color_defaults`; FT-7: `test_empty_groups`; FT-8: `test_opt_name_not_truncated`; FT-9: `test_single_group_binary_name`; FT-10: `test_tty_detect_true_suppresses_ansi_in_non_tty`; FT-11: `test_no_data_fmt_dependency`; FT-12/FT-13: `test_usage_lines` (T-A01); FT-14/FT-15: `test_arguments_section` (T-A02); FT-16: `test_option_groups_render` (T-A03); FT-17: `test_option_groups_empty_backward_compat` (T-A04); FT-18: `test_option_groups_suppresses_options` (T-A05); FT-19: `test_option_groups_independent_padding` (T-A06); FT-20: `test_cli_help_data_default` (T-A07); T-A08: compile_fail doctest in `src/help.rs`; T-A09: `test_examples_compile` (construction pattern under `#[non_exhaustive]`); FT-21: `test_multiple_usage_lines` (T-B01); FT-22: `test_arguments_multi_entry_padding` (T-B02); FT-23: `test_command_group_empty_entries` (T-B03); FT-24: `test_render_empty_data_infallible` (T-B04); FT-25: `test_example_empty_desc_some_renders_marker` (T-B05); FT-26: `test_option_group_empty_entries_skipped` (T-B06); FT-27: `test_empty_option_group_suppresses_legacy_options` (T-B07); FT-28: `test_arguments_before_groups_in_output` (T-B08); FT-29: `test_examples_declaration_order` (T-B09); FT-30: `test_tagline_blank_line_separator` (T-B10); FT-31: `test_col_gap_custom`; FT-32: `test_cmd_indent_custom`; FT-33: `test_padded_name_contiguous_with_gap_and_description` (T-B13); FT-34: `test_padded_opt_name_contiguous_with_gap_and_description` (T-B14); FT-35: `test_option_group_differential_padding_within_group` (T-B16); FT-36: `test_cmd_column_grows_to_longest_name` (T-B17); FT-37: `test_opt_column_grows_to_longest_name` (T-B18); FT-38: `test_detail_page_golden_full_output` (T-C01); FT-39: `test_detail_page_empty_data_renders_empty` (T-C03); FT-40: `test_detail_page_empty_section_skipped` (T-C06); FT-41: `test_detail_page_untitled_section` (T-C07); FT-42: `test_detail_page_per_section_padding` (T-C08); FT-43: `test_detail_page_empty_desc_no_trailing_whitespace` (T-C09); detail-page contract without FT anchors: T-C02 `test_detail_page_no_ansi_codes`, T-C04 `test_detail_page_name_without_label`, T-C05 `test_detail_page_label_without_name`, T-C10 `test_detail_page_example_desc_parity`, T-C11 `test_detail_section_new_constructor`, T-C12 `prelude_reexports_detail_items::test_prelude_reexports_detail_items`, T-C13 `test_detail_page_usage_lines`; T-C14: compile_fail doctest in `src/help.rs` (`DetailPageData` literal rejected) |
 | `../../../examples/basic_usage.rs` | T-A09: `cargo test --examples` compiles and runs the example using `CliHelpData::default()` + field assignment |

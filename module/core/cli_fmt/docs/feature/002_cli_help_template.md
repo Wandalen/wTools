@@ -4,7 +4,7 @@
 
 - **Purpose**: Provide a typed, configurable template that renders structured CLI help output from two disjoint parameter sets — style and data — producing ANSI-colored, column-aligned text suitable for terminal display.
 - **Responsibility**: Document style/data separation, multi-section content model, backward compatibility semantics, non-exhaustive enforcement, dependency architecture, and crate boundary rationale.
-- **In Scope**: Rendering structured CLI help from typed style and data parameters, covering section layout, ANSI color, TTY detection, column alignment, and section omission rules.
+- **In Scope**: Rendering structured CLI help from typed style and data parameters, covering section layout, ANSI color, TTY detection, column alignment, and section omission rules; the detail-page template for single-subject help (one command or one parameter).
 - **Out of Scope**: Type field details and rendering procedure — see `api/002_help_api.md`; data_fmt table-based help path; per-command help (unilang pipeline concern).
 
 ### Design
@@ -30,6 +30,12 @@
 **Backward compatibility:** When `option_groups` is empty and `options` is non-empty, the legacy `Options:` section renders unchanged. When `option_groups` is non-empty, the `options` field is suppressed — callers using named groups replace the flat list entirely. Callers that set only `options` and leave `option_groups` empty are fully unaffected.
 
 **Non-exhaustive data structure:** The content structure is marked non-exhaustive. Callers outside the crate cannot construct it with a struct literal; they must use the default constructor followed by field assignment. This is a compile-time enforcement of API extensibility.
+
+**Detail page template:** Alongside the overview template (`CliHelpTemplate`, which renders a whole binary's help), a second template renders a detail page about a single subject — one command or one parameter. Its data model is generic and domain-free: a labeled header (`{label}: {name}`, degrading gracefully when either half is empty), usage lines, description lines, an ordered list of named sections each holding option entries, and examples. Frameworks (not this crate) decide what the sections mean — a parameter page might carry "Type"/"Possible values" sections; a command page might carry "Parameters". This keeps cli_fmt free of any command-framework vocabulary while giving frameworks a shared, styled rendering target.
+
+**Detail page section rules:** A section with no entries is skipped entirely, title included. A section with entries but an empty title renders its entries as a bare block without a header line. Entry name columns pad to each section's own longest name — per-section independent, content-driven, with no configured floor (unlike the overview template's `cmd_name_width`/`opt_name_width` floors, a detail page's sections are small and self-describing). An entry with an empty description renders the name alone with no trailing whitespace. A fully empty data structure renders to the empty string — the detail template emits nothing it wasn't given, so callers can compose its output without defensive trimming.
+
+**Detail page shared emitters:** The Examples section reuses the same emitter as the overview template, so annotation rendering (`# text` when a description is present) and indentation behave identically across both templates — one convention, learned once.
 
 **Feature flag:** The `cli_help_template` feature flag enables this module (declared as `["std"]` dependency). Included in the default feature set when the crate is enabled.
 
@@ -64,4 +70,4 @@ For complete type definitions, field defaults, and the rendering procedure, see 
 | File | Relationship |
 |------|-------------|
 | [`../../tests/docs/feature/002_cli_help_template.md`](../../tests/docs/feature/002_cli_help_template.md) | Test specification verifying the behavioral cases defined here |
-| `tests/help.rs` | Column alignment, TTY detection, conditional section rendering, backward compatibility, option groups, and edge cases |
+| `tests/help.rs` | Column alignment, TTY detection, conditional section rendering, backward compatibility, option groups, detail page rendering (T-C01..T-C14), and edge cases |
