@@ -243,7 +243,7 @@ path = "module/experimental/component_model"
 default-features = false
 
 [workspace.dependencies.component_model_meta]
-version = "~0.22.1"
+version = "~0.23.1"
 path = "module/experimental/component_model_meta"
 default-features = false
 
@@ -268,7 +268,7 @@ path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.64.1"
+version = "~0.65.1"
 path = "module/core/mod_interface_meta"
 default-features = false
 
