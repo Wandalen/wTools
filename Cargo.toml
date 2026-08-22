@@ -684,7 +684,7 @@ version = "4.0.1"
 version = "0.8.2"
 
 [workspace.dependencies.workspace_tools]
-version = "~0.17.1"
+version = "~0.18.1"
 path = "module/core/workspace_tools"
 default-features = false
 
