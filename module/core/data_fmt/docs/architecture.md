@@ -70,6 +70,8 @@ src/
     mod.rs                   # Public re-exports from config sub-modules
     tree_config.rs           # TreeConfig, TreeSymbols
     table_config.rs          # TableConfig and all supporting types
+    table_enums.rs           # Enums shared by table config types
+    table_heading.rs         # Heading, render_rule_if_present, render_commented_rule_if_present
     expanded_config.rs       # ExpandedConfig
   conversions.rs             # Tree<->Table conversions, FlattenConfig
   ansi_str.rs                # visual_len, pad_to_width, truncate_cell
@@ -82,11 +84,15 @@ src/
   formatters/
     mod.rs                   # Format trait re-export; `table_view_to_row_maps` shared helper
     format_trait.rs          # Format trait, FormatError
-    tree.rs                  # TreeFormatter with format() and format_aligned()
+    tree/                    # TreeFormatter (split into directory)
+      mod.rs                 # TreeFormatter struct; format(), write_to()
+      aggregated.rs          # format_with_aggregation, calculate_aggregate
+      aligned.rs             # format_aligned, format_aligned_node
     table/                   # TableFormatter (split into directory)
       mod.rs                 # TableFormatter impl; format() entry point
       auto_fit.rs            # Column width budget allocation
       rendering.rs           # Cell rendering: borders, separators, rules
+      row_rendering.rs       # Row/heading/footer line assembly
     expanded.rs              # ExpandedFormatter
     logfmt.rs                # LogfmtFormatter
     html.rs                  # HtmlFormatter

@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Refuse to run unattended: this script builds+tests every crate in the
+# workspace (~48 crates), which has repeatedly exhausted local disk space.
+# See rulebook.md: Exception to longrun.rulebook.md § Breadth Selection.
+if ! read -r -t 20 -p "This runs the FULL workspace test suite across every crate. Type 'yes' to continue: " confirm < /dev/tty; then
+	echo "test_all_crates.sh: no interactive confirmation available (no controlling terminal, or timed out) — refusing to run." >&2
+	exit 1
+fi
+if [ "$confirm" != "yes" ]; then
+	echo "test_all_crates.sh: confirmation declined — aborting." >&2
+	exit 1
+fi
+
 # Script to test all crates individually and identify failures
 echo "=== Testing All Crates Individually ==="
 echo "Date: $(date)"

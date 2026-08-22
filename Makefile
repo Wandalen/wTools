@@ -5,9 +5,22 @@
 # === Parameters ===
 #
 
-# Defines package flags for cargo commands if a crate is specified.
+# Defines package flags for cargo commands. `crate=` is MANDATORY for every
+# ctest*/wtest* target below (see REQUIRE_CRATE) — full-workspace test runs
+# are disabled here because this workspace has 48+ member crates and a bare
+# sweep has repeatedly exhausted local disk space. See rulebook.md.
 # e.g., `make ctest1 crate=my-app` will set PKG_FLAGS to `-p my-app`.
 PKG_FLAGS = $(if $(crate),-p $(crate))
+
+# Guard shared by every ctest*/wtest* target: refuse to run without an
+# explicit crate= instead of silently falling back to a full-workspace run.
+define REQUIRE_CRATE
+	@if [ -z "$(crate)" ]; then \
+		echo "error: crate=<name> is required (e.g. 'make ctest1 crate=data_fmt')." >&2; \
+		echo "       Full-workspace test runs are disabled locally — see rulebook.md." >&2; \
+		exit 1; \
+	fi
+endef
 
 #
 # === .PHONY section ===
@@ -49,18 +62,20 @@ help:
 	@echo "  cwa              - Full update and clean workspace (rustup + cargo tools + cache cleanup)."
 	@echo ""
 	@echo "Test Commands (each level includes all previous steps):"
-	@echo "  ctest1 [crate=..] - Level 1: Primary test suite (cargo nextest run)."
-	@echo "  ctest2 [crate=..] - Level 2: Primary + Documentation tests."
-	@echo "  ctest3 [crate=..] - Level 3: Primary + Doc + Linter checks."
-	@echo "  ctest4 [crate=..] - Level 4: All checks + Heavy testing (unused deps + audit)."
-	@echo "  ctest5 [crate=..] - Level 5: Full heavy testing with mutation tests."
+	@echo "  crate=<name> is MANDATORY on every ctest*/wtest* target below —"
+	@echo "  full-workspace test runs are disabled locally (see rulebook.md)."
+	@echo "  ctest1 crate=<name> - Level 1: Primary test suite (cargo nextest run)."
+	@echo "  ctest2 crate=<name> - Level 2: Primary + Documentation tests."
+	@echo "  ctest3 crate=<name> - Level 3: Primary + Doc + Linter checks."
+	@echo "  ctest4 crate=<name> - Level 4: All checks + Heavy testing (unused deps + audit)."
+	@echo "  ctest5 crate=<name> - Level 5: Full heavy testing with mutation tests."
 	@echo ""
 	@echo "Watch Commands (auto-run on file changes):"
-	@echo "  wtest1 [crate=..] - Watch Level 1: Primary tests only."
-	@echo "  wtest2 [crate=..] - Watch Level 2: Primary + Doc tests."
-	@echo "  wtest3 [crate=..] - Watch Level 3: Primary + Doc + Linter."
-	@echo "  wtest4 [crate=..] - Watch Level 4: All checks + Heavy testing (deps + audit)."
-	@echo "  wtest5 [crate=..] - Watch Level 5: Full heavy testing with mutations."
+	@echo "  wtest1 crate=<name> - Watch Level 1: Primary tests only."
+	@echo "  wtest2 crate=<name> - Watch Level 2: Primary + Doc tests."
+	@echo "  wtest3 crate=<name> - Watch Level 3: Primary + Doc + Linter."
+	@echo "  wtest4 crate=<name> - Watch Level 4: All checks + Heavy testing (deps + audit)."
+	@echo "  wtest5 crate=<name> - Watch Level 5: Full heavy testing with mutations."
 	@echo ""
 	@echo "Cache Management:"
 	@echo "  clean-cache-files - Add hyphen prefix to cache files for git exclusion."
@@ -131,6 +146,7 @@ cwa:
 # Usage :
 #	make ctest1 [crate=name]
 ctest1:
+	$(REQUIRE_CRATE)
 	@clear && RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS)
 
 # Test Level 2: Primary + Documentation tests.
@@ -138,6 +154,7 @@ ctest1:
 # Usage :
 #	make ctest2 [crate=name]
 ctest2:
+	$(REQUIRE_CRATE)
 	@clear && RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS)
 
 # Test Level 3: Primary + Doc + Linter.
@@ -145,6 +162,7 @@ ctest2:
 # Usage :
 #	make ctest3 [crate=name]
 ctest3:
+	$(REQUIRE_CRATE)
 	@clear && RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings
 
 # Test Level 4: All standard + Heavy testing (deps, audit).
@@ -152,6 +170,7 @@ ctest3:
 # Usage :
 #	make ctest4 [crate=name]
 ctest4:
+	$(REQUIRE_CRATE)
 	@clear && RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit
 
 # Test Level 5: Full heavy testing with mutation tests.
@@ -159,6 +178,7 @@ ctest4:
 # Usage :
 #	make ctest5 [crate=name]
 ctest5:
+	$(REQUIRE_CRATE)
 	@clear && RUSTFLAGS="-D warnings" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS="-D warnings" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && willbe .test dry:0 && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit
 
 #
@@ -170,6 +190,7 @@ ctest5:
 # Usage :
 #	make wtest1 [crate=name]
 wtest1:
+	$(REQUIRE_CRATE)
 	@echo "Watching Level 1: Primary tests..."
 	@cargo watch -c -x "nextest run --all-features $(PKG_FLAGS)"
 
@@ -178,6 +199,7 @@ wtest1:
 # Usage :
 #	make wtest2 [crate=name]
 wtest2:
+	$(REQUIRE_CRATE)
 	@echo "Watching Level 2: Primary + Doc tests..."
 	@cargo watch -c -x "nextest run --all-features $(PKG_FLAGS)" -x "test --doc --all-features $(PKG_FLAGS)"
 
@@ -186,6 +208,7 @@ wtest2:
 # Usage :
 #	make wtest3 [crate=name]
 wtest3:
+	$(REQUIRE_CRATE)
 	@echo "Watching Level 3: All standard checks..."
 	@cargo watch -c -x "nextest run --all-features $(PKG_FLAGS)" -x "test --doc --all-features $(PKG_FLAGS)" -x "clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings"
 
@@ -194,6 +217,7 @@ wtest3:
 # Usage :
 #	make wtest4 [crate=name]
 wtest4:
+	$(REQUIRE_CRATE)
 	@echo "Watching Level 4: All checks + Heavy testing..."
 	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit --all-features $(PKG_FLAGS) && make --no-print-directory clean-cache-files"
 
@@ -202,6 +226,7 @@ wtest4:
 # Usage :
 #	make wtest5 [crate=name]
 wtest5:
+	$(REQUIRE_CRATE)
 	@echo "Watching Level 5: Full heavy testing..."
 	@cargo watch -c --shell "RUSTFLAGS=\"-D warnings\" cargo nextest run --all-features $(PKG_FLAGS) && RUSTDOCFLAGS=\"-D warnings\" cargo test --doc --all-features $(PKG_FLAGS) && cargo clippy --all-targets --all-features $(PKG_FLAGS) -- -D warnings && willbe .test dry:0 && cargo +nightly udeps --all-targets --all-features $(PKG_FLAGS) && cargo +nightly audit --all-features $(PKG_FLAGS) && make --no-print-directory clean-cache-files"
 

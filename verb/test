@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# verb/test — Canonical verb (V-02, verb.rulebook.md VE009). Workspace-root
+# Unified Test Interface: "fully verify this unit, environment-correct by
+# construction." Always the complete suite — never narrowed to satisfy a
+# gate faster (VE018 Forbidden Pattern: "test_only at a gate").
+#
+# No verb.d/ layers exist yet (pure host Rust workspace, no Container
+# Mandate) — the default layer below is the only implementation.
+#
+# Refuses to execute without interactive confirmation from a real terminal:
+# this workspace has 48+ member crates and a bare full-suite run has
+# repeatedly exhausted local disk space (target/ growth). See rulebook.md:
+# Exception to longrun.rulebook.md § Long-Run Execution : Breadth Selection.
+# An agent's non-interactive Bash call has no controlling terminal, so this
+# reliably refuses rather than running — Final Verification then requires
+# a human to run this directly, in their own terminal.
+
+set -euo pipefail
+
+TEST_CMD='RUSTFLAGS="-D warnings" cargo nextest run --workspace --all-features && RUSTDOCFLAGS="-D warnings" cargo test --doc --workspace --all-features'
+
+if [ "${1:-}" = "dry::1" ]; then
+	echo "$TEST_CMD"
+	exit 0
+fi
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+echo "verb/test: FULL workspace test suite — every crate, all features." >&2
+echo "verb/test: this has repeatedly exhausted local disk space; see rulebook.md." >&2
+if ! read -r -t 20 -p "Type 'yes' to continue: " confirm < /dev/tty; then
+	echo "verb/test: no interactive confirmation available (no controlling terminal, or timed out) — refusing to run." >&2
+	echo "verb/test: run this yourself in an interactive terminal to perform Final Verification." >&2
+	exit 1
+fi
+if [ "$confirm" != "yes" ]; then
+	echo "verb/test: confirmation declined — aborting." >&2
+	exit 1
+fi
+
+exec bash -c "$TEST_CMD"
