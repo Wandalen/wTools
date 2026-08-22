@@ -87,9 +87,9 @@ impl YamlFormatter
     }
     let width = body.lines().map( crate::ansi_str::unicode_visual_len ).max().unwrap_or( 0 );
     let mut output = String::with_capacity( body.len() + 64 );
-    crate::config::render_commented_rule_if_present( &mut output, self.heading.as_ref(), width, "# " );
+    crate::config::render_commented_rule_if_present( &mut output, self.heading.as_ref(), width, "# ", "" );
     output.push_str( &body );
-    crate::config::render_commented_rule_if_present( &mut output, self.footer.as_ref(), width, "# " );
+    crate::config::render_commented_rule_if_present( &mut output, self.footer.as_ref(), width, "# ", "" );
     output
   }
 }

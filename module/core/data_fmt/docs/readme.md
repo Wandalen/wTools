@@ -10,7 +10,8 @@
 
 | Term | Definition |
 |------|-----------|
-| **heading** | The titled-rule line printed above a table header — includes lead rule, title, optional heading fields, and trailing rule |
+| **heading** | The titled-rule line printed above a formatter's output — includes lead rule, title, optional heading fields, and trailing rule |
+| **footer** | The titled-rule line printed below a formatter's output — same title/fields/rule structure and rendering mechanism as heading, opposite position |
 | **title** | The primary text in a heading |
 | **heading field** | An additional metadata item appended to the heading title with the field separator |
 | **field separator** | The character placed between heading fields — fixed as `·` (U+00B7 MIDDLE DOT) |

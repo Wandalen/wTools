@@ -1,11 +1,11 @@
-# Feature: Table Heading
+# Feature: Heading and Footer Titled Rules
 
 ### Scope
 
 - **Purpose**: Drive test coverage for the heading and footer feature across every adopting formatter.
-- **Responsibility**: Documents test cases for `Heading`, `TableConfig::with_heading()` / `with_footer()`, `TreeConfig::with_heading()` / `with_footer()`, `ExpandedConfig::with_heading()` / `with_footer()`, and `TextFormatter::with_heading()` / `with_footer()` as specified in `docs/feature/007_table_heading.md`.
-- **In Scope**: Heading and footer rendering with title only, heading fields, target-width filling (table width for Table, widest rendered line for Tree/Expanded/Text), width-ceiling clamping, no-heading/no-footer regression, style interaction, title-exceeds-width edge case, empty-title edge case, header+footer coexistence.
-- **Out of Scope**: Auto-fit width algorithm (see `feature/005`); ANSI coloring (see `feature/004`); cell rendering (see `feature/001`); Yaml/Toml/Sql heading/footer coverage (not yet implemented).
+- **Responsibility**: Documents test cases for `Heading`, `TableConfig::with_heading()` / `with_footer()`, `TreeConfig::with_heading()` / `with_footer()`, `ExpandedConfig::with_heading()` / `with_footer()`, `TextFormatter::with_heading()` / `with_footer()`, and `YamlFormatter` / `TomlFormatter` / `SqlFormatter` / `HtmlFormatter`'s `with_heading()` / `with_footer()` as specified in `docs/feature/007_table_heading.md`.
+- **In Scope**: Heading and footer rendering with title only, heading fields, target-width filling (table width for Table, widest rendered line for Tree/Expanded/Text/Yaml/Toml/Sql/Html), width-ceiling clamping, no-heading/no-footer regression, style interaction, title-exceeds-width edge case, empty-title edge case, header+footer coexistence, comment-wrapped rendering (`"# "` for Yaml/Toml, `"-- "` for Sql, `"<!-- "` + `" -->"` for Html), `include_wrapper` interaction (Html-specific).
+- **Out of Scope**: Auto-fit width algorithm (see `feature/005`); ANSI coloring (see `feature/004`); cell rendering (see `feature/001`); Json/Logfmt heading/footer coverage (excluded — no comment syntax/convention); a visible `<caption>`-element banner for Html (rejected alternative — see `task/completed/019_html_heading_footer.md`).
 
 ### Case Index
 
@@ -47,6 +47,28 @@
 | FT-34 | no heading/footer configured produces byte-identical text output | ✅ |
 | FT-35 | heading and footer coexist on text output without interfering | ✅ |
 | FT-36 | heading applies on the empty-cli-help-rows early-return branch | ✅ |
+| FT-37 | title-only heading renders before yaml output, `#`-commented | ✅ |
+| FT-38 | title-only footer renders after yaml output, `#`-commented | ✅ |
+| FT-39 | commented heading fills to the widest rendered yaml line | ✅ |
+| FT-40 | no heading/footer configured leaves yaml output as pure passthrough | ✅ |
+| FT-41 | heading and footer coexist on yaml output without interfering | ✅ |
+| FT-42 | title-only heading renders before toml output, `#`-commented | ✅ |
+| FT-43 | title-only footer renders after toml output, `#`-commented | ✅ |
+| FT-44 | commented heading fills to the widest rendered toml line | ✅ |
+| FT-45 | no heading/footer configured leaves toml output as pure passthrough | ✅ |
+| FT-46 | heading and footer coexist on toml output without interfering | ✅ |
+| FT-47 | title-only heading renders before sql output, `--`-commented | ✅ |
+| FT-48 | title-only footer renders after sql output, `--`-commented | ✅ |
+| FT-49 | commented heading fills to the widest rendered sql line | ✅ |
+| FT-50 | no heading/footer configured leaves sql output as pure passthrough | ✅ |
+| FT-51 | heading and footer coexist on sql output without interfering | ✅ |
+| FT-52 | heading applies on the BUG-020 empty-rows early-return branch | ✅ |
+| FT-53 | title-only heading renders before html output, `<!-- -->`-commented | ✅ |
+| FT-54 | title-only footer renders after html output, `<!-- -->`-commented | ✅ |
+| FT-55 | commented heading fills to the widest rendered html line | ✅ |
+| FT-56 | no heading/footer configured leaves html output as pure passthrough | ✅ |
+| FT-57 | heading and footer coexist on html output without interfering | ✅ |
+| FT-58 | heading wraps the entire output, including the `include_wrapper` prelude | ✅ |
 
 ---
 
@@ -365,11 +387,209 @@
 
 ---
 
+### FT-37: title-only heading renders before yaml output, `#`-commented
+
+- **Given:** A `YamlFormatter::new()` with `.with_heading(Heading::new("Users"))`.
+- **When:** A two-row `TableView` is formatted.
+- **Then:** The first output line starts with `"# ─── Users"`; the yaml body (e.g. `"Alice"`) still renders unaffected.
+- **Note:** Covered by `title_only_heading_renders_before_yaml_output_ft37` in `tests/yaml_heading_test.rs`.
+
+---
+
+### FT-38: title-only footer renders after yaml output, `#`-commented
+
+- **Given:** A `YamlFormatter::new()` with `.with_footer(Heading::new("2 records"))`.
+- **When:** The same `TableView` is formatted.
+- **Then:** The last output line starts with `"# ─── 2 records"`; the yaml body (e.g. `"Bob"`) still renders unaffected.
+- **Note:** Covered by `title_only_footer_renders_after_yaml_output_ft38`.
+
+---
+
+### FT-39: commented heading fills to the widest rendered yaml line
+
+- **Given:** A `YamlFormatter::new()` with `.with_heading(Heading::new("H"))` applied to a two-row view.
+- **When:** The view is formatted.
+- **Then:** The full commented heading line's display width (comment prefix `"# "` plus rule) equals the maximum display width across every body line — not any config-declared or table-style width.
+- **Note:** Covered by `heading_fills_to_widest_yaml_line_ft39`. The Yaml-specific instance of the Width Ceiling invariant's target-width derivation, with the additional comment-prefix `saturating_sub` step unique to Yaml/Toml/Sql (`docs/algorithm/007_heading_rendering.md § Comment-Wrapped Rendering (Yaml/Toml/Sql)`).
+
+---
+
+### FT-40: no heading/footer configured leaves yaml output as pure passthrough
+
+- **Given:** A `YamlFormatter::new()` with no heading/footer.
+- **When:** A `TableView` is formatted.
+- **Then:** The output does not start with `'#'`; it is byte-identical to plain `serde_yaml_ng::to_string()` output — the Yaml-specific instance of Invariant 1 (No-Heading/No-Footer Passthrough).
+- **Note:** Covered by `no_heading_no_footer_is_pure_yaml_passthrough_ft40`.
+
+---
+
+### FT-41: heading and footer coexist on yaml output without interfering
+
+- **Given:** A `YamlFormatter::new()` with both `.with_heading(Heading::new("Top"))` and `.with_footer(Heading::new("End"))` — equal-length titles (3 chars each), same rationale as FT-18/FT-23/FT-29/FT-35.
+- **When:** The view is formatted.
+- **Then:** The first output line is the heading (starts with `"# ─── Top"`); the last output line is the footer (starts with `"# ─── End"`); both lines fill to the same width; the yaml body between them is unaffected.
+- **Note:** Covered by `heading_and_footer_coexist_on_yaml_output_ft41`.
+
+---
+
+### FT-42: title-only heading renders before toml output, `#`-commented
+
+- **Given:** A `TomlFormatter::new()` with `.with_heading(Heading::new("Users"))`.
+- **When:** A two-row `TableView` is formatted.
+- **Then:** The first output line starts with `"# ─── Users"`; the toml body (e.g. `"Alice"`) still renders unaffected.
+- **Note:** Covered by `title_only_heading_renders_before_toml_output_ft42` in `tests/toml_heading_test.rs`.
+
+---
+
+### FT-43: title-only footer renders after toml output, `#`-commented
+
+- **Given:** A `TomlFormatter::new()` with `.with_footer(Heading::new("2 records"))`.
+- **When:** The same `TableView` is formatted.
+- **Then:** The last output line starts with `"# ─── 2 records"`; the toml body (e.g. `"Bob"`) still renders unaffected.
+- **Note:** Covered by `title_only_footer_renders_after_toml_output_ft43`.
+
+---
+
+### FT-44: commented heading fills to the widest rendered toml line
+
+- **Given:** A `TomlFormatter::new()` with `.with_heading(Heading::new("H"))` applied to a two-row view.
+- **When:** The view is formatted.
+- **Then:** The full commented heading line's display width (comment prefix `"# "` plus rule) equals the maximum display width across every body line — not any config-declared or table-style width.
+- **Note:** Covered by `heading_fills_to_widest_toml_line_ft44`. Same technique as Yaml's FT-39.
+
+---
+
+### FT-45: no heading/footer configured leaves toml output as pure passthrough
+
+- **Given:** A `TomlFormatter::new()` with no heading/footer.
+- **When:** A `TableView` is formatted.
+- **Then:** The output does not start with `'#'`; it is byte-identical to plain `toml::to_string()` output against the internal `TomlWrapper` — the Toml-specific instance of Invariant 1.
+- **Note:** Covered by `no_heading_no_footer_is_pure_toml_passthrough_ft45`.
+
+---
+
+### FT-46: heading and footer coexist on toml output without interfering
+
+- **Given:** A `TomlFormatter::new()` with both `.with_heading(Heading::new("Top"))` and `.with_footer(Heading::new("End"))`.
+- **When:** The view is formatted.
+- **Then:** The first output line is the heading (starts with `"# ─── Top"`); the last output line is the footer (starts with `"# ─── End"`); both lines fill to the same width; the toml body between them is unaffected.
+- **Note:** Covered by `heading_and_footer_coexist_on_toml_output_ft46`.
+
+---
+
+### FT-47: title-only heading renders before sql output, `--`-commented
+
+- **Given:** A `SqlFormatter::new("users")` with `.with_heading(Heading::new("Users"))`.
+- **When:** A two-row `TableView` is formatted.
+- **Then:** The first output line starts with `"-- ─── Users"`; the sql body still contains `"INSERT INTO"`, unaffected.
+- **Note:** Covered by `title_only_heading_renders_before_sql_output_ft47` in `tests/sql_heading_test.rs`. `--` is SQL's line-comment marker, distinct from Yaml/Toml's `#`.
+
+---
+
+### FT-48: title-only footer renders after sql output, `--`-commented
+
+- **Given:** A `SqlFormatter::new("users")` with `.with_footer(Heading::new("2 records"))`.
+- **When:** The same `TableView` is formatted.
+- **Then:** The last output line starts with `"-- ─── 2 records"`, on its own line — not appended to the closing `;` of the `INSERT` statement.
+- **Note:** Covered by `title_only_footer_renders_after_sql_output_ft48`. This is the test that caught the SQL-specific trailing-newline defect: the populated-rows body ends in a bare `;` with no `\n` (unlike every other adopting formatter's body, which always ends in `\n`), so `wrap_with_heading_footer()` inserts a separating `\n` before the footer whenever `footer.is_some() && !body.is_empty() && !body.ends_with('\n')`.
+
+---
+
+### FT-49: commented heading fills to the widest rendered sql line
+
+- **Given:** A `SqlFormatter::new("users")` with `.with_heading(Heading::new("H"))` applied to a two-row view.
+- **When:** The view is formatted.
+- **Then:** The full commented heading line's display width (comment prefix `"-- "` plus rule) equals the maximum display width across every body line — not any config-declared or table-style width.
+- **Note:** Covered by `heading_fills_to_widest_sql_line_ft49`. Same technique as Yaml's FT-39/Toml's FT-44, with the wider `"-- "` (3-char) prefix instead of `"# "` (2-char).
+
+---
+
+### FT-50: no heading/footer configured leaves sql output as pure passthrough
+
+- **Given:** A `SqlFormatter::new("users")` with no heading/footer.
+- **When:** A `TableView` is formatted.
+- **Then:** The output does not start with `"--"`; it starts with `"INSERT INTO"` and ends with `';'` — the Sql-specific instance of Invariant 1.
+- **Note:** Covered by `no_heading_no_footer_is_pure_sql_passthrough_ft50`.
+
+---
+
+### FT-51: heading and footer coexist on sql output without interfering
+
+- **Given:** A `SqlFormatter::new("users")` with both `.with_heading(Heading::new("Top"))` and `.with_footer(Heading::new("End"))`.
+- **When:** The view is formatted.
+- **Then:** The first output line is the heading (starts with `"-- ─── Top"`); the last output line is the footer (starts with `"-- ─── End"`); both lines fill to the same width; the sql body between them (still containing `"INSERT INTO"`) is unaffected.
+- **Note:** Covered by `heading_and_footer_coexist_on_sql_output_ft51`. Also confirms the FT-48 newline fix holds with both heading and footer present simultaneously.
+
+---
+
+### FT-52: heading applies on the BUG-020 empty-rows early-return branch
+
+- **Given:** A `TableView` built with headers but zero rows and `SqlFormatter::new("users").with_heading(Heading::new("Empty"))`.
+- **When:** The view is formatted.
+- **Then:** The output is exactly one line — the heading line (starts with `"-- ─── Empty"`) — with no body content, since `Format::format()` returns `Ok(self.wrap_with_heading_footer(String::new()))` immediately on the `data.rows.is_empty()` branch (the BUG-020 guard against emitting invalid `INSERT INTO ... VALUES;` SQL).
+- **Note:** Covered by `heading_applies_to_empty_rows_early_return_ft52`. Proves the heading/footer wrap applies uniformly at both of `SqlFormatter::format()`'s return points, not only the populated-rows path. Mirrors Tree's FT-24, Expanded's FT-30, and Text's FT-36.
+
+---
+
+### FT-53: title-only heading renders before html output, `<!-- -->`-commented
+
+- **Given:** An `HtmlFormatter::new()` with `.with_heading(Heading::new("Users"))`.
+- **When:** A two-row `TableView` is formatted.
+- **Then:** The first output line starts with `"<!-- ─── Users"` AND ends with `"-->"` — the comment is closed on the same line; the html body still contains `"<table>"` and `"Alice"`, uncorrupted.
+- **Note:** Covered by `title_only_heading_renders_before_html_output_ft53` in `tests/html_heading_test.rs`. Unlike Yaml/Toml/Sql's line-comment prefix alone, HTML's `<!-- -->` is a delimited comment — asserting the closing `-->` is present is load-bearing: an unclosed `<!--` would silently swallow all subsequent markup, including `<table>`, up to the next `-->` in the document.
+
+---
+
+### FT-54: title-only footer renders after html output, `<!-- -->`-commented
+
+- **Given:** An `HtmlFormatter::new()` with `.with_footer(Heading::new("2 records"))`.
+- **When:** The same `TableView` is formatted.
+- **Then:** The last output line starts with `"<!-- ─── 2 records"` and ends with `"-->"`; the second-to-last line ends with `"</table>"` — the footer is on its own line, not appended to the closing tag.
+- **Note:** Covered by `title_only_footer_renders_after_html_output_ft54`. Like Sql's FT-48, this is the test that exercises the trailing-newline guard: `HtmlFormatter`'s body ends with a bare `</table>` and no `\n` (unlike Yaml/Toml/Text, which always end in `\n`), so `wrap_with_heading_footer()` inserts a separating `\n` before the footer whenever `footer.is_some() && !body.is_empty() && !body.ends_with('\n')`.
+
+---
+
+### FT-55: commented heading fills to the widest rendered html line
+
+- **Given:** An `HtmlFormatter::new()` with `.with_heading(Heading::new("H"))` applied to a two-row view.
+- **When:** The view is formatted.
+- **Then:** The full commented heading line's display width (`"<!-- "` prefix plus rule plus `" -->"` suffix) equals the maximum display width across every body line — not any config-declared or table-style width.
+- **Note:** Covered by `heading_fills_to_widest_html_line_ft55`. Same technique as Yaml's FT-39/Toml's FT-44/Sql's FT-49, but the first case where both a prefix width AND a suffix width are subtracted before the rule is sized (`render_commented_rule_if_present`'s `comment_suffix` parameter), since Yaml/Toml/Sql all pass an empty `""` suffix.
+
+---
+
+### FT-56: no heading/footer configured leaves html output as pure passthrough
+
+- **Given:** An `HtmlFormatter::new()` with no heading/footer.
+- **When:** A `TableView` is formatted.
+- **Then:** The output does not start with `"<!--"`; it starts with `"<table"` and ends with `"</table>"` — the Html-specific instance of Invariant 1.
+- **Note:** Covered by `no_heading_no_footer_is_pure_html_passthrough_ft56`.
+
+---
+
+### FT-57: heading and footer coexist on html output without interfering
+
+- **Given:** An `HtmlFormatter::new()` with both `.with_heading(Heading::new("Top"))` and `.with_footer(Heading::new("End"))`.
+- **When:** The view is formatted.
+- **Then:** The first output line is the heading (starts with `"<!-- ─── Top"`); the last output line is the footer (starts with `"<!-- ─── End"`); both lines fill to the same width; the html body between them (still containing `"Alice"` and `"Bob"`) is unaffected.
+- **Note:** Covered by `heading_and_footer_coexist_on_html_output_ft57`. Also confirms the FT-54 newline fix holds with both heading and footer present simultaneously.
+
+---
+
+### FT-58: heading wraps the entire output, including the `include_wrapper` prelude
+
+- **Given:** An `HtmlFormatter::new().with_include_wrapper(true)` with `.with_heading(Heading::new("Report"))`.
+- **When:** The view is formatted.
+- **Then:** The first output line starts with `"<!-- ─── Report"` — the heading precedes `"<!DOCTYPE html>"`, which itself precedes `"<table"`; the html body still contains `"Alice"`.
+- **Note:** Covered by `heading_wraps_entire_output_including_wrapper_ft58`. Html's own genuinely distinct structural case, with no equivalent among Table/Tree/Expanded/Text/Yaml/Toml/Sql: proves the heading wraps the ENTIRE rendered output (including the optional `<!DOCTYPE>`/`<html>`/`<body>` prelude) rather than being inserted between the wrapper and the `<table>` tag — the heading is always the first line of output, full stop.
+
+---
+
 ### Sources
 
 | File | Relationship |
 |------|-------------|
-| [`docs/feature/007_table_heading.md`](../../../docs/feature/007_table_heading.md) | Source feature spec — Heading builder, rendering contract, style interaction, Tree/Expanded/Text usage |
+| [`docs/feature/007_table_heading.md`](../../../docs/feature/007_table_heading.md) | Source feature spec — Heading builder, rendering contract, style interaction, Tree/Expanded/Text/Yaml/Toml/Sql/Html usage |
 
 ### Tests
 
@@ -382,3 +602,7 @@
 | [`tests/tree_heading_test.rs`](../../tree_heading_test.rs) | Tree heading/footer rendering test implementation (FT-19..FT-24) |
 | [`tests/expanded_heading_test.rs`](../../expanded_heading_test.rs) | Expanded heading/footer rendering test implementation (FT-25..FT-30) |
 | [`tests/text_heading_test.rs`](../../text_heading_test.rs) | Text heading/footer rendering test implementation (FT-31..FT-36) |
+| [`tests/yaml_heading_test.rs`](../../yaml_heading_test.rs) | Yaml comment-wrapped heading/footer rendering test implementation (FT-37..FT-41) |
+| [`tests/toml_heading_test.rs`](../../toml_heading_test.rs) | Toml comment-wrapped heading/footer rendering test implementation (FT-42..FT-46) |
+| [`tests/sql_heading_test.rs`](../../sql_heading_test.rs) | Sql comment-wrapped heading/footer rendering test implementation (FT-47..FT-52), including the BUG-020 empty-rows branch |
+| [`tests/html_heading_test.rs`](../../html_heading_test.rs) | Html comment-delimited heading/footer rendering test implementation (FT-53..FT-58), including the `include_wrapper` interaction |

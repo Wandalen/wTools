@@ -67,7 +67,7 @@
 //! let html = formatter.format( &view ).unwrap();
 //! ```
 
-use crate::{ TableView, formatters::{ Format, FormatError } };
+use crate::{ TableView, Heading, formatters::{ Format, FormatError } };
 
 /// HTML table themes with predefined CSS classes
 #[ derive( Debug, Clone, PartialEq, Eq ) ]
@@ -112,6 +112,10 @@ pub struct HtmlFormatter
   pub include_wrapper : bool,
   /// Custom table ID attribute
   pub table_id : Option< String >,
+  /// Optional titled rule rendered above the formatted output, as an `<!-- -->` comment (`None` = no heading)
+  pub heading : Option< Heading >,
+  /// Optional titled rule rendered below the formatted output, as an `<!-- -->` comment (`None` = no footer)
+  pub footer : Option< Heading >,
 }
 
 impl HtmlFormatter
@@ -124,6 +128,8 @@ impl HtmlFormatter
       variant : HtmlVariant::Minimal,
       include_wrapper : false,
       table_id : None,
+      heading : None,
+      footer : None,
     }
   }
 
@@ -135,6 +141,8 @@ impl HtmlFormatter
       variant,
       include_wrapper : false,
       table_id : None,
+      heading : None,
+      footer : None,
     }
   }
 
@@ -146,6 +154,8 @@ impl HtmlFormatter
       variant : HtmlVariant::Custom( class.into() ),
       include_wrapper : false,
       table_id : None,
+      heading : None,
+      footer : None,
     }
   }
 
@@ -163,6 +173,54 @@ impl HtmlFormatter
   {
     self.include_wrapper = enabled;
     self
+  }
+
+  /// Attach a titled heading rule rendered above the formatted output, as an `<!-- -->` comment
+  #[ must_use ]
+  pub fn with_heading( mut self, h : Heading ) -> Self
+  {
+    self.heading = Some( h );
+    self
+  }
+
+  /// Attach a titled rule rendered below the formatted output, as an `<!-- -->` comment
+  #[ must_use ]
+  pub fn with_footer( mut self, f : Heading ) -> Self
+  {
+    self.footer = Some( f );
+    self
+  }
+
+  /// Prepend heading and/or append footer around the already-rendered HTML output (including
+  /// the optional `<!DOCTYPE>`/`<html>`/`<body>` wrapper), each wrapped in an `<!-- -->` comment
+  /// so the titled rule stays valid HTML — unlike `#`/`--` line comments, `<!-- -->` needs an
+  /// explicit closing delimiter or everything up to the next `-->` would be swallowed.
+  ///
+  /// HTML output has no fixed column width, so the rule fills to the widest rendered line's
+  /// display width instead of a precomputed `table_width` — same approach as
+  /// `TreeFormatter`/`ExpandedFormatter`/`TextFormatter`/`YamlFormatter`/`TomlFormatter`/`SqlFormatter`.
+  ///
+  /// Like `SqlFormatter`'s body (and unlike Yaml/Toml/Text, which always end with `\n`), HTML
+  /// output ends with a bare closing tag (`</table>` or `</html>`) and no trailing newline. A
+  /// footer appended directly onto that would land on the same line as the closing tag instead
+  /// of its own line, so a separating `\n` is inserted first whenever the body is non-empty and
+  /// doesn't already end in one.
+  fn wrap_with_heading_footer( &self, body : String ) -> String
+  {
+    if self.heading.is_none() && self.footer.is_none()
+    {
+      return body;
+    }
+    let width = body.lines().map( crate::ansi_str::unicode_visual_len ).max().unwrap_or( 0 );
+    let mut output = String::with_capacity( body.len() + 64 );
+    crate::config::render_commented_rule_if_present( &mut output, self.heading.as_ref(), width, "<!-- ", " -->" );
+    output.push_str( &body );
+    if self.footer.is_some() && !body.is_empty() && !body.ends_with( '\n' )
+    {
+      output.push( '\n' );
+    }
+    crate::config::render_commented_rule_if_present( &mut output, self.footer.as_ref(), width, "<!-- ", " -->" );
+    output
   }
 
   /// Get CSS class string for variant
@@ -289,6 +347,6 @@ impl Format for HtmlFormatter
       output.push_str( "\n</body>\n</html>" );
     }
 
-    Ok( output )
+    Ok( self.wrap_with_heading_footer( output ) )
   }
 }

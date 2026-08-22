@@ -60,6 +60,10 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `tree_heading_test.rs` | Test TreeConfig::with_heading()/with_footer() builder API on TreeFormatter |
 | `expanded_heading_test.rs` | Test ExpandedConfig::with_heading()/with_footer() builder API on ExpandedFormatter |
 | `text_heading_test.rs` | Test TextFormatter::with_heading()/with_footer() builder API (no separate config type) |
+| `yaml_heading_test.rs` | Test YamlFormatter::with_heading()/with_footer() builder API, `#`-commented rendering |
+| `toml_heading_test.rs` | Test TomlFormatter::with_heading()/with_footer() builder API, `#`-commented rendering |
+| `sql_heading_test.rs` | Test SqlFormatter::with_heading()/with_footer() builder API, `--`-commented rendering, BUG-020 branch |
+| `html_heading_test.rs` | Test HtmlFormatter::with_heading()/with_footer() builder API, `<!-- -->`-commented rendering, include_wrapper |
 | `table_config_validation_test.rs` | min_column_width floor enforcement and table-line alignment correctness tests |
 | `table_rendering_borders.rs` | Test border variant rendering: top/bottom borders, inter-row separators, AsciiGrid corners |
 | `table_rendering_colors.rs` | Test ANSI header coloring and alternating-row coloring |

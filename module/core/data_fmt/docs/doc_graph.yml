@@ -117,7 +117,7 @@ nodes:
     entity: feature
   - id: feature/007
     file: feature/007_table_heading.md
-    label: Table Heading
+    label: Heading and Footer Titled Rules
     entity: feature
   - id: feature/008
     file: feature/008_quantity_formatting.md

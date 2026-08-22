@@ -123,21 +123,47 @@ pub( crate ) fn render_rule_if_present( output : &mut String, rule : Option< &He
   }
 }
 
-/// Render a titled rule (heading or footer) prefixed with a comment marker, or do nothing
-/// if `rule` is `None`. Reuses [`Heading::render_line`] unmodified — the comment prefix is
-/// prepended as a wrapping step so YAML/TOML (`#`) and SQL (`--`) heading/footer lines stay
-/// valid comments in their respective syntaxes, without changing `Heading`'s own rendering.
+/// Render a titled rule (heading or footer) wrapped in a comment marker, or do nothing
+/// if `rule` is `None`. Reuses [`Heading::render_line`] unmodified aside from stripping its
+/// trailing `\n` so a `comment_suffix` can be appended before the line break — the prefix/suffix
+/// wrapping keeps YAML/TOML (`# ` prefix, no suffix), SQL (`-- ` prefix, no suffix), and HTML
+/// (`<!-- ` prefix, ` -->` suffix) heading/footer lines valid comments in their respective
+/// syntaxes, without changing `Heading`'s own rendering.
 ///
-/// `target_width` is the total visible width the emitted line (prefix + rule) should fill;
-/// the prefix's own display width is subtracted from it before calling `render_line`, so the
-/// rule portion narrows to leave room for the prefix rather than being added on top of it.
-pub( crate ) fn render_commented_rule_if_present( output : &mut String, rule : Option< &Heading >, target_width : usize, comment_prefix : &str )
+/// `target_width` is the total visible width the emitted line (prefix + rule + suffix) should
+/// fill; both the prefix's and suffix's own display width are subtracted from it before calling
+/// `render_line`, so the rule portion narrows to leave room for both delimiters rather than being
+/// added on top of them. Line-comment callers (YAML/TOML/SQL) pass `comment_suffix: ""` since a
+/// line comment has no closing delimiter; HTML's `<!-- -->` is a delimited comment and needs one,
+/// or everything up to the next `-->` (including the surrounding markup) would be swallowed.
+///
+/// Only `sql`/`toml_fmt`/`yaml`/`html` formatters call this — cfg-gated to mirror their exact
+/// mod-level feature gates (formatters/mod.rs) so `enabled`-only builds don't see it as
+/// dead code (Fix FT-9).
+#[ cfg( any(
+  feature = "sql_ansi",
+  feature = "sql_postgres",
+  feature = "sql_mysql",
+  feature = "sql_sqlite",
+  feature = "format_toml",
+  feature = "format_yaml",
+  feature = "html_minimal",
+  feature = "html_bootstrap",
+  feature = "html_tailwind",
+  feature = "html_custom"
+) ) ]
+pub( crate ) fn render_commented_rule_if_present( output : &mut String, rule : Option< &Heading >, target_width : usize, comment_prefix : &str, comment_suffix : &str )
 {
   if let Some( heading ) = rule
   {
     let prefix_dw = crate::ansi_str::unicode_visual_len( comment_prefix );
-    let inner_width = target_width.saturating_sub( prefix_dw );
+    let suffix_dw = crate::ansi_str::unicode_visual_len( comment_suffix );
+    let inner_width = target_width.saturating_sub( prefix_dw ).saturating_sub( suffix_dw );
+    let mut line = heading.render_line( inner_width );
+    line.pop();
     output.push_str( comment_prefix );
-    output.push_str( &heading.render_line( inner_width ) );
+    output.push_str( &line );
+    output.push_str( comment_suffix );
+    output.push( '\n' );
   }
 }

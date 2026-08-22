@@ -59,7 +59,7 @@
 | feature | 004 | Color Themes | [feature/004_color_themes.md](feature/004_color_themes.md) |
 | feature | 005 | Auto-Fit | [feature/005_auto_fit.md](feature/005_auto_fit.md) |
 | feature | 006 | API Cleanup v0.3.0 | [feature/006_api_cleanup_v030.md](feature/006_api_cleanup_v030.md) |
-| feature | 007 | Table Heading | [feature/007_table_heading.md](feature/007_table_heading.md) |
+| feature | 007 | Heading and Footer Titled Rules | [feature/007_table_heading.md](feature/007_table_heading.md) |
 | feature | 008 | Quantity Formatting | [feature/008_quantity_formatting.md](feature/008_quantity_formatting.md) |
 | formatter | 001 | TableFormatter | [formatter/001_table_formatter.md](formatter/001_table_formatter.md) |
 | formatter | 002 | ExpandedFormatter | [formatter/002_expanded_formatter.md](formatter/002_expanded_formatter.md) |
@@ -157,7 +157,7 @@
 | tests/docs/feature | 004 | Color Themes | [tests/docs/feature/004_color_themes.md](../tests/docs/feature/004_color_themes.md) |
 | tests/docs/feature | 005 | Auto-Fit | [tests/docs/feature/005_auto_fit.md](../tests/docs/feature/005_auto_fit.md) |
 | tests/docs/feature | 006 | API Cleanup v0.3.0 | [tests/docs/feature/006_api_cleanup_v030.md](../tests/docs/feature/006_api_cleanup_v030.md) |
-| tests/docs/feature | 007 | Table Heading | [tests/docs/feature/007_table_heading.md](../tests/docs/feature/007_table_heading.md) |
+| tests/docs/feature | 007 | Heading and Footer Titled Rules | [tests/docs/feature/007_table_heading.md](../tests/docs/feature/007_table_heading.md) |
 | tests/docs/invariant | 001 | Data Model | [tests/docs/invariant/001_data_model.md](../tests/docs/invariant/001_data_model.md) |
 | tests/docs/invariant | 002 | ANSI and Unicode | [tests/docs/invariant/002_ansi_unicode.md](../tests/docs/invariant/002_ansi_unicode.md) |
 | tests/docs/invariant | 003 | Auto-Wrap Backward Compatibility | [tests/docs/invariant/003_auto_wrap_backward_compat.md](../tests/docs/invariant/003_auto_wrap_backward_compat.md) |

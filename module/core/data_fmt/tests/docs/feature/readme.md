@@ -17,5 +17,5 @@
 | 004 | [Color Themes](004_color_themes.md) | Feature spec for predefined and custom color themes | ✅ |
 | 005 | [Auto-Fit](005_auto_fit.md) | Feature spec for terminal-aware auto-wrapping and column folding | ✅ |
 | 006 | [API Cleanup v0.3.0](006_api_cleanup_v030.md) | Feature spec for v0.3.0 breaking-change boundary validation | ✅ |
-| 007 | [Table Heading](007_table_heading.md) | Feature spec for table heading | ✅ |
+| 007 | [Heading and Footer Titled Rules](007_table_heading.md) | Feature spec for heading and footer titled rules across all adopting formatters | ✅ |
 | 008 | [Quantity Formatting](008_quantity_formatting.md) | Feature spec for quantity/duration/byte formatting | ⏳ |
