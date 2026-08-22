@@ -4,7 +4,7 @@
 
 - **Purpose**: Provide test coverage specifications for all algorithm doc instances.
 - **Responsibility**: Registry and overview of all algorithm test spec instances.
-- **In Scope**: AC-N correctness test cases in Given/When/Then format for all 7 algorithm elements; minimum 4 cases per spec; edge cases and error paths documented in source algorithm docs.
+- **In Scope**: AC-N correctness test cases in Given/When/Then format for all 8 algorithm elements; minimum 4 cases per spec; edge cases and error paths documented in source algorithm docs.
 - **Out of Scope**: Algorithm performance and benchmarks (see `benches/`), manual test procedures (see `tests/manual/`).
 
 ### Overview Table
@@ -18,3 +18,4 @@
 | 005 | [Column Fold Detection](005_column_fold_detection.md) | Algorithm spec for column fold detection | ✅ |
 | 006 | [CLI Help Alignment](006_cli_help_alignment.md) | Algorithm spec for CLI help text alignment | ✅ |
 | 007 | [Heading Rendering](007_heading_rendering.md) | Algorithm spec for heading rendering | ✅ |
+| 008 | [Quantity Formatting](008_quantity_formatting.md) | Algorithm spec for duration/number/byte quantity formatting | ⏳ |

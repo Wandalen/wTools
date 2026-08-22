@@ -48,7 +48,7 @@
 
 ### Variants
 
-Selection mechanism: pass a `SqlVariant` enum value and a table name string to `SqlFormatter::with_variant(table_name, variant)`. Each variant is independently feature-gated.
+Selection mechanism: pass a `SqlVariant` enum value and a table name string to `SqlFormatter::with_variant(table_name, variant)`. Each variant has its own named feature flag, but the 4 flags are OR'd together at the crate's export boundary (`src/lib.rs`) to gate `SqlFormatter` as a whole — none of them individually cfg-gates a specific dialect's code in `src/formatters/sql.rs`, so enabling any single flag compiles all 4 dialects.
 
 | Variant | Selector | Feature Flag | Identifier quoting |
 |---------|----------|--------------|-------------------|
@@ -57,4 +57,4 @@ Selection mechanism: pass a `SqlVariant` enum value and a table name string to `
 | mysql | `SqlVariant::MySQL` | `sql_mysql` | backticks |
 | sqlite | `SqlVariant::SQLite` | `sql_sqlite` | double quotes |
 
-`SqlFormatter::new()` defaults to `SqlVariant::Ansi` with table name `"table"`.
+`SqlFormatter::new(table_name)` requires a table name argument and defaults to `SqlVariant::Ansi`; use `with_variant(table_name, variant)` to select a different dialect.

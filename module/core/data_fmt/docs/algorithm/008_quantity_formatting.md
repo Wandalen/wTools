@@ -7,6 +7,12 @@
 - **In Scope**: `duration_6ch` band selection and clamp, `number_compact` SI scaling, `bytes_iec` IEC scaling, `bytes_si` SI/decimal byte scaling, mantissa rendering, `QuantityStyle` and the `NO_COLOR`/TTY resolution policy.
 - **Out of Scope**: Terminal width resolution (see `feature/005_auto_fit.md § Terminal Width Detection`), table/column layout — these formatters emit standalone cell strings only.
 
+### Features
+
+| File | Relationship |
+|------|-------------|
+| [008_quantity_formatting.md](../feature/008_quantity_formatting.md) | Feature that this algorithm implements |
+
 ### Sources
 
 | File | Relationship |
@@ -47,7 +53,7 @@ Three formatters share one style policy. `duration_6ch` selects a two-unit layou
 **bytes_si(bytes, style)** (base 1000, verbose layout, units `KB`/`MB`/`GB`/`TB`):
 
 1. Below `1 KB` (1000), render an exact integer count with the spelled-out unit word: singular `1 byte`, plural `N bytes` (`0` and `2+`).
-2. `>= 1 KB`, select the largest fitting magnitude among `KB`/`MB`/`GB`/`TB` (1000-based) and render with exactly 2 fractional digits (`{:.2}`) — no roll-over promotion step: unlike `number_compact`/`bytes_iec`'s dropped-trailing-zero mantissa, two fixed decimals never grow a spurious digit at a tier boundary.
+2. `>= 1 KB`, select the magnitude among `KB`/`MB`/`GB`/`TB` (1000-based) by comparing the raw `bytes` value against each threshold in descending order — not by scaling a running mantissa like `number_compact`/`bytes_iec` — and render with exactly 2 fractional digits (`{:.2}`). There is no roll-over promotion step, so a value just below a tier's threshold can still round up to a 4-digit mantissa after formatting: `999_999_999_999` (just under the 1 TB threshold) renders `"1000.00 GB"`, not `"1.00 TB"` — `number_compact`/`bytes_iec` avoid this via their `starts_with("1000"/"1024")` rollover check; `bytes_si` has none.
 3. Same `styled_unit` dimming as every other formatter in this module — the unit token is dimmed under `Colored`, the digits and separating space are not.
 
 This is the decimal/SI counterpart to `bytes_human` (base 1024, identical verbose layout, tops out at `GB`) — see § SI-vs-IEC Contrast.
@@ -71,7 +77,7 @@ Two byte-size bases coexist in this module, each with a real, distinct consumer:
 
 - **Fixed 6-column duration**: `duration_6ch` output is always exactly 6 visible columns (verified via the crate's `visual_len`), independent of magnitude and style — the property columnar callers depend on for alignment.
 - **Digits never dimmed**: only unit letters carry color; a colored result and its plain counterpart have identical visible glyph counts because ANSI SGR escapes have zero display width.
-- **No spurious width from rounding**: magnitude formatters promote to the next unit on a rounding roll-over rather than emitting a four-digit mantissa (`1000k`, `1024K`).
+- **No spurious width from rounding (except `bytes_si`)**: `number_compact`/`bytes_iec`/`bytes_compact_si` promote to the next unit on a rounding roll-over rather than emitting a four-digit mantissa (`1000k`, `1024K`); `bytes_si` has no such promotion step and can render a 4-digit mantissa at a tier boundary (see Algorithm above, e.g. `"1000.00 GB"`).
 - **Pure formatting path**: the environment (`NO_COLOR`) is consulted only in `resolve`; the formatters themselves are deterministic pure functions of `(value, style)`.
 - **Std-only**: assembly uses `format!` and integer/float arithmetic plus the crate's existing `DecoratedText`; no additional dependencies.
 

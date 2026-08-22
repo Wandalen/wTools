@@ -9,11 +9,11 @@
 
 ### Abstract
 
-A 46-attribute schema describing every output format variant in the library. Attributes are organized across 10 groups covering identity, build requirements, character encoding, visual structure, data representation, output characteristics, usage context, technical details, API surface, performance, and compatibility. Every variant doc instance fills out all 46 attributes to enable uniform comparison and selection across formatters.
+A 46-attribute schema describing every output format variant in the library. Attributes are organized across 11 groups covering identity, build requirements, character encoding, visual structure, data representation, output characteristics, usage context, technical details, API surface, performance, and compatibility. Every variant doc instance fills out all 46 attributes to enable uniform comparison and selection across formatters.
 
 ### Structure
 
-The schema defines 46 attributes across 10 groups. Every variant doc instance fills out all 46 attributes.
+The schema defines 46 attributes across 11 groups. Every variant doc instance fills out all 46 attributes.
 
 #### Identity & Classification
 

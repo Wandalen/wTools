@@ -18,7 +18,9 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/builder.rs`](../../src/builder.rs) | Builder implementation |
+| [`src/builder.rs`](../../src/builder.rs) | `TreeBuilder< T >` implementation |
+| [`src/table_tree.rs`](../../src/table_tree.rs) | `RowBuilder` implementation |
+| [`src/conversions.rs`](../../src/conversions.rs) | `FlattenConfig`, `flatten_to_table_tree`, `flatten_to_table_tree_with_config` |
 
 ### Tests
 
@@ -44,7 +46,7 @@ Fluent and mutable builder for constructing table-shaped data from headers and r
 
 #### TreeBuilder< T >
 
-Path-based tree constructor. Initialized with `TreeBuilder::new( root_name )`. `insert( self, path : &[ &str ], data : T ) -> Self` traverses or creates intermediate directory nodes and places `data` at the leaf. `from_items< I, P >( root_name, items : I ) -> Self` batch-constructs from an iterator of `( path, data )` pairs (requires `T : Clone`). Terminal operation: `build( self ) -> TreeNode< T >`.
+Path-based tree constructor. Initialized with `TreeBuilder::new( root_name )`. `insert( self, path : &[ &str ], data : T ) -> Self` traverses or creates intermediate directory nodes and places `data` at the leaf. `from_items< F, G >( items : &[ T ], extract_path : F, extract_data : G ) -> TreeNode< T >` (where `F : Fn( &T ) -> Vec< String >`, `G : Fn( &T ) -> T`, requires `T : Clone`) batch-constructs directly from a slice of items using caller-supplied path/data extractor closures — it hardcodes the root name to `"root"` internally and returns the built `TreeNode< T >` directly, not a further-chainable `Self`. Terminal operation on the fluent path: `build( self ) -> TreeNode< T >`.
 
 #### FlattenConfig
 
@@ -56,7 +58,7 @@ Configuration for which columns to include when flattening a hierarchical tree t
 
 ### Error Handling
 
-Builder construction does not return `Result`. `RowBuilder` panics if a row's length does not equal `headers.len()`. `TreeBuilder::insert` with an empty path slice inserts directly at the root. Flatten functions propagate no errors; `Display` conversion is infallible.
+Builder construction does not return `Result`. `RowBuilder` panics if a row's length does not equal `headers.len()`. `TreeBuilder::insert` with an empty path slice (or a path whose components are all empty strings) is a silent no-op — the builder is returned unchanged and `data` is discarded, not inserted at the root. Flatten functions propagate no errors; `Display` conversion is infallible.
 
 ### Compatibility Guarantees
 

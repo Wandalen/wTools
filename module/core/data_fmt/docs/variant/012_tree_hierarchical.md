@@ -23,13 +23,13 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/formatters/tree.rs`](../../src/formatters/tree.rs) | TreeFormatter implementation |
+| [`src/formatters/tree/mod.rs`](../../src/formatters/tree/mod.rs) | TreeFormatter implementation (`format()`) |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
-| [`tests/aligned_tree_basic.rs`](../../tests/aligned_tree_basic.rs) | Tree alignment and rendering tests |
+| [`tests/variant_012_tree_hierarchical_test.rs`](../../tests/variant_012_tree_hierarchical_test.rs) | Spec tests VT-1..VT-4 for the hierarchical variant |
 
 ### Identity & Classification
 
@@ -113,9 +113,12 @@
 ### Example Output
 
 ```
-Root
 ├── Alice
 │   └── Age: 30
 └── Bob
     └── Age: 25
 ```
+
+Note: `TreeConfig::show_root` defaults to `false`, so the root node's own name
+line is omitted whenever the tree has children (verified against
+`src/formatters/tree/mod.rs`); only the branches are shown.

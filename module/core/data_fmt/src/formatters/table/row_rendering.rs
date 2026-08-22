@@ -187,12 +187,7 @@ impl TableFormatter
     let cells = if self.config.is_markdown()
     {
       md_cells_buf = cells.iter()
-        .map( | ct |
-        {
-          let mut escaped = DecoratedText::from( ct.text.replace( '|', "\\|" ) );
-          if let Some( ref c ) = ct.color { escaped = escaped.with_color( c.clone() ); }
-          escaped
-        } )
+        .map( | ct | Self::restyle( DecoratedText::from( ct.text.replace( '|', "\\|" ) ), ct ) )
         .collect();
       &md_cells_buf
     }
@@ -206,15 +201,16 @@ impl TableFormatter
 
     if has_multiline
     {
-      // Per-line color wrapping: emit color+line+RESET for each sub-line to prevent
-      // background-color bleed across \n boundaries (Fix BUG-010).
+      // Per-line color/bold/dim wrapping: emit style+line+RESET for each sub-line to
+      // prevent background-color bleed across \n boundaries (Fix BUG-010), and to
+      // preserve bold/dim styling even when no color is set (Fix BUG-024).
       let cells_colored : Vec< String > = cells.iter()
         .map( | ct |
         {
-          if let Some( ref c ) = ct.color
+          if ct.color.is_some() || ct.bold || ct.dim
           {
             ct.text.lines()
-              .map( | line | DecoratedText::from( line.to_string() ).with_color( c.clone() ).render() )
+              .map( | line | Self::restyle( DecoratedText::from( line.to_string() ), ct ).render() )
               .collect::< Vec< _ > >()
               .join( "\n" )
           }
@@ -232,36 +228,6 @@ impl TableFormatter
       let cells_rendered : Vec< String > = cells.iter().map( DecoratedText::render ).collect();
       self.format_single_line_row( output, &cells_rendered, column_widths, true );
     }
-  }
-
-  /// Render the heading titled rule into `output`, or return early if no heading is set.
-  ///
-  /// Format: `─── content ──────...` filling `table_width` display columns.
-  /// Uses `unicode_visual_len` for content width (not `.chars().count()`) so that
-  /// CJK / wide characters are measured correctly at 2 display columns each.
-  pub( super ) fn render_heading_if_present( &self, output : &mut String, table_width : usize )
-  {
-    let Some( heading ) = self.config.heading_ref() else { return };
-    let content = heading.content_str();
-    let tw = table_width;
-    let lead_width = crate::config::HEADING_LEAD_WIDTH;
-    let rule_char  = crate::config::HEADING_RULE_CHAR;
-    // Fix(BUG-015): use unicode_visual_len (display columns) instead of .chars().count().
-    // Root cause: CJK characters are 1 char but 2 display columns; .chars().count()
-    //   undercounted, making the trail too long and heading line wider than table body.
-    // Pitfall: always use unicode_visual_len for any width arithmetic that must match
-    //   what the terminal actually renders.
-    let content_dw = crate::ansi_str::unicode_visual_len( &content );
-    let used = lead_width + 1 + content_dw + 1;
-    let trail = tw.saturating_sub( used );
-    let lead  : String = std::iter::repeat_n( rule_char, lead_width ).collect();
-    let trail_str : String = std::iter::repeat_n( rule_char, trail ).collect();
-    output.push_str( &lead );
-    output.push( ' ' );
-    output.push_str( &content );
-    output.push( ' ' );
-    output.push_str( &trail_str );
-    output.push( '\n' );
   }
 
   /// Apply RFC 4180 quoting: wrap cell in double-quotes and double internal `"`
@@ -286,6 +252,32 @@ impl TableFormatter
     {
       text.to_string()
     }
+  }
+
+  /// Apply `ct`'s color/bold/dim styling onto `base`, chaining only the flags that are set.
+  ///
+  /// Used at cell-reconstruction points (Markdown pipe-escaping, per-line multiline
+  /// splitting) that build a fresh `DecoratedText` from a transformed text string and
+  /// must carry the original cell's full styling forward, not just its color.
+  ///
+  /// # Fix(BUG-024)
+  ///
+  /// Root cause: both reconstruction sites built `DecoratedText::from(text)` and copied
+  ///   only the `.color` field across, because at the time they were written
+  ///   `DecoratedText` had no `bold`/`dim` fields. When bold/dim weight support was added
+  ///   (`color_tools` 0.9.0), these two sites were never updated to carry the new fields,
+  ///   so a bold- or dim-only cell (no color) silently lost its styling on markdown-escape
+  ///   or multiline-split reconstruction.
+  /// Pitfall: any future `DecoratedText` reconstruction must copy ALL styling fields, not
+  ///   just the ones that existed when the reconstruction code was first written — grep
+  ///   for `DecoratedText::from(` call sites when adding new styling fields.
+  fn restyle( base : DecoratedText, ct : &DecoratedText ) -> DecoratedText
+  {
+    let mut styled = base;
+    if let Some( ref c ) = ct.color { styled = styled.with_color( c.clone() ); }
+    if ct.bold { styled = styled.with_bold(); }
+    if ct.dim { styled = styled.with_dim(); }
+    styled
   }
 
 }

@@ -57,7 +57,7 @@
 //! | integration | empty stdout with stderr and head (FT-39) | ✓ |
 //! | width | zero disables truncation with head active (FT-40) | ✓ |
 //! | merge | both empty inputs — infallible (AP-11) | ✓ |
-//! | invariant | sole runtime dep is strs_tools (IN-3) | ✓ |
+//! | invariant | dependency footprint is exactly strs_tools + color_tools (IN-3) | ✓ |
 //! | OutputConfig | width=0 activates has_processing, not is_default (AP-12) | ✓ |
 //! | StreamFilter | merge_streams Stdout-only direct call (AP-14) | ✓ |
 //! | StreamFilter | merge_streams Stderr-only direct call (AP-15) | ✓ |
@@ -925,18 +925,23 @@ fn merge_streams_both_empty_infallible()
   );
 }
 
-// IN-3: strs_tools is the sole runtime dependency of cli_fmt
+// IN-3: strs_tools and color_tools are the entire, closed runtime dependency set of cli_fmt
 #[ test ]
-fn test_strs_tools_sole_runtime_dependency()
+fn test_cli_fmt_dependency_footprint_minimal()
 {
   let cargo = include_str!( "../Cargo.toml" );
-  // strs_tools must be present
+  // strs_tools must be present ( output feature's backend )
   assert!(
     cargo.contains( "strs_tools" ),
     "cli_fmt Cargo.toml must declare strs_tools as a dependency"
   );
-  // No other crate may appear in [dependencies]
-  // Extract the [dependencies] section and confirm only strs_tools is listed
+  // color_tools must be present ( cli_help_template feature's mandatory typed style backend )
+  assert!(
+    cargo.contains( "color_tools" ),
+    "cli_fmt Cargo.toml must declare color_tools as a dependency"
+  );
+  // No crate other than strs_tools and color_tools may appear in [dependencies]
+  // Extract the [dependencies] section and confirm only these two are listed
   let deps_section = cargo
     .split( "[dependencies]" )
     .nth( 1 )
@@ -949,14 +954,18 @@ fn test_strs_tools_sole_runtime_dependency()
     .filter( | l | !l.trim().is_empty() && !l.trim_start().starts_with( '#' ) )
     .collect();
   assert_eq!(
-    dep_lines.len(), 1,
-    "cli_fmt must have exactly one runtime dependency (strs_tools), found {} dep lines:\n{:?}",
+    dep_lines.len(), 2,
+    "cli_fmt must have exactly two runtime dependencies (strs_tools, color_tools), found {} dep lines:\n{:?}",
     dep_lines.len(),
     dep_lines
   );
   assert!(
     dep_lines[ 0 ].starts_with( "strs_tools" ),
-    "the sole runtime dependency must be strs_tools, got:\n{:?}", dep_lines[ 0 ]
+    "the first runtime dependency must be strs_tools, got:\n{:?}", dep_lines[ 0 ]
+  );
+  assert!(
+    dep_lines[ 1 ].starts_with( "color_tools" ),
+    "the second runtime dependency must be color_tools, got:\n{:?}", dep_lines[ 1 ]
   );
 }
 

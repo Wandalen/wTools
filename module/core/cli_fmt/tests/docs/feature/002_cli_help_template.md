@@ -37,11 +37,11 @@
 - **When:** `CliHelpTemplate::new(style, data).render()`
 - **Then:** output contains `"eleven-char"` intact — the name is not clipped to 10 chars
 
-### FT-6: CliHelpStyle::default() color fields and tty_detect match the API contract
+### FT-6: CliHelpStyle::default() color/style fields and tty_detect match the API contract
 
 - **Given:** `CliHelpStyle::default()`
-- **When:** each color field and `tty_detect` are read directly
-- **Then:** `color_tagline == "\x1b[1m"`; `color_group == "\x1b[33m\x1b[1m"`; `color_option == "\x1b[1;36m"`; `color_example == "\x1b[2m"`; `color_reset == "\x1b[0m"`; `tty_detect == true`
+- **When:** each color-role field (a `color_tools::DecoratedText` style descriptor) is rendered via `.clone().render()` and `tty_detect` is read directly
+- **Then:** `color_tagline.clone().render() == "\x1b[1m\x1b[0m"` (bold only); `color_group.clone().render() == "\x1b[1m\x1b[33m\x1b[0m"` (bold + yellow); `color_option.clone().render() == "\x1b[1m\x1b[36m\x1b[0m"` (bold + cyan); `color_example.clone().render() == "\x1b[2m\x1b[0m"` (dim only); `tty_detect == true`. No separate `color_reset` field exists — `render()` appends the reset automatically
 
 ### FT-7: Empty groups vec — render succeeds and no group content appears
 

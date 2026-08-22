@@ -53,7 +53,7 @@ Format each row using the classification and `max_key_width` from Pass 1.
 
 #### Key Properties
 
-- **Description column** is at position `indent + max_key_width + gap` where gap defaults to 2 spaces.
+- **Description column** is at position `indent + max_key_width + gap` where gap is a fixed 2 spaces (hardcoded, unlike indentation depth there is no builder method to configure it).
 - **Blank lines** are automatically inserted before each section header to visually separate sections.
 - **Indentation depth** is configurable; defaults to 2 spaces.
 - **Mixed content** — section headers, aligned pairs, and simple lines — may appear in any order.

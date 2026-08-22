@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Provide section headers format for organized content blocks.
+- **Purpose**: Provide a single column-name header line followed by every cell value listed one per line (no per-record grouping or underline is rendered).
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
 - **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
@@ -56,8 +56,8 @@
 - **has_borders**: No
 - **border_style**: None
 - **column_separator**: None
-- **row_separator**: Double-Newline
-- **header_separator**: Underline
+- **row_separator**: Newline
+- **header_separator**: None
 - **outer_padding**: No
 - **inner_padding**: 0
 
@@ -79,7 +79,7 @@
 
 ### Usage Context
 
-- **primary_use_case**: Section headers
+- **primary_use_case**: Column-name header over a flat cell listing
 - **terminal_optimized**: Yes
 - **file_export_suitable**: Yes
 - **streaming_friendly**: Yes
@@ -90,7 +90,7 @@
 - **escaping_rules**: None
 - **output_format**: text/plain
 - **standards_compliance**: None
-- **supports_custom_colors**: Yes
+- **supports_custom_colors**: No
 
 ### API & Construction
 
@@ -113,15 +113,11 @@
 ### Example Output
 
 ```
-Record 1
-========
-Name: Alice
-Age: 30
-City: NYC
-
-Record 2
-========
-Name: Bob
-Age: 25
-City: LA
+Name, Age, City:
+  Alice
+  30
+  NYC
+  Bob
+  25
+  LA
 ```

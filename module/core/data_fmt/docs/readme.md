@@ -3,7 +3,7 @@
 ### Scope
 
 **Responsibilities:** Define behavioral requirements and document data_fmt architecture, algorithms, and design decisions.
-**In Scope:** Typed doc entity instances (feature/, invariant/, api/, algorithm/, formatter/, trait/, variant/, builder/, pattern/, data_structure/, input_model/, input_type/), architecture docs, development notes, entities index, and doc dependency graph.
+**In Scope:** Typed doc entity instances (feature/, invariant/, api/, algorithm/, formatter/, trait/, variant/, theme/, builder/, pattern/, data_structure/, input_model/, input_type/), architecture docs, development notes, entities index, and doc dependency graph.
 **Out of Scope:** Test code (tests/), production source (src/), usage examples (examples/), task tracking (task/).
 
 ### Vocabulary
@@ -35,6 +35,7 @@
 | `pattern/` | Documents architectural patterns and design principles |
 | `formatter/` | Documents individual formatter structs and dispatch |
 | `variant/` | Documents per-variant output format and attributes |
+| `theme/` | Documents per-theme color catalog and attributes |
 | `development_notes.md` | Records implementation decisions and technical history |
 | `feature_selection_guide.md` | Guides feature flag selection for use cases |
 | `entity.md` | Indexes all doc entity types and instances |

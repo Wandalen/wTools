@@ -113,13 +113,22 @@
 ### Example Output
 
 ```toml
-[[rows]]
+[[row]]
 Name = "Alice"
 Age = "30"
 City = "NYC"
 
-[[rows]]
+[[row]]
 Name = "Bob"
 Age = "25"
 City = "LA"
 ```
+
+Note: the array-of-tables key is `row` (singular), from the `TomlWrapper { row
+: Vec<...> }` wrapper struct — not `rows` (verified against
+`src/formatters/toml_fmt.rs`). Also, each row is built as a
+`HashMap<String, String>` (see `table_view_to_row_maps` in
+`src/formatters/mod.rs`), whose iteration order is not guaranteed by the
+current implementation; the key order shown here (`Name`, `Age`, `City`) is a
+representative illustration, not a guarantee — running the formatter
+repeatedly can and does produce different per-table key orderings.

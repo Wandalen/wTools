@@ -23,7 +23,7 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/formatters/tree.rs`](../../src/formatters/tree.rs) | TreeFormatter implementation |
+| [`src/formatters/tree/aligned.rs`](../../src/formatters/tree/aligned.rs) | TreeFormatter implementation (`format_aligned()`) |
 
 ### Tests
 
@@ -113,9 +113,13 @@
 ### Example Output
 
 ```
-Root                Size    Modified
-├── Alice           1.2KB   2024-01-15
-│   └── Age: 30     128B    2024-01-15
-└── Bob             980B    2024-01-14
-    └── Age: 25     96B     2024-01-14
+├── Alice        1.2KB  2024-01-15
+│   └── Age: 30  128B   2024-01-15
+└── Bob          980B   2024-01-14
+    └── Age: 25  96B    2024-01-14
 ```
+
+Note: `format_aligned()` has no header-row concept (no "Size"/"Modified"
+column titles are ever emitted), and `TreeConfig::show_root` defaults to
+`false` so the root name line is omitted — verified by running
+`TreeFormatter::new().format_aligned()` against `src/formatters/tree/aligned.rs`.

@@ -35,7 +35,7 @@ println!( "{}", result.content );
 
 - `enabled` — master switch; activates core dependencies
 - `output` — CLI output processing (head/tail filtering, width truncation, stream merging)
-- `cli_help_template` — typed CLI help renderer (`CliHelpStyle`, `CliHelpData`, `CliHelpTemplate`, `DetailPageData`, `DetailPageTemplate`)
+- `cli_help_template` — typed CLI help renderer (`CliHelpStyle`, `CliHelpData`, `CliHelpTemplate`, `DetailPageData`, `DetailPageTemplate`); `CliHelpStyle`'s color-role fields are `color_tools::DecoratedText` style descriptors, so this feature pulls in `color_tools`
 - `ansi_unicode` — grapheme-based Unicode width via `unicode-segmentation` (opt-in)
 - `full` — enables all functionality (`enabled` + `output` + `ansi_unicode` + `cli_help_template`)
 

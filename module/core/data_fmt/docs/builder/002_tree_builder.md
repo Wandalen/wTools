@@ -61,7 +61,7 @@ root
 
 ### Input Model
 
-Hierarchical — see `input_model/hierarchical.md`.
+Hierarchical — see `input_model/002_hierarchical.md`.
 
 ### Downstream
 
@@ -76,6 +76,6 @@ Hierarchical — see `input_model/hierarchical.md`.
 Pre/post conditions enforced at construction time:
 
 - **Intermediate nodes**: every non-terminal path element that does not already exist is created as a directory node with no data payload. Callers cannot produce a tree with missing interior nodes.
-- **Leaf placement**: the final element of each `insert()` path is always a leaf carrying the inserted data value. A path with zero elements panics.
+- **Leaf placement**: the final element of each `insert()` path is always a leaf carrying the inserted data value. A path with zero elements — or containing only empty-string components — is silently ignored: `insert()` returns the builder unchanged, no panic.
 - **Type uniformity**: all leaf nodes carry the same data type. Mixed-type trees are not possible — the type is fixed at builder construction.
 - **Batch equivalence**: `from_items( items, path_fn, data_fn )` produces the same tree as calling `insert()` for each item individually with the extracted path and data.

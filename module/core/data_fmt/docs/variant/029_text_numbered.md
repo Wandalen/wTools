@@ -55,7 +55,7 @@
 
 - **has_borders**: No
 - **border_style**: None
-- **column_separator**: None
+- **column_separator**: Space
 - **row_separator**: Newline
 - **header_separator**: None
 - **outer_padding**: No
@@ -90,7 +90,7 @@
 - **escaping_rules**: None
 - **output_format**: text/plain
 - **standards_compliance**: None
-- **supports_custom_colors**: Yes
+- **supports_custom_colors**: No
 
 ### API & Construction
 
@@ -113,6 +113,6 @@
 ### Example Output
 
 ```
-1. Name: Alice, Age: 30, City: NYC
-2. Name: Bob, Age: 25, City: LA
+  1. Alice 30 NYC
+  2. Bob 25 LA
 ```

@@ -75,6 +75,10 @@ src/
   ansi_str.rs                # visual_len, pad_to_width, truncate_cell
   wrap.rs                    # WrapConfig, WrapFormatter, BreakStrategy, Overflow
   themes.rs                  # ColorTheme predefined and custom themes
+  quantity/
+    mod.rs                   # QuantityStyle, resolve(), styled_unit()
+    duration.rs              # duration_6ch, duration_human, duration_human_hours, duration_ms, parse_duration
+    number.rs                # number_compact, bytes_iec, bytes_human, bytes_si, bytes_compact_si
   formatters/
     mod.rs                   # Format trait re-export; `table_view_to_row_maps` shared helper
     format_trait.rs          # Format trait, FormatError
@@ -142,6 +146,12 @@ Config structs: `TreeConfig`, `TableConfig`, `ExpandedConfig`. Each formatter ac
 | `ColumnData` | struct | Multi-column leaf payload for aligned tree formatting |
 | `DecoratedText` | struct | ANSI-aware string cell (from `color_tools`) — carries text + optional color |
 | `WrapFormatter` | struct | Word-wrap pre-processor; not a `Format` implementor; wraps cell content before table formatting |
+| `WrapConfig` | struct | Word-wrap parameters — width, `BreakStrategy`, `Overflow`; setters use no `with_` prefix |
+| `BreakStrategy` | enum | Word-wrap break rule — `Word`, `Hard`, `WordThenHard` (default) |
+| `Overflow` | enum | Word-wrap overflow handling — `Truncate` or `Ellipsis(String)` when `max_lines` exceeded |
+| `ColorTheme` | struct | Predefined/custom color scheme; `apply_to_table/expanded/tree` sets config color fields |
+| `ColorThemeBuilder` | struct | Fluent builder for custom `ColorTheme` instances |
+| `QuantityStyle` | enum | `Plain`/`Colored` policy for quantity formatters; `resolve(is_tty)` applies `NO_COLOR` |
 | `TableShapedView` | trait | Extracts headers/rows from `TreeNode< T where T: Display >`; use `RowBuilder::build_view()` for canonical table-from-data flow |
 
 **Pipeline summary**: `RowBuilder` → `TableView` → `Format::format()` → `String`

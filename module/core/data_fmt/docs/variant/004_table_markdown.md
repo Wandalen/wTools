@@ -49,7 +49,7 @@
 - **charset**: ASCII
 - **border_charset**: ASCII
 - **requires_unicode_terminal**: No
-- **supports_ansi_colors**: No
+- **supports_ansi_colors**: Yes
 
 ### Visual Structure
 
@@ -68,7 +68,7 @@
 - **supports_hierarchical**: No
 - **supports_tabular**: Yes
 - **preserves_structure**: Yes
-- **supports_multiline_values**: No
+- **supports_multiline_values**: Yes
 
 ### Output Characteristics
 
@@ -87,10 +87,10 @@
 
 ### Technical Details
 
-- **escaping_rules**: None
+- **escaping_rules**: Backslash
 - **output_format**: text/markdown
 - **standards_compliance**: Markdown-GFM
-- **supports_custom_colors**: No
+- **supports_custom_colors**: Yes
 
 ### API & Construction
 

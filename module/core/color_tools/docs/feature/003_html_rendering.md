@@ -24,9 +24,12 @@ color_tools = { workspace = true, features = [ "html_support" ] }
 
 | Input state | Output |
 |-------------|--------|
-| Plain text (no color) | HTML-escaped text, no wrapper element |
+| Plain text (no color, not bold, not dim) | HTML-escaped text, no wrapper element |
 | Named-color text (`with_color_named`) | `<span style="color: {css}">escaped_text</span>` |
-| Raw-string color (`with_color(raw)`) | Plain escaped text — no span produced |
+| Raw-string color (`with_color(raw)`) | Plain escaped text — no span produced (color styling only; bold/dim below still apply if also set) |
+| Bold (`with_bold`) | `<span style="font-weight: bold">escaped_text</span>` |
+| Dim (`with_dim`) | `<span style="opacity: 0.7">escaped_text</span>` — a lossy approximation; CSS has no native equivalent for SGR dim |
+| Any combination (e.g. named-color + bold) | One `<span style="...; ...">` with all applicable declarations joined by `"; "`, in the order: color, then bold, then dim |
 
 **HTML escaping:** `&` → `&amp;`, `<` → `&lt;`, `>` → `&gt;`. Only these three characters are escaped; no quote escaping is needed inside the span's text content.
 

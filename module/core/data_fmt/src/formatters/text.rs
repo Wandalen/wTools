@@ -79,7 +79,7 @@
 //! # }
 //! ```
 
-use crate::{ TableView, ansi_str::visual_len, formatters::{ Format, FormatError } };
+use crate::{ TableView, Heading, ansi_str::visual_len, formatters::{ Format, FormatError } };
 
 /// Text output style
 #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
@@ -129,6 +129,10 @@ pub struct TextFormatter
   pub indent : usize,
   /// Separator string
   pub separator : String,
+  /// Optional titled rule rendered above the formatted output (`None` = no heading)
+  pub heading : Option< Heading >,
+  /// Optional titled rule rendered below the formatted output (`None` = no footer)
+  pub footer : Option< Heading >,
 }
 
 impl TextFormatter
@@ -141,6 +145,8 @@ impl TextFormatter
       variant,
       indent : 2,
       separator : "\n".to_string(),
+      heading : None,
+      footer : None,
     }
   }
 
@@ -176,6 +182,8 @@ impl TextFormatter
       variant : TextVariant::Compact,
       indent : 0,
       separator : ", ".to_string(),
+      heading : None,
+      footer : None,
     }
   }
 
@@ -200,6 +208,41 @@ impl TextFormatter
     self.separator = separator;
     self
   }
+
+  /// Attach a titled heading rule rendered above the formatted output
+  #[ must_use ]
+  pub fn with_heading( mut self, h : Heading ) -> Self
+  {
+    self.heading = Some( h );
+    self
+  }
+
+  /// Attach a titled rule rendered below the formatted output
+  #[ must_use ]
+  pub fn with_footer( mut self, f : Heading ) -> Self
+  {
+    self.footer = Some( f );
+    self
+  }
+
+  /// Prepend heading and/or append footer around already-rendered text output.
+  ///
+  /// Text output has no fixed column width (line lengths vary by variant and content),
+  /// so the titled rule fills to the widest rendered line's display width instead of a
+  /// precomputed `table_width` — same approach as `TreeFormatter`/`ExpandedFormatter`.
+  fn wrap_with_heading_footer( &self, body : String ) -> String
+  {
+    if self.heading.is_none() && self.footer.is_none()
+    {
+      return body;
+    }
+    let width = body.lines().map( crate::ansi_str::unicode_visual_len ).max().unwrap_or( 0 );
+    let mut output = String::with_capacity( body.len() + 64 );
+    crate::config::render_rule_if_present( &mut output, self.heading.as_ref(), width );
+    output.push_str( &body );
+    crate::config::render_rule_if_present( &mut output, self.footer.as_ref(), width );
+    output
+  }
 }
 
 impl Default for TextFormatter
@@ -223,7 +266,7 @@ impl Format for TextFormatter
       TextVariant::Compact => format_compact( data, &self.separator ),
       TextVariant::CliHelp => format_cli_help( data, self.indent ),
     };
-    Ok( result )
+    Ok( self.wrap_with_heading_footer( result ) )
   }
 }
 

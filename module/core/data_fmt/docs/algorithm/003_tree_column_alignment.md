@@ -11,7 +11,7 @@
 
 | File | Relationship |
 |------|--------------|
-| [`src/formatters/tree.rs`](../../src/formatters/tree.rs) | TreeFormatter column alignment |
+| [`src/formatters/tree/aligned.rs`](../../src/formatters/tree/aligned.rs) | TreeFormatter column alignment — `calculate_column_widths`, `traverse_for_widths`, `calculate_prefix_len`, `format_aligned_node` |
 
 ### Tests
 

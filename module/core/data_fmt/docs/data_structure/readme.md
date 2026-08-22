@@ -12,3 +12,4 @@
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
 | 001 | [Variant Attributes](001_variant_attributes.md) | 46-attribute schema describing all output variant properties | ✅ |
+| 002 | [Theme Attributes](002_theme_attributes.md) | 21-attribute schema describing all color theme properties | ✅ |

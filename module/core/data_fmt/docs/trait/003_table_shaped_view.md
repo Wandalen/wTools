@@ -11,7 +11,7 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/table_tree.rs`](../../src/table_tree.rs) | TableShapedView implementation |
+| [`src/data.rs`](../../src/data.rs) | TableShapedView trait definition and blanket implementation |
 
 ### Tests
 
@@ -27,13 +27,13 @@
 
 | Implementor | Provided By |
 |-------------|-------------|
-| `TreeNode` (display-capable data) | Blanket impl in `src/table_tree.rs` |
+| `TreeNode` (display-capable data) | Blanket impl in `src/data.rs` |
 
 There is exactly one implementation: a blanket impl for all tree nodes whose data type supports display formatting. Cell values are converted to strings at extraction time.
 
 ### Coverage Gaps
 
-No known gaps for the current use case. `TableView` makes this trait largely redundant for new code — it stores headers and rows directly without tree encoding. `TableShapedView` exists for backward compatibility with the table-encoded tree path used by `TableShapedFormatter`.
+No known gaps for the current use case. `TableView` makes this trait largely redundant for new code — it stores headers and rows directly without tree encoding. `TableShapedView` exists for backward compatibility with the table-encoded tree path formerly used by `TableShapedFormatter`, which was removed in v0.3.0 (see `trait/002_table_shaped_formatter.md`).
 
 ### Methods
 
@@ -45,7 +45,7 @@ No known gaps for the current use case. `TableView` makes this trait largely red
 
 ### Role in the Pipeline
 
-The tree produced by `RowBuilder::build()` implements `TableShapedView`. `TableFormatter` and `ExpandedFormatter` call `extract_headers()`, `to_rows()`, and `is_table_shaped()` internally to decompose the tree-encoded table into headers and rows before rendering.
+Neither `TableFormatter` nor `ExpandedFormatter` calls `extract_headers()`, `to_rows()`, or `is_table_shaped()` internally — both consume `TableView` directly via the `Format` trait, built through `RowBuilder::build_view()` (which accumulates rows directly and does not construct a `TreeNode` at all). `TableShapedView` is implemented via a blanket impl over any `TreeNode<T>` whose data type implements `Display`, and remains available to callers that already hold a table-shaped `TreeNode` and want direct header/row extraction without going through `RowBuilder`.
 
 ### Relationship to TableView
 

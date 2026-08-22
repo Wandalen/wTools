@@ -38,7 +38,7 @@ The parallel vectors invariant holds throughout the builder's lifetime: `rows` a
 
 #### TableView
 
-`TableView` is the format-agnostic data structure consumed by all formatters. It holds extracted headers and rows as plain string vectors, decoupled from `TreeNode` internals. The `TableShapedView` trait provides generic extraction from any tree node whose data type supports display formatting, converting data values to strings automatically.
+`TableView` is the format-agnostic data structure consumed by all formatters. It holds column metadata (names and types) and rows of `DecoratedText` cells — each cell carries a text string plus an optional ANSI color and independent bold/dim weight flags — decoupled from `TreeNode` internals. The `TableShapedView` trait provides generic extraction from any tree node whose data type supports display formatting, converting data values to strings automatically.
 
 #### Edge Case Contracts
 
@@ -49,7 +49,7 @@ The parallel vectors invariant holds throughout the builder's lifetime: `rows` a
 
 ### Enforcement Mechanism
 
-Row length validation is enforced by `RowBuilder` at the point of insertion — the builder panics immediately if row length does not match `headers.len()`. The parallel vectors invariant is maintained by the single internal insertion method that always updates both vectors atomically. `TableView` is constructed only via `build_view()` or `TableShapedView::to_table_view()`, both of which produce a well-formed state.
+Row length validation is enforced by `RowBuilder` at the point of insertion — the builder panics immediately if row length does not match `headers.len()`. The parallel vectors invariant is maintained by the single internal insertion method that always updates both vectors atomically. `TableView`'s fields are public, so it can also be constructed directly or via `TableView::new()`/`with_details()`; only the `RowBuilder::build_view()` path validates row length before construction — direct construction does not re-check it.
 
 ### Violation Consequences
 

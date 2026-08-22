@@ -153,7 +153,7 @@ impl ExpandedFormatter
     let headers = &data.metadata.column_names;
     if headers.is_empty()
     {
-      return String::new();
+      return self.wrap_with_heading_footer( String::new() );
     }
 
     let max_key_width = headers.iter()
@@ -236,6 +236,26 @@ impl ExpandedFormatter
       }
     }
 
+    self.wrap_with_heading_footer( output )
+  }
+
+  /// Prepend heading and/or append footer around an already-rendered expanded body.
+  ///
+  /// Expanded output has no fixed column width the way table output does (line lengths
+  /// vary with key/value content per record), so the titled rule fills to the widest
+  /// rendered line's display width instead of a precomputed `table_width` — same approach
+  /// as `TreeFormatter::wrap_with_heading_footer`.
+  fn wrap_with_heading_footer( &self, body : String ) -> String
+  {
+    if self.config.heading.is_none() && self.config.footer.is_none()
+    {
+      return body;
+    }
+    let width = body.lines().map( crate::ansi_str::unicode_visual_len ).max().unwrap_or( 0 );
+    let mut output = String::with_capacity( body.len() + 64 );
+    crate::config::render_rule_if_present( &mut output, self.config.heading.as_ref(), width );
+    output.push_str( &body );
+    crate::config::render_rule_if_present( &mut output, self.config.footer.as_ref(), width );
     output
   }
 }

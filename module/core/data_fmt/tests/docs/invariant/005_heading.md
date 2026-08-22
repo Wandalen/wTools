@@ -2,9 +2,9 @@
 
 ### Scope
 
-- **Purpose**: Drive test coverage for the heading rendering invariants.
-- **Responsibility**: Documents test cases for the three heading invariants (no-heading passthrough, width ceiling, single-line output) in `docs/invariant/005_heading.md`.
-- **In Scope**: Absent heading behavior, table width ceiling enforcement, single output line guarantee.
+- **Purpose**: Drive test coverage for the heading and footer rendering invariants across every adopting formatter.
+- **Responsibility**: Documents test cases for the three invariants (no-heading/no-footer passthrough, width ceiling, single-line output) in `docs/invariant/005_heading.md`, applying identically to both positions and every adopting formatter.
+- **In Scope**: Absent heading/footer behavior, target-width ceiling enforcement, single output line guarantee, at both positions, across formatters.
 - **Out of Scope**: Heading content format (see `feature/007`), rendering algorithm steps (see `algorithm/007`).
 
 ### Case Index
@@ -44,14 +44,34 @@
 
 ---
 
+### Footer Coverage
+
+Footer rendering shares `render_rule_if_present()` with heading rendering (see `docs/algorithm/007_heading_rendering.md § Position-Agnostic and Formatter-Agnostic Dispatch`), so IN-1..IN-3 apply identically at the footer position. Footer-specific instances: IN-1 covered by FT-14 (`no_footer_output_unchanged`); IN-2 covered by FT-12/FT-13/FT-16 and `footer_line_never_exceeds_table_width` (3-scenario invariant test, mirroring `heading_line_never_exceeds_table_width_in2`); IN-3 covered by FT-10 and FT-18 (heading+footer coexistence proves each occupies exactly one line without leaking into the other's line or the table body).
+
+### Tree Coverage
+
+IN-1..IN-3 hold identically for Tree, verified by `tests/tree_heading_test.rs`. IN-1 (no-heading/no-footer passthrough) covered by `no_heading_no_footer_output_unchanged_ft22` — byte-identical output between a plain `TreeConfig::new()` and the `TreeFormatter::new()` baseline. IN-2 (width ceiling) covered by `heading_fills_to_widest_tree_line_ft21` — the heading fills to exactly the widest rendered body line's display width, using Tree's own target-width derivation (max rendered line width) rather than Table's `compute_total_row_width`; the clamp-to-zero guarantee itself is identical since both formatters share `Heading::render_line()`. IN-3 (single output line) covered by `title_only_heading_renders_before_tree_ft19`, `title_only_footer_renders_after_tree_ft20`, and `heading_and_footer_coexist_on_tree_ft23` (heading and footer each confined to exactly one line, never leaking into the tree body); `heading_applies_to_leaf_only_root_ft24` additionally proves the single-line guarantee holds even on the leaf-only-root branch, where the entire tree body is itself a single line.
+
+### Expanded Coverage
+
+IN-1..IN-3 hold identically for Expanded, verified by `tests/expanded_heading_test.rs`. IN-1 (no-heading/no-footer passthrough) covered by `no_heading_no_footer_output_unchanged_ft28` — byte-identical output between a plain `ExpandedConfig::new()` and the `ExpandedFormatter::new()` baseline. IN-2 (width ceiling) covered by `heading_fills_to_widest_expanded_line_ft27` — the heading fills to exactly the widest rendered body line's display width, using Expanded's own target-width derivation (max rendered line width, same technique as Tree) rather than Table's `compute_total_row_width`; the clamp-to-zero guarantee itself is identical since both formatters share `Heading::render_line()`. IN-3 (single output line) covered by `title_only_heading_renders_before_expanded_output_ft25`, `title_only_footer_renders_after_expanded_output_ft26`, and `heading_and_footer_coexist_on_expanded_output_ft29` (heading and footer each confined to exactly one line, never leaking into the expanded body); `heading_applies_to_empty_headers_view_ft30` additionally proves the single-line guarantee holds even on the `headers.is_empty()` early-return branch, where the entire body is empty.
+
+### Text Coverage
+
+IN-1..IN-3 hold identically for Text, verified by `tests/text_heading_test.rs`. IN-1 (no-heading/no-footer passthrough) covered by `no_heading_no_footer_output_unchanged_ft34` — byte-identical output between `TextFormatter::bullets()` with no heading/footer and the `TextFormatter::new(TextVariant::Bullets)` baseline. IN-2 (width ceiling) covered by `heading_fills_to_widest_text_line_ft33` — the heading fills to exactly the widest rendered body line's display width, using Text's own target-width derivation (max rendered line width, same technique as Tree/Expanded) rather than Table's `compute_total_row_width`; the clamp-to-zero guarantee itself is identical since all formatters share `Heading::render_line()`. IN-3 (single output line) covered by `title_only_heading_renders_before_text_output_ft31`, `title_only_footer_renders_after_text_output_ft32`, and `heading_and_footer_coexist_on_text_output_ft35` (heading and footer each confined to exactly one line, never leaking into the text body); `heading_applies_to_empty_cli_help_rows_ft36` additionally proves the single-line guarantee holds even when `format_cli_help()`'s own `data.rows.is_empty()` early return produces an empty body, all flowing through `TextFormatter`'s single `Format::format()` funnel point.
+
 ### Sources
 
 | File | Relationship |
 |------|-------------|
-| [`docs/invariant/005_heading.md`](../../../docs/invariant/005_heading.md) | Source invariant spec — no-heading passthrough, width ceiling, single-line output |
+| [`docs/invariant/005_heading.md`](../../../docs/invariant/005_heading.md) | Source invariant spec — no-heading/no-footer passthrough, width ceiling, single-line output |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
 | [`tests/table_heading_test.rs`](../../table_heading_test.rs) | Heading invariant test implementation (FC-1, FC-3, FC-4, FC-5, FC-6, FT-4, FT-7, FT-8, heading_line_never_exceeds_table_width_in2) |
+| [`tests/table_footer_test.rs`](../../table_footer_test.rs) | Footer invariant test implementation (FT-10, FT-12, FT-13, FT-14, FT-16, FT-18, footer_line_never_exceeds_table_width) |
+| [`tests/tree_heading_test.rs`](../../tree_heading_test.rs) | Tree invariant test implementation (FT-19..FT-24) |
+| [`tests/expanded_heading_test.rs`](../../expanded_heading_test.rs) | Expanded invariant test implementation (FT-25..FT-30) |
+| [`tests/text_heading_test.rs`](../../text_heading_test.rs) | Text invariant test implementation (FT-31..FT-36) |

@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Define the separation boundaries between `cli_fmt` and its neighboring crates: `strs_tools` (general-purpose text utilities) and `data_fmt` (generic tabular data formatting).
+- **Purpose**: Define the separation boundaries between `cli_fmt` and its neighboring crates: `strs_tools` (general-purpose text utilities), `color_tools` (general-purpose typed color/style abstraction), and `data_fmt` (generic tabular data formatting).
 - **Responsibility**: Document which processing belongs in each crate and why CLI-specific policy must not migrate to general-purpose utilities.
 - **In Scope**: Boundary placement rules, enforcement mechanism, and violation consequences.
 - **Out of Scope**: Processing logic and behavior — see `feature/` instances.
@@ -21,13 +21,21 @@ decisions embedded in `strs_tools` would impose unwanted assumptions on non-CLI 
 by downstream applications, and coupling them would impose CLI-domain assumptions on a
 domain-agnostic formatting library.
 
+`color_tools` is different from `data_fmt`: it is a general-purpose typed color/style
+abstraction with no CLI-domain assumptions of its own, and `cli_fmt` legitimately depends
+on it (one-directionally) to back `CliHelpStyle`'s color-role fields — this is not a
+boundary violation, since `color_tools` carries no CLI-specific policy and remains fully
+reusable by non-CLI consumers.
+
 ### Enforcement Mechanism
 
 - `cli_fmt` depends on `strs_tools` — the dependency is one-directional only.
+- `cli_fmt` also depends on `color_tools` — the `cli_help_template` feature's mandatory typed style backend for `CliHelpStyle`'s color-role fields; this dependency is one-directional only (`color_tools` carries no reference back to `cli_fmt`).
+- `strs_tools` and `color_tools` together are the entire, closed runtime dependency set of `cli_fmt` — no third crate may appear in `[dependencies]` (verified by `tests/output.rs`, checking `Cargo.toml`).
 - `strs_tools` carries no stream concepts, head/tail conventions, output-transparency types, or CLI-help-rendering types (`CliHelpTemplate`, `CliHelpStyle`, `CliHelpData`, etc.).
 - New CLI-specific utilities belong in `cli_fmt`.
-- New general-purpose text or ANSI utilities belong in `strs_tools`.
-- Feature flags in `cli_fmt` are independent of `strs_tools` feature flags.
+- New general-purpose text or ANSI utilities belong in `strs_tools`; new general-purpose color/style abstractions belong in `color_tools`.
+- Feature flags in `cli_fmt` are independent of `strs_tools` and `color_tools` feature flags.
 - `cli_fmt` carries no dependency on `data_fmt` (verified by `tests/help.rs`, checking `Cargo.toml`).
 
 ### Violation Consequences
@@ -57,7 +65,7 @@ independent consumption by downstream applications.
 
 | File | Relationship |
 |------|-------------|
-| `Cargo.toml` | Dependency declarations enforce one-directional cli_fmt → strs_tools dependency |
+| `Cargo.toml` | Dependency declarations enforce one-directional cli_fmt → strs_tools and cli_fmt → color_tools dependencies, with no third crate present |
 
 ### Tests
 

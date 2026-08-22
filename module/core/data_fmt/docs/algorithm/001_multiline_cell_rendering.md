@@ -12,7 +12,7 @@
 | File | Relationship |
 |------|--------------|
 | [`src/formatters/table/rendering.rs`](../../src/formatters/table/rendering.rs) | `format_multiline_row` — multiline cell rendering |
-| [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `format_row` — dispatches to `format_multiline_row` |
+| [`src/formatters/table/row_rendering.rs`](../../src/formatters/table/row_rendering.rs) | `format_row` — dispatches to `format_multiline_row` |
 
 ### Tests
 

@@ -9,15 +9,15 @@
 
 ### Abstract
 
-`.is_empty()` tests `self.text.is_empty()` — the raw text field — not `self.render().is_empty()`. A colored empty text (e.g. `from("").with_color(...)`) is still considered empty because no visible content will be displayed.
+`.is_empty()` tests `self.text.is_empty()` — the raw text field — not `self.render().is_empty()`. A styled empty text (e.g. `from("").with_color(...)`, `.with_bold()`, or `.with_dim()`) is still considered empty because no visible content will be displayed.
 
 ### Invariant Statement
 
-`DecoratedText::is_empty()` returns `self.text.is_empty()`. The presence or absence of a color prefix does not affect the emptiness result.
+`DecoratedText::is_empty()` returns `self.text.is_empty()`. The presence or absence of a color prefix, bold, or dim does not affect the emptiness result.
 
 ### Rationale
 
-Formatters use `is_empty()` to decide whether to render a detail row. An empty text with a color attached carries no visible payload — displaying `"\x1b[33m\x1b[0m"` wastes vertical space. By testing the text field only, the formatter can skip empty details regardless of color state.
+Formatters use `is_empty()` to decide whether to render a detail row. An empty text with any styling attached carries no visible payload — displaying `"\x1b[33m\x1b[0m"` (or a bold/dim-only equivalent) wastes vertical space. By testing the text field only, the formatter can skip empty details regardless of styling state.
 
 ### Enforcement Mechanism
 

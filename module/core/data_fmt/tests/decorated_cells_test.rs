@@ -22,6 +22,9 @@
 //! | P02 | Plain cell | `DecoratedText::from("plain")` | No escape codes anywhere |
 //! | P03 | Multi-line colored cell | `{text:"a\nb", color:"\x1b[32m"}` | Each sub-line ends with `\x1b[0m` before `\n`; 2 colored lines total |
 //! | P04 | Mixed: colored + plain cells in same row | one colored, one plain | Colored cell has ANSI; plain cell does not |
+//! | P05 | Multi-line, bold-only cell (no color) | `.with_bold()` on "a\nb" | Both sub-lines carry `\x1b[1m` |
+//! | P06 | Multi-line, dim-only cell (no color) | `.with_dim()` on "a\nb" | Both sub-lines carry `\x1b[2m` |
+//! | P07 | Markdown cell, bold + color | `.with_color(..).with_bold()` on `"a \| b"` | Pipe escaped AND both color+bold survive |
 
 #![ cfg( feature = "enabled" ) ]
 
@@ -190,5 +193,129 @@ fn test_p04_mixed_colored_and_plain_cells_in_row()
   assert_eq!(
     reset_count, 1,
     "P04: exactly one RESET expected (from colored cell); got {reset_count}\nFull output:\n{output:?}"
+  );
+}
+
+// ---------------------------------------------------------------------------
+// P05-P07: bold/dim styling survives cell reconstruction (BUG-024)
+// ---------------------------------------------------------------------------
+
+/// P05 — A multi-line cell with `with_bold()` set and NO color: bold must still
+/// wrap each sub-line.
+///
+/// ## Root Cause
+///
+/// `format_row_colored`'s multiline branch gated per-line styling on
+/// `ct.color.is_some()` alone. A cell with `bold: true, color: None` fell into
+/// the `else` arm and was emitted as fully plain text — bold was silently lost.
+///
+/// ## Why Not Caught
+///
+/// All prior multiline tests (P03, T013-M01/M02/M06 in `table_rendering_colors.rs`)
+/// set a color on the cell. None exercised a multiline cell styled by bold/dim alone.
+///
+/// ## Fix Applied
+///
+/// The branch condition now checks `ct.color.is_some() || ct.bold || ct.dim`, and
+/// each sub-line is rebuilt via a shared `restyle()` helper that carries color,
+/// bold, AND dim onto the fresh per-line `DecoratedText` before `.render()`
+/// (`src/formatters/table/row_rendering.rs`).
+///
+/// ## Prevention
+///
+/// Any code that reconstructs a `DecoratedText` from another cell's styling
+/// (rather than cloning the cell directly) must copy every style field — color,
+/// bold, dim — not just color.
+///
+/// ## Pitfall
+///
+/// `ct.color.is_some()` alone is not "is this cell styled" — `bold`/`dim` are
+/// independent boolean fields that can be set without a color. Always OR all
+/// three when deciding whether a cell needs the styled rendering path.
+// test_kind: bug_reproducer(BUG-024)
+#[ test ]
+fn test_p05_multiline_bold_only_cell_preserves_bold_no_color()
+{
+  let cell = DecoratedText::from( "line_a\nline_b" ).with_bold();
+
+  let view = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ cell ] )
+    .build_view();
+
+  let formatter = TableFormatter::with_config( TableConfig::plain() );
+  let output = Format::format( &formatter, &view ).unwrap();
+
+  let bold_lines : Vec< &str > = output.lines().filter( | l | l.contains( "\x1b[1m" ) ).collect();
+  assert_eq!(
+    bold_lines.len(), 2,
+    "P05: 2-line bold-only cell must produce 2 bold sub-lines; got {}\nFull output:\n{output:?}",
+    bold_lines.len()
+  );
+}
+
+/// P06 — Same root cause as P05 but for `with_dim()`: dim must survive multiline
+/// splitting with no color set. See P05 doc comment for full Root Cause / Fix Applied.
+// test_kind: bug_reproducer(BUG-024)
+#[ test ]
+fn test_p06_multiline_dim_only_cell_preserves_dim_no_color()
+{
+  let cell = DecoratedText::from( "line_a\nline_b" ).with_dim();
+
+  let view = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ cell ] )
+    .build_view();
+
+  let formatter = TableFormatter::with_config( TableConfig::plain() );
+  let output = Format::format( &formatter, &view ).unwrap();
+
+  let dim_lines : Vec< &str > = output.lines().filter( | l | l.contains( "\x1b[2m" ) ).collect();
+  assert_eq!(
+    dim_lines.len(), 2,
+    "P06: 2-line dim-only cell must produce 2 dim sub-lines; got {}\nFull output:\n{output:?}",
+    dim_lines.len()
+  );
+}
+
+/// P07 — A Markdown-formatted cell with both `with_bold()` and a color: after
+/// pipe-escaping, BOTH the color AND bold must survive.
+///
+/// ## Root Cause
+///
+/// `format_row_colored`'s Markdown branch reconstructed the escaped cell via
+/// `DecoratedText::from(escaped_text)` and re-applied ONLY `.color` — bold and
+/// dim were dropped silently regardless of the outer branch's condition.
+///
+/// ## Fix Applied
+///
+/// The same shared `restyle()` helper used by the multiline fix (P05/P06) is
+/// applied here too, so pipe-escaping no longer strips bold/dim.
+// test_kind: bug_reproducer(BUG-024)
+#[ test ]
+fn test_p07_markdown_cell_bold_and_color_survive_pipe_escaping()
+{
+  let cell = DecoratedText::from( "a | b" ).with_color( "\x1b[33m" ).with_bold();
+
+  let view = RowBuilder::new( vec![ "Col".into() ] )
+    .add_row( vec![ cell ] )
+    .build_view();
+
+  let formatter = TableFormatter::with_config( TableConfig::markdown() );
+  let output = Format::format( &formatter, &view ).unwrap();
+
+  // Pipe must still be escaped (BUG-022 behavior preserved)
+  assert!(
+    output.contains( r"a \| b" ),
+    "P07: pipe must remain escaped after restyling, got:\n{output}"
+  );
+
+  // header=0, separator=1, data=2 (matches BUG-022 precedent in corner_case_bug_reproducer_test.rs)
+  let data_line = output.lines().nth( 2 ).expect( "expected a data line" );
+  assert!(
+    data_line.contains( "\x1b[33m" ),
+    "P07: color must survive pipe-escaping, got: {data_line:?}"
+  );
+  assert!(
+    data_line.contains( "\x1b[1m" ),
+    "P07: bold must survive pipe-escaping (was silently dropped before BUG-024 fix), got: {data_line:?}"
   );
 }

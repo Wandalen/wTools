@@ -96,7 +96,7 @@
 
 - **constructor**: `ExpandedConfig::postgres_style()`
 - **config_type**: ExpandedConfig
-- **customizable_parameters**: 8+
+- **customizable_parameters**: 7
 - **builder_pattern**: Yes
 
 ### Performance & Size
@@ -113,11 +113,11 @@
 ### Example Output
 
 ```
--[ RECORD 1 ]----
+-[ RECORD 1 ]
 Name | Alice
 Age  | 30
 City | NYC
--[ RECORD 2 ]----
+-[ RECORD 2 ]
 Name | Bob
 Age  | 25
 City | LA

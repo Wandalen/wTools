@@ -51,6 +51,14 @@
 //! | t43 | All 8 bright 4-bit `Color` variants produce correct SGR 90-97 codes |
 //! | t44 | `with_color("")` — `is_colored()` = true but render emits text + RESET, no color prefix |
 //! | t45 | `render()` on uncolored text containing embedded `\x1b` escapes passes through verbatim |
+//! | t46 | `.with_bold()` alone: `render()` emits `\x1b[1m` prefix and reset |
+//! | t47 | `.with_dim()` alone: `render()` emits `\x1b[2m` prefix and reset |
+//! | t48 | `.with_bold().with_color_named(...)` combines as two cumulative sequences |
+//! | t49 | Neither bold, dim, nor color set: `render()` returns bare text (regression guard) |
+//! | t50 | `render_html()` with bold only → `<span style="font-weight: bold">` (`html_support`) |
+//! | t51 | `render_html()` with dim only → `<span style="opacity: 0.7">` (`html_support`) |
+//! | t52 | `render_html()` with color + bold combined → single span, `"; "`-joined styles (`html_support`) |
+//! | t53 | `Default::default()` produces `bold: false, dim: false` |
 
 use color_tools::DecoratedText;
 
@@ -760,4 +768,116 @@ fn t45_render_preserves_embedded_escapes()
     !ct.is_colored(),
     "no outer color was attached"
   );
+}
+
+// =============================================================================
+// t46 — .with_bold() alone: render() emits \x1b[1m prefix and reset
+// =============================================================================
+
+#[ test ]
+fn t46_with_bold_alone_renders_bold_prefix()
+{
+  let ct = DecoratedText::from( "title" ).with_bold();
+
+  assert_eq!( ct.render(), "\x1b[1mtitle\x1b[0m" );
+  assert!( !ct.is_colored(), "bold alone must not set the color field" );
+}
+
+// =============================================================================
+// t47 — .with_dim() alone: render() emits \x1b[2m prefix and reset
+// =============================================================================
+
+#[ test ]
+fn t47_with_dim_alone_renders_dim_prefix()
+{
+  let ct = DecoratedText::from( "note" ).with_dim();
+
+  assert_eq!( ct.render(), "\x1b[2mnote\x1b[0m" );
+  assert!( !ct.is_colored(), "dim alone must not set the color field" );
+}
+
+// =============================================================================
+// t48 — .with_bold().with_color_named(...) combines as two cumulative sequences
+//
+// Bold and color are emitted as two separate SGR sequences back-to-back rather
+// than merged into one combined parameter list (e.g. "\x1b[1;36m"). Every real
+// terminal treats consecutive SGR sequences as cumulative state, so this is
+// visually identical while keeping render() simple.
+// =============================================================================
+
+#[ test ]
+fn t48_bold_and_named_color_combine_as_two_sequences()
+{
+  use color_tools::Color;
+  let ct = DecoratedText::from( "warn" ).with_bold().with_color_named( Color::Cyan );
+
+  assert_eq!( ct.render(), "\x1b[1m\x1b[36mwarn\x1b[0m" );
+}
+
+// =============================================================================
+// t49 — Neither bold, dim, nor color set: render() returns bare text (regression guard)
+// =============================================================================
+
+#[ test ]
+fn t49_no_decoration_at_all_returns_bare_text()
+{
+  let ct = DecoratedText::from( "plain" );
+
+  assert_eq!( ct.render(), "plain" );
+  assert!( !ct.bold );
+  assert!( !ct.dim );
+  assert!( !ct.is_colored() );
+}
+
+// =============================================================================
+// t50 — render_html() with bold only → <span style="font-weight: bold"> (html_support)
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t50_render_html_bold_only()
+{
+  let ct = DecoratedText::from( "title" ).with_bold();
+
+  assert_eq!( ct.render_html(), "<span style=\"font-weight: bold\">title</span>" );
+}
+
+// =============================================================================
+// t51 — render_html() with dim only → <span style="opacity: 0.7"> (html_support)
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t51_render_html_dim_only()
+{
+  let ct = DecoratedText::from( "note" ).with_dim();
+
+  assert_eq!( ct.render_html(), "<span style=\"opacity: 0.7\">note</span>" );
+}
+
+// =============================================================================
+// t52 — render_html() with color + bold combined → single span, "; "-joined styles (html_support)
+// =============================================================================
+
+#[ cfg( feature = "html_support" ) ]
+#[ test ]
+fn t52_render_html_color_and_bold_combine_in_one_span()
+{
+  use color_tools::Color;
+  let ct = DecoratedText::from( "warn" ).with_bold().with_color_named( Color::Yellow );
+
+  assert_eq!( ct.render_html(), "<span style=\"color: yellow; font-weight: bold\">warn</span>" );
+}
+
+// =============================================================================
+// t53 — Default::default() produces bold: false, dim: false
+// =============================================================================
+
+#[ test ]
+fn t53_default_has_no_weight()
+{
+  let ct = DecoratedText::default();
+
+  assert!( !ct.bold );
+  assert!( !ct.dim );
 }

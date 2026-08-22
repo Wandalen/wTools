@@ -113,7 +113,7 @@
 ### Example Output
 
 ```html
-<table class="table table-striped">
+<table class="table table-striped table-hover">
   <thead>
     <tr><th>Name</th><th>Age</th><th>City</th></tr>
   </thead>
@@ -123,3 +123,8 @@
   </tbody>
 </table>
 ```
+
+Note: the CSS class is `table table-striped table-hover` (3 classes,
+including `table-hover`), and it is applied only to the `<table>` tag — no
+other element gets a class attribute (verified via `variant_class()` in
+`src/formatters/html.rs`).

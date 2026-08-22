@@ -56,7 +56,7 @@
 - **has_borders**: No
 - **border_style**: None
 - **column_separator**: Colon
-- **row_separator**: Newline
+- **row_separator**: Double-Newline
 - **header_separator**: None
 - **outer_padding**: No
 - **inner_padding**: 1
@@ -90,13 +90,13 @@
 - **escaping_rules**: None
 - **output_format**: text/plain
 - **standards_compliance**: None
-- **supports_custom_colors**: Yes
+- **supports_custom_colors**: No
 
 ### API & Construction
 
 - **constructor**: `TextVariant::KeyValue`
 - **config_type**: TextVariant
-- **customizable_parameters**: 1
+- **customizable_parameters**: 0
 - **builder_pattern**: No
 
 ### Performance & Size

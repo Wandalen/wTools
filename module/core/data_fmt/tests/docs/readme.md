@@ -4,7 +4,7 @@
 
 - **Purpose**: House test surface specification documents for doc entity test coverage.
 - **Responsibility**: Root directory for test-aligned documentation specs.
-- **In Scope**: All 12 doc entity type surfaces: algorithm (007), api (004), builder (002), data_structure (001), feature (007), formatter (010), input_model (002), input_type (002), invariant (005), pattern (004), trait (003), variant (033) — covering all instances from corresponding `docs/` directories.
+- **In Scope**: All 13 doc entity type surfaces: algorithm (008), api (006), builder (002), data_structure (002), feature (008), formatter (010), input_model (002), input_type (002), invariant (005), pattern (004), theme (008), trait (003), variant (033) — covering all instances from corresponding `docs/` directories.
 - **Out of Scope**: Test code organization (see `tests/readme.md`), manual testing procedures (see `tests/manual/readme.md`).
 
 ### Responsibility Table
@@ -21,5 +21,6 @@
 | `input_type/` | Input type contract spec files; IV-N cases, min 4 per spec |
 | `invariant/` | Invariant enforcement spec files; IN-N cases, min 2 per spec |
 | `pattern/` | Design pattern verification spec files; PT-N cases, min 3 per spec |
+| `theme/` | Theme test spec files; TH-N cases, min 4 per spec |
 | `trait/` | Trait contract spec files; TR-N cases, min 4 per spec |
 | `variant/` | Variant output contract spec files; VT-N cases, min 4 per spec |

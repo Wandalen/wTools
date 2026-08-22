@@ -37,9 +37,9 @@ A strict three-layer architecture separates concerns: data representation, ergon
 
 Ergonomic construction and generic extraction for table-shaped trees:
 
-- `RowBuilder` — fluent and mutable APIs for building table-shaped trees
+- `RowBuilder` — fluent and mutable APIs for building `TableView` directly (accumulates rows and row details; does not construct a `TreeNode`)
 - `TableShapedView` trait — generic extraction of headers and rows from any tree node whose data supports display formatting
-- `TableView` — canonical interchange struct holding `headers` and `rows` for format-agnostic code
+- `TableView` — canonical interchange struct holding column metadata and rows of `DecoratedText` cells for format-agnostic code
 
 #### Layer 3: Formatters
 
@@ -63,12 +63,13 @@ Nine of ten formatters implement the `Format` trait for a unified API; `TreeForm
 | `lib.rs` | Re-exports public API |
 | `data.rs` | Core data types and view trait |
 | `builder.rs` | TreeBuilder for hierarchical trees |
-| `table_tree.rs` | RowBuilder for table-shaped trees |
-| `config.rs` | All configuration types |
+| `table_tree.rs` | `RowBuilder` — accumulates rows directly into a `TableView` |
+| `config/` | All configuration types (split across 5 sub-modules) |
 | `conversions.rs` | Tree-to-table conversion utilities |
 | `ansi_str.rs` | ANSI-aware string width utilities |
 | `wrap.rs` | Word-wrap config and formatter |
 | `themes.rs` | Color theme definitions |
+| `quantity/` | Terminal-aware duration/number/byte-size formatting (feature-gated) |
 | `formatters/` | Per-formatter modules, one per formatter type |
 
 ### Applicability
@@ -77,4 +78,4 @@ Apply this pattern when organizing a library that renders the same data in multi
 
 ### Consequences
 
-The three-layer separation ensures formatters remain interchangeable: the same `TreeNode` or `TableView` can be passed to any formatter without modification. Layer 2's `TableShapedView` trait decouples formatter logic from tree internals, so table-shaped formatters operate on flat vectors of strings rather than traversing tree structure directly. This enables the mutual replaceability design principle. The cost is that the tree encoding for tabular data is non-obvious — callers must use the builders rather than constructing trees directly.
+The three-layer separation ensures formatters remain interchangeable: the same `TreeNode` or `TableView` can be passed to any formatter without modification. Layer 2's `TableView` struct decouples formatter logic from tree internals, so table-shaped formatters operate on `TableView`'s `DecoratedText` rows rather than traversing tree structure directly; the separate `TableShapedView` trait remains available for extracting headers/rows from a table-shaped `TreeNode` when one is already in hand (see `trait/003_table_shaped_view.md`). This enables the mutual replaceability design principle. The cost is that the tree encoding for tabular data is non-obvious — callers must use the builders rather than constructing trees directly.

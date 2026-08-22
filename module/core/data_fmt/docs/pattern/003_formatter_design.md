@@ -33,19 +33,19 @@ The formatter layer must support multiple formatter types with different data re
 
 ### Solution
 
-The formatter layer uses two orthogonal trait axes. The `Format` trait provides the universal output interface shared by every formatter. The `TableShapedFormatter` trait (deprecated) provides polymorphism for the subset of formatters that operate on flat row/column data extracted via `TableShapedView`. Tree-specific formatters bypass `TableShapedView` and operate on hierarchical tree data directly.
+The formatter layer is unified under a single trait axis today. The `Format` trait provides the universal output interface shared by every formatter, consuming `TableView` values (built via `RowBuilder::build_view()`). Historically, a second axis existed: the `TableShapedFormatter` trait provided polymorphism for the subset of formatters that operated on flat row/column data. It was removed in v0.3.0; `Format` is now the sole formatter interface. Tree-specific formatters (`TreeFormatter`) operate on hierarchical tree data directly rather than through `TableView`.
 
 #### TableShapedView Decoupling
 
-`TableFormatter` and `ExpandedFormatter` use the `TableShapedView` trait to extract headers and rows from any tree node whose data supports display formatting. This decouples formatting logic from tree internals — formatters work with flat vectors of strings.
+`TableFormatter` and `ExpandedFormatter` do not call `TableShapedView` internally — both consume `TableView` (built via `RowBuilder::build_view()`), whose `rows` field holds `DecoratedText` cells (text plus optional ANSI color and independent bold/dim weight flags), not plain strings. `TableShapedView` is a separate, standalone trait (blanket-implemented for any `TreeNode<T: Display>` in `src/data.rs`) available to callers that already hold a table-shaped `TreeNode` and want direct `Vec<String>` header/row extraction without going through `RowBuilder` — see `trait/003_table_shaped_view.md`.
 
-`TreeFormatter` renders hierarchical tree data directly using method-level generics rather than relying on `TableShapedView`. Its format methods accept tree references directly, producing box-drawing output with configurable symbols and indentation.
+`TreeFormatter` renders hierarchical tree data directly using method-level generics, independent of both `TableView` and `TableShapedView`. Its format methods accept tree references directly, producing box-drawing output with configurable symbols and indentation.
 
-#### TableShapedFormatter Trait (Deprecated)
+#### TableShapedFormatter Trait (Removed in v0.3.0)
 
-> **Deprecated since 0.1.0.** Use `Format` trait with `RowBuilder::build_view()` instead.
+> **Removed in v0.3.0.** Use `Format` trait with `RowBuilder::build_view()` instead.
 
-The `TableShapedFormatter` trait was the original polymorphism interface between `TableFormatter` and `ExpandedFormatter`. It is now deprecated; the `Format` trait is the canonical interface.
+The `TableShapedFormatter` trait was the original polymorphism interface between `TableFormatter` and `ExpandedFormatter`. It was removed — not merely deprecated — in the v0.3.0 API cleanup; the `Format` trait is the sole canonical interface. See `trait/002_table_shaped_formatter.md` for the removed trait's historical definition.
 
 #### Output Surface
 
@@ -56,8 +56,8 @@ All formatters support both output modes:
 
 ### Applicability
 
-Apply this pattern when adding a new formatter to the library. New formatters must implement `Format` (not `TableShapedFormatter`). Use `TableShapedView` to extract flat row/column data when the formatter produces tabular output; operate on tree data directly when the formatter produces hierarchical output.
+Apply this pattern when adding a new formatter to the library. New formatters must implement `Format` — `TableShapedFormatter` no longer exists as an option. Build or accept a `TableView` (typically via `RowBuilder::build_view()`) when the formatter produces tabular output; operate on tree data directly when the formatter produces hierarchical output.
 
 ### Consequences
 
-Decoupling via `TableShapedView` prevents formatters from depending on tree traversal details. The `Format` trait is the canonical extension point — new formatters implement `Format`, not the deprecated `TableShapedFormatter`. The dual `format()`/`write_to()` surface satisfies both in-memory and streaming output needs without separate formatter types. The deprecated `TableShapedFormatter` adds maintenance burden but is preserved for backward compatibility in 0.x versions.
+Decoupling via `TableView` prevents formatters from depending on tree traversal details. The `Format` trait is the canonical extension point — new formatters implement `Format`; the removed `TableShapedFormatter` is no longer an option. The dual `format()`/`write_to()` surface satisfies both in-memory and streaming output needs without separate formatter types. `TableShapedFormatter` was removed in v0.3.0 rather than preserved, eliminating the maintenance burden of two parallel interfaces — `Format` is the sole formatter interface today.

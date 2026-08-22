@@ -18,6 +18,7 @@
 | File | Relationship |
 |------|-------------|
 | [`src/formatters/mod.rs`](../../src/formatters/mod.rs) | Formatter module organization |
+| [`src/ansi_str.rs`](../../src/ansi_str.rs) | `visual_len`, `pad_to_width`, `strip_ansi` — re-exported from `strs_tools::ansi` |
 
 ### Tests
 
@@ -41,7 +42,7 @@ Error type returned by `Format::format`. Three variants: `Serialization( String 
 
 #### TableFormatter
 
-Horizontal tabular display with configurable borders, column sizing, and coloring. Constructed via `TableFormatter::new()` (default config) or `TableFormatter::with_config( config : TableConfig )`. Key methods: `format( &self, tree : &TreeNode< String > ) -> String` (table-shaped tree via `TableShapedView`), `format_tree< T : Display >( &self, tree : &TreeNode< T > ) -> String` (hierarchical tree auto-flattened to path/name/depth/data columns), `write_to< W : Write >( &self, tree, writer )` (streaming output). Implements `Format` for the canonical `TableView` path.
+Horizontal tabular display with configurable borders, column sizing, and coloring. Constructed via `TableFormatter::new()` (default config) or `TableFormatter::with_config( config : TableConfig )`. Key methods: `format_tree< T : Display >( &self, tree : &TreeNode< T > ) -> String` (hierarchical tree auto-flattened to path/name/depth/data columns via `conversions::flatten_to_table_tree`; infallible — errors default to an empty string), `write_to< W : Write >( &self, data : &TableView, writer ) -> std::io::Result< () >` (streaming output). Implements `Format` (`format( &self, data : &TableView ) -> Result< String, FormatError >`) for the canonical `TableView` path — this is the only `format` method; there is no separate tree-typed inherent method.
 
 #### ExpandedFormatter
 
@@ -75,7 +76,7 @@ Seven feature-gated formatters, all implementing `Format`:
 
 ### Error Handling
 
-`Format::format` returns `Result< String, FormatError >`. `TableFormatter`, `ExpandedFormatter`, and `TreeFormatter` return `Ok` for all valid inputs; they do not emit `FormatError` in practice. `JsonFormatter`, `YamlFormatter`, and `TomlFormatter` may return `FormatError::Serialization` when serialization fails. `FormatError::Serialization` is only present when the `serde_support` feature is enabled; without it, the error type has two variants.
+`Format::format` returns `Result< String, FormatError >`. `TableFormatter` and `ExpandedFormatter` return `Ok` for all valid inputs; they do not emit `FormatError` in practice. `TreeFormatter` does not implement `Format` at all (see Abstract) — its methods (`format`, `format_aligned`, `format_with_aggregation`) return a bare `String` with no `Result`/error path. `JsonFormatter`, `YamlFormatter`, and `TomlFormatter` may return `FormatError::Serialization` when serialization fails. `FormatError::Serialization` is only present when the `serde_support` feature is enabled; without it, the error type has two variants.
 
 ### Feature Flags
 

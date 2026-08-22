@@ -97,6 +97,8 @@ pub struct TableConfig
   border_color : Option< String >,
   /// Optional titled rule rendered above the table (None = no heading)
   heading : Option< Heading >,
+  /// Optional titled rule rendered below the table (None = no footer)
+  footer : Option< Heading >,
 }
 
 impl Default for TableConfig
@@ -130,6 +132,7 @@ impl Default for TableConfig
       fold_indent : "    ".to_string(),
       border_color : None,
       heading : None,
+      footer : None,
     }
   }
 }
@@ -433,6 +436,14 @@ impl TableConfig
     self.heading = Some( h );
     self
   }
+
+  /// Attach a titled rule rendered below the table
+  #[ must_use ]
+  pub fn with_footer( mut self, f : Heading ) -> Self
+  {
+    self.footer = Some( f );
+    self
+  }
 }
 
 /// Internal accessors for formatters (pub(crate) methods, not fields — satisfies AF1).
@@ -590,6 +601,12 @@ impl TableConfig
   pub( crate ) fn heading_ref( &self ) -> Option< &Heading >
   {
     self.heading.as_ref()
+  }
+
+  /// Footer reference (accessor)
+  pub( crate ) fn footer_ref( &self ) -> Option< &Heading >
+  {
+    self.footer.as_ref()
   }
 
   /// Whether column separator is comma or tab (CSV/TSV mode disables padding and ANSI)

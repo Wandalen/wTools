@@ -57,4 +57,4 @@ Selection mechanism: pass an `HtmlVariant` enum value to `HtmlFormatter::with_va
 | tailwind | `HtmlVariant::Tailwind` | `html_tailwind` |
 | custom | `HtmlVariant::Custom` (with a CSS class string) | `html_custom` |
 
-`HtmlVariant::Custom` takes a string of CSS class names applied to the `<table>` element. Each variant is independently feature-gated; unused variants add no binary overhead.
+`HtmlVariant::Custom` takes a string of CSS class names applied to the `<table>` element. The 4 flags are OR'd together at the crate's export boundary (`src/lib.rs`) to gate `HtmlFormatter` as a whole — none of them individually cfg-gates a specific variant's code in `src/formatters/html.rs`, so enabling any single flag compiles all 4 variants; there is no per-variant binary-size reduction.

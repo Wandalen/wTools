@@ -41,7 +41,7 @@
 ### Build & Dependencies
 
 - **feature_flag**: format_yaml
-- **runtime_deps**: serde+serde_yaml
+- **runtime_deps**: serde+serde_yaml_ng
 - **zero_dependency**: No
 
 ### Character Set & Encoding
@@ -113,11 +113,19 @@
 ### Example Output
 
 ```yaml
-rows:
-  - Name: Alice
-    Age: "30"
-    City: NYC
-  - Name: Bob
-    Age: "25"
-    City: LA
+- Name: Alice
+  Age: '30'
+  City: NYC
+- Name: Bob
+  Age: '25'
+  City: LA
 ```
+
+Note: the output is a top-level YAML sequence — there is no `rows:` wrapper
+key (verified by running `YamlFormatter::new().format()` against
+`src/formatters/yaml.rs`); `serde_yaml_ng` single-quotes values that would
+otherwise parse as a different type (e.g. `'30'`), not double-quotes them.
+Also, each row is built as a `HashMap<String, String>` (see
+`table_view_to_row_maps` in `src/formatters/mod.rs`), whose iteration order is
+not guaranteed by the current implementation; the key order shown here
+(`Name`, `Age`, `City`) is a representative illustration, not a guarantee.

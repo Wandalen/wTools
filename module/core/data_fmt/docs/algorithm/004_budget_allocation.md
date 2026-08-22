@@ -12,14 +12,15 @@
 | File | Relationship |
 |------|--------------|
 | `src/formatters/table/auto_fit.rs` | `classify_columns`, `compute_column_budgets` |
-| `src/config.rs` | `ColumnFlex` enum, `terminal_width` field |
+| `src/config/table_enums.rs` | `ColumnFlex` enum |
+| `src/config/table_config.rs` | `terminal_width` field |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
 | `tests/auto_wrap_test.rs` | Budget allocation test scenarios (T02–T05, T14–T15) |
-| `tests/auto_wrap_budget_test.rs` | Budget allocation acceptance criteria (BA AC-6–AC-8) |
+| `tests/auto_wrap_budget_test.rs` | Budget allocation acceptance criteria (BA AC-6–AC-11) plus `auto_wrap=false` invariant checks IN3–IN10 (14 tests total) |
 
 ### Abstract
 
@@ -39,10 +40,11 @@ Skipped entirely for CSV/TSV presets (data formats must not wrap).
 
 **Step 1 — Resolve terminal width**
 
-Three-tier fallback (see `feature/005_auto_fit.md § Terminal Width Detection`):
+Four-tier fallback (see `feature/005_auto_fit.md § Terminal Width Detection`):
 1. Explicit `terminal_width` config → use directly (clamp 0 to 1)
-2. `terminal_size` crate query (when feature enabled) → use detected width
-3. Hardcoded fallback → 120
+2. `$COLUMNS` environment variable → use if set and parses to a positive integer
+3. `terminal_size` crate query (when feature enabled) → use detected width
+4. Hardcoded fallback → 120
 
 **Step 2 — Classify columns**
 
@@ -62,7 +64,7 @@ When `column_flex` has explicit entries, use them directly. If shorter than colu
 
 ```
 separator_total = separator_visual_width × (column_count - 1)
-outer = if has_outer_padding: cell_inner_padding × 2 else: 0
+outer = if has_outer_padding: cell_inner_padding × 2 × column_count else: 0
 border = if needs_border_pipes: 2 else: 0
 overhead = separator_total + outer + border
 ```

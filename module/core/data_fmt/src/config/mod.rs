@@ -16,6 +16,7 @@ pub use table_enums::{ BorderVariant, HeaderSeparatorVariant, ColumnSeparator, C
 
 mod table_heading;
 pub use table_heading::{ HEADING_FIELD_SEP, HEADING_RULE_CHAR, HEADING_LEAD_WIDTH, Heading };
+pub( crate ) use table_heading::{ render_rule_if_present, render_commented_rule_if_present };
 
 mod table_config;
 pub use table_config::{ TableConfig, PaddingSide };

@@ -12,14 +12,15 @@
 | File | Relationship |
 |------|--------------|
 | `src/formatters/table/auto_fit.rs` | `determine_fold_point`, `render_fold_continuation`, `should_auto_fold` |
-| `src/config.rs` | `FoldStyle` enum, `auto_fold`/`fold_style`/`fold_indent` fields |
+| `src/config/table_enums.rs` | `FoldStyle` enum |
+| `src/config/table_config.rs` | `auto_fold`/`fold_style`/`fold_indent` fields |
 
 ### Tests
 
 | File | Relationship |
 |------|--------------|
 | `tests/auto_fold_test.rs` | Column folding test scenarios T01–T25 (25 tests) |
-| `tests/auto_fold_acceptance_test.rs` | Fold acceptance criteria CF AC-6–AC-8 + additional (7 tests) |
+| `tests/auto_fold_acceptance_test.rs` | Fold acceptance criteria CF AC-6–AC-11 plus 1 additional invariant test (7 tests) |
 
 ### Abstract
 
@@ -27,13 +28,16 @@ An O(C) algorithm that determines which columns must fold to continuation lines 
 
 ### Trigger Condition
 
-Fold detection runs when all three conditions hold:
+Fold detection runs when all four conditions hold:
 
 1. `auto_fold` is `true` (default)
-2. Total row width exceeds terminal width after budget allocation and wrapping (Strategy 2)
-3. Style is not CSV/TSV (data formats never fold)
+2. `auto_wrap` is also `true` (default) — fold detection is gated on wrapping being enabled, same as budget allocation (algorithm/004)
+3. No explicit `column_widths` override is set
+4. Style is not CSV/TSV (data formats never fold)
 
-Header row is exempt — headers always render all columns inline, never fold.
+The fold point itself (Step 1) is computed unconditionally once the above hold; when no column's cumulative width exceeds the terminal budget, `determine_fold_point` returns `column_count` and nothing actually folds.
+
+Header row is folded identically to data rows — it is sliced at `fold_point`, so only primary column headers render inline. Overflow column headers are not emitted as their own continuation row; instead their names are used as labels inside each data row's continuation lines (Labeled/Stacked styles).
 
 ### Algorithm
 
@@ -42,10 +46,13 @@ Header row is exempt — headers always render all columns inline, never fold.
 After budget allocation (algorithm/004), compute cumulative row width left-to-right:
 
 ```
-cumulative = 0
+content_so_far = 0
 for each column i in 0..column_count:
-  cumulative += budget_width[i] + separator_width
-  if cumulative > terminal_width:
+  content_so_far += budget_width[i]
+  sep_total = i × separator_width
+  pad_total = if has_outer_padding: cell_inner_padding × 2 × (i + 1) else: 0
+  border = if needs_border_pipes: 2 else: 0
+  if content_so_far + sep_total + pad_total + border > terminal_width:
     fold_point = max(i, 1)   // clamp: first column always stays primary
     break
 ```
@@ -71,17 +78,18 @@ For each overflow column, emit a continuation line using the configured `FoldSty
 
 ```
 match fold_style:
-  Labeled:
-    for each overflow column:
-      emit: fold_indent + header_name + ": " + cell_value
+  Labeled (default):
+    pairs = overflow columns with a non-empty value, each formatted "header_name: cell_value"
+    emit: fold_indent + join( pairs, "  " )
   Bare:
-    emit: fold_indent + join( cell_values, "  " )
+    values = overflow columns with a non-empty value (no labels)
+    emit: fold_indent + join( values, "  " )
   Stacked:
-    for each overflow column:
+    for each overflow column with a non-empty value:
       emit: fold_indent + header_name + ": " + cell_value
 ```
 
-Labeled and Stacked produce one line per overflow column. Bare joins all values on a single line; if that line exceeds the terminal budget, word wrapping is applied (same as Step 5 below).
+Only Stacked produces one line per overflow column. Labeled and Bare each produce a single joined continuation line; if that line exceeds the terminal budget, word wrapping is applied (Step 5), which can still spread it across multiple physical output lines. Overflow columns with an empty value are filtered out before joining/emitting in all three styles.
 
 **Step 5 — Wrap folded values**
 
@@ -102,7 +110,7 @@ If a continuation line exceeds `terminal_width - visual_len(fold_indent)`, apply
 | Single overflow column | One continuation line |
 | All columns overflow except first | Only first column in table; rest fold |
 | Very narrow terminal (< first column width) | First column renders at natural width; all others fold |
-| Mixed rows (some fit, some overflow) | Fold point computed per-row; only overflowing rows have continuation lines |
+| Mixed rows (some fit, some overflow) | Fold point is computed once for the whole table (not per-row); every row attempts continuation lines, but a row's continuation is empty when all its overflow-column values are empty |
 
 ### Complexity
 

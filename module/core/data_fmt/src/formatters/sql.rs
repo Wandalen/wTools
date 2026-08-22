@@ -45,7 +45,7 @@
 //! // INSERT INTO users (name, age) VALUES ('Alice', 30), ('Bob', 25);
 //! ```
 
-use crate::{ TableView, formatters::{ Format, FormatError } };
+use crate::{ TableView, Heading, formatters::{ Format, FormatError } };
 
 /// SQL dialect for identifier quoting and syntax
 #[ derive( Debug, Clone, Copy, PartialEq, Eq ) ]
@@ -89,6 +89,10 @@ pub struct SqlFormatter
   pub variant : SqlVariant,
   /// Treat empty strings as NULL
   pub empty_as_null : bool,
+  /// Optional titled rule rendered above the formatted output, as a `--` comment (`None` = no heading)
+  pub heading : Option< Heading >,
+  /// Optional titled rule rendered below the formatted output, as a `--` comment (`None` = no footer)
+  pub footer : Option< Heading >,
 }
 
 impl SqlFormatter
@@ -101,6 +105,8 @@ impl SqlFormatter
       table_name : table_name.into(),
       variant : SqlVariant::Ansi,
       empty_as_null : false,
+      heading : None,
+      footer : None,
     }
   }
 
@@ -112,6 +118,8 @@ impl SqlFormatter
       table_name : table_name.into(),
       variant,
       empty_as_null : false,
+      heading : None,
+      footer : None,
     }
   }
 
@@ -121,6 +129,54 @@ impl SqlFormatter
   {
     self.empty_as_null = enabled;
     self
+  }
+
+  /// Attach a titled heading rule rendered above the formatted output, as a `--` comment
+  #[ must_use ]
+  pub fn with_heading( mut self, h : Heading ) -> Self
+  {
+    self.heading = Some( h );
+    self
+  }
+
+  /// Attach a titled rule rendered below the formatted output, as a `--` comment
+  #[ must_use ]
+  pub fn with_footer( mut self, f : Heading ) -> Self
+  {
+    self.footer = Some( f );
+    self
+  }
+
+  /// Prepend heading and/or append footer around already-rendered SQL output, each wrapped
+  /// in a `--` comment marker so the titled rule stays valid SQL.
+  ///
+  /// SQL output has no fixed column width, so the rule fills to the widest rendered line's
+  /// display width instead of a precomputed `table_width` — same approach as
+  /// `TreeFormatter`/`ExpandedFormatter`/`TextFormatter`/`YamlFormatter`/`TomlFormatter`.
+  /// Called from both `Format::format()` return points (empty-rows early return and the
+  /// final populated-rows return) so heading/footer apply regardless of the BUG-020 branch.
+  ///
+  /// Unlike the other formatters' bodies (which always end with `\n` — one per rendered
+  /// row/line), the populated-rows SQL body ends with a bare `;` and no trailing newline.
+  /// A footer appended directly onto that would land on the same line as the closing `;`
+  /// instead of its own line, so a separating `\n` is inserted first whenever the body is
+  /// non-empty and doesn't already end in one.
+  fn wrap_with_heading_footer( &self, body : String ) -> String
+  {
+    if self.heading.is_none() && self.footer.is_none()
+    {
+      return body;
+    }
+    let width = body.lines().map( crate::ansi_str::unicode_visual_len ).max().unwrap_or( 0 );
+    let mut output = String::with_capacity( body.len() + 64 );
+    crate::config::render_commented_rule_if_present( &mut output, self.heading.as_ref(), width, "-- " );
+    output.push_str( &body );
+    if self.footer.is_some() && !body.is_empty() && !body.ends_with( '\n' )
+    {
+      output.push( '\n' );
+    }
+    crate::config::render_commented_rule_if_present( &mut output, self.footer.as_ref(), width, "-- " );
+    output
   }
 
   /// Quote identifier (table/column name) according to variant
@@ -181,7 +237,7 @@ impl Format for SqlFormatter
     // Pitfall: guard on rows, not columns — a headers-only table has nothing to insert.
     if data.rows.is_empty()
     {
-      return Ok( String::new() );
+      return Ok( self.wrap_with_heading_footer( String::new() ) );
     }
 
     let mut output = String::new();
@@ -239,6 +295,6 @@ impl Format for SqlFormatter
 
     output.push( ';' );
 
-    Ok( output )
+    Ok( self.wrap_with_heading_footer( output ) )
   }
 }

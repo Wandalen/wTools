@@ -37,8 +37,8 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/formatters/tree.rs`](../../src/formatters/tree.rs) | `TreeFormatter` implementation |
-| [`src/config.rs`](../../src/config.rs) | `TreeConfig`, `TreeSymbols` |
+| [`src/formatters/tree/mod.rs`](../../src/formatters/tree/mod.rs) | `TreeFormatter` implementation |
+| [`src/config/tree_config.rs`](../../src/config/tree_config.rs) | `TreeConfig`, `TreeSymbols` |
 
 ### Trait
 
@@ -56,7 +56,7 @@
 | Multi-column tree (ColumnData leaves) | Hierarchical — multi-column aligned | `::format_aligned(tree)` |
 | Aggregating tree + aggregation spec | Hierarchical — subtree totals | `::format_with_aggregation(tree, …)` |
 
-`TreeFormatter` is the exclusive consumer of the hierarchical input model. No other formatter accepts hierarchical tree data.
+`TreeFormatter` is the only formatter that renders hierarchical tree data natively (box-drawing, aligned, or aggregated output). `TableFormatter` and `ExpandedFormatter` also accept a `TreeNode` — via their own `format_tree(tree)` convenience method — but only after flattening it to a `TableView` through `conversions::flatten_to_table_tree`; they do not render hierarchy directly.
 
 ### Variants
 
@@ -68,4 +68,4 @@ Selection mechanism: the called method name determines the variant — there is 
 | aligned | `TreeFormatter::format_aligned(tree)` | `tree_aligned` |
 | aggregated | `TreeFormatter::format_with_aggregation(tree, …)` | `tree_aggregated` |
 
-Each feature flag is independent. Enabling `tree_aligned` alone does not compile `format_with_aggregation`.
+The three flags are OR'd together at the crate's export boundary (`src/lib.rs`) to gate `TreeFormatter` as a whole — none of them individually cfg-gates a specific method, so enabling `tree_aligned` alone still compiles `format`, `format_aligned`, and `format_with_aggregation` together.

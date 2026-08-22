@@ -35,7 +35,7 @@
 
 | File | Relationship |
 |------|-------------|
-| [`tests/text.rs`](../../tests/text.rs) | Text output tests |
+| [`tests/text_cli_help.rs`](../../tests/text_cli_help.rs) | CliHelp output tests (not covered by `tests/text.rs`) |
 
 ### Identity & Classification
 
@@ -96,14 +96,14 @@
 - **escaping_rules**: None
 - **output_format**: text/plain
 - **standards_compliance**: None
-- **supports_custom_colors**: Yes
+- **supports_custom_colors**: No
 
 ### API & Construction
 
 - **constructor**: `TextVariant::CliHelp` or `TextFormatter::cli_help()`
 - **config_type**: TextVariant
-- **customizable_parameters**: 2 (indent, separator)
-- **builder_pattern**: Yes
+- **customizable_parameters**: 1 (indent; `separator` is accepted by the formatter but has no effect on this variant)
+- **builder_pattern**: No
 
 ### Performance & Size
 

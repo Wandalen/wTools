@@ -32,14 +32,19 @@ path.
 | `opt_name_width` | integer | `18` | Minimum column width for option names |
 | `col_gap` | integer | `2` | Gap between name column and description column |
 | `example_indent` | integer | `2` | Left margin before example lines |
-| `color_tagline` | ANSI string | ANSI bold | ANSI bold for usage line and section headers |
-| `color_group` | ANSI string | ANSI yellow+bold | ANSI yellow+bold for group headers |
-| `color_option` | ANSI string | ANSI bold cyan | ANSI bold cyan for command and option names |
-| `color_example` | ANSI string | ANSI dim | ANSI dim for example invocation lines |
-| `color_reset` | ANSI string | ANSI reset | ANSI reset applied after each colored span |
+| `color_tagline` | `color_tools::DecoratedText` | bold | Style for usage line and section headers |
+| `color_group` | `color_tools::DecoratedText` | bold + yellow | Style for group headers |
+| `color_option` | `color_tools::DecoratedText` | bold + cyan | Style for command and option names |
+| `color_example` | `color_tools::DecoratedText` | dim | Style for example invocation lines |
 | `tty_detect` | boolean | `true` | When true, colors active only when stdout is a TTY; when false, always suppress colors |
 
-`CliHelpStyle::default()` produces layout and ANSI defaults matching the standard cli_fmt terminal display.
+The four color-role fields are style-only descriptors: their `color`/`bold`/`dim` sub-fields
+are meaningful, but `text` is always empty and discarded at render time — each renderer
+substitutes the actual span content via struct-update syntax before calling `.render()`.
+There is no separate `color_reset` field; `color_tools::DecoratedText::render()` appends its
+own ANSI reset automatically whenever any of `color`/`bold`/`dim` is set.
+
+`CliHelpStyle::default()` produces layout and style defaults matching the standard cli_fmt terminal display.
 
 **`CliHelpData`** — structured content for all rendered sections. All fields are public. Extensibility-sealed — external callers cannot use struct literal expressions; must use the default constructor followed by field assignment.
 
@@ -114,7 +119,7 @@ path.
 **`CliHelpTemplate::new(style, data)`** — constructs a template from style and data. Both parameters are consumed.
 
 **`CliHelpTemplate::render`** — renders the complete help text in this order:
-1. ANSI codes are active only when `style.tty_detect = true` and stdout IS a TTY; otherwise all color fields are treated as empty strings.
+1. ANSI codes are active only when `style.tty_detect = true` and stdout IS a TTY; otherwise every color-role field renders its span as plain text with no escape codes.
 2. Emits header: when `data.usage_lines` is non-empty, emits each line as `"  {line}"`; otherwise emits `"{bold}Usage:{rst} {binary} <command>"`. In both cases follows with: blank line, tagline text, blank line, `"{bold}Commands:{rst}"`.
 3. If `data.arguments` is non-empty: emits `"{bold}Arguments:{rst}"` section; entries padded to the maximum argument name length across all argument entries.
 4. Emits each command group from `data.groups` with entries padded to `cmd_name_width`.

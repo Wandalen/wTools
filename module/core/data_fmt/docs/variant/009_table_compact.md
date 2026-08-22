@@ -68,7 +68,7 @@
 - **supports_hierarchical**: No
 - **supports_tabular**: Yes
 - **preserves_structure**: Yes
-- **supports_multiline_values**: No
+- **supports_multiline_values**: Yes
 
 ### Output Characteristics
 
@@ -113,7 +113,7 @@
 ### Example Output
 
 ```
-Name Age City
-Alice 30 NYC
-Bob 25 LA
+Name  Age City
+Alice 30  NYC
+Bob   25  LA
 ```

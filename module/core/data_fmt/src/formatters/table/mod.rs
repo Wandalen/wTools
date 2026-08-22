@@ -222,7 +222,7 @@ impl TableFormatter
     let primary_headers : &[ String ] = &headers[ ..fold_point ];
 
     // Heading titled rule — rendered before top border when present
-    self.render_heading_if_present( &mut output, self.compute_total_row_width( primary_widths ) );
+    crate::config::render_rule_if_present( &mut output, self.config.heading_ref(), self.compute_total_row_width( primary_widths ) );
 
     // Top border (AsciiGrid / Unicode only)
     self.format_top_border_if_needed( &mut output, primary_widths );
@@ -332,6 +332,9 @@ impl TableFormatter
 
     // Bottom border (AsciiGrid / Unicode only)
     self.format_bottom_border_if_needed( &mut output, primary_widths );
+
+    // Footer titled rule — rendered after bottom border when present
+    crate::config::render_rule_if_present( &mut output, self.config.footer_ref(), self.compute_total_row_width( primary_widths ) );
 
     output
   }

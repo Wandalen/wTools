@@ -39,7 +39,7 @@
 | File | Relationship |
 |------|-------------|
 | [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `TableFormatter` implementation |
-| [`src/config.rs`](../../src/config.rs) | `TableConfig` struct and preset methods |
+| [`src/config/table_config.rs`](../../src/config/table_config.rs) | `TableConfig` struct and preset methods |
 
 ### Variant Selection
 
@@ -57,4 +57,4 @@ Selection mechanism: pass a `TableConfig` preset to `TableFormatter::with_config
 | tsv | `TableConfig::tsv()` | `table_tsv` |
 | compact | `TableConfig::compact()` | `table_compact` |
 
-Each feature flag compiles the formatter independently — unused variants add no binary overhead.
+These 9 flags are OR'd together at the crate's export boundary (`src/lib.rs`) to gate `TableFormatter` as a whole — none of them individually cfg-gates a specific preset's code in `src/config/table_config.rs`, so enabling any single flag compiles all 9 presets; there is no per-variant binary-size reduction.

@@ -23,22 +23,22 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/builder.rs`](../../src/builder.rs) | RowBuilder implementation |
+| [`src/table_tree.rs`](../../src/table_tree.rs) | RowBuilder implementation |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
-| [`tests/builder.rs`](../../tests/builder.rs) | Builder tests |
+| [`tests/builder_row_test.rs`](../../tests/builder_row_test.rs) | RowBuilder tests |
 
 ### Construction API
 
 | Method | Consumes Self | Output |
 |--------|:------------:|--------|
 | `new( headers )` | — | Builder with column schema |
-| `add_row( row )` | yes | Append row (auto-numbered) |
+| `add_row( row )` | yes | Append row |
 | `add_row_mut( row )` | no | Same, mutable reference for loops |
-| `add_row_with_name( name, row )` | yes | Append row with custom name |
+| `add_row_with_name( name, row )` | yes | Append row (`name` currently unused, see Invariants) |
 | `add_row_with_name_mut( name, row )` | no | Same, mutable reference |
 | `add_row_with_detail( row, detail )` | yes | Append row with `DecoratedText` annotation |
 | `add_row_with_detail_mut( row, detail )` | no | Same, mutable reference |
@@ -65,3 +65,4 @@ Pre/post conditions enforced at construction time:
 - **Row length**: every row added via any `add_row*` method must have length exactly equal to `headers.len()`. Violated at insertion time causes an immediate panic. Downstream formatters never encounter ragged rows.
 - **Parallel vectors**: `rows` and `row_details` are always the same length throughout the builder's lifetime. Every internal row insertion updates both vectors simultaneously; rows without explicit detail receive no annotation.
 - **Empty headers allowed**: constructing with an empty headers list is valid; all subsequently added rows must also be empty.
+- **Row naming has no effect**: `add_row`/`add_row_mut`/`add_row_with_detail`/`add_row_with_detail_mut` compute a sequential row name internally, and `add_row_with_name`/`add_row_with_name_mut` accept an explicit one — but every name is discarded by `add_row_internal` before it reaches `TableView`. Row naming is currently accepted but has no observable effect on formatted output.

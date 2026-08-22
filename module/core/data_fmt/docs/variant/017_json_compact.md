@@ -113,5 +113,14 @@
 ### Example Output
 
 ```json
-{"rows":[{"Name":"Alice","Age":"30","City":"NYC"},{"Name":"Bob","Age":"25","City":"LA"}]}
+[{"Name":"Alice","Age":"30","City":"NYC"},{"Name":"Bob","Age":"25","City":"LA"}]
 ```
+
+Note: the output is a top-level JSON array of row objects — there is no
+`"rows"` wrapper object (verified by running `JsonFormatter::compact().format()`
+against `src/formatters/json.rs`). Also, each row is built as a
+`HashMap<String, String>` (see `table_view_to_row_maps` in
+`src/formatters/mod.rs`), whose iteration order is not guaranteed by the
+current implementation; the key order shown here (`Name`, `Age`, `City`) is a
+representative illustration, not a guarantee — running the formatter
+repeatedly can and does produce different per-object key orderings.

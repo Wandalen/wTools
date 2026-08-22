@@ -38,7 +38,7 @@
 
 #### TableView
 
-The canonical data format consumed by all formatters. It holds a `TableMetadata` header and rows as a two-dimensional collection of string values.
+The canonical data format consumed by all formatters. It holds a `TableMetadata` header and rows as `Vec< Vec< DecoratedText > >` — each cell may carry an optional ANSI color plus independent bold/dim weight flags, not a plain string.
 
 #### Format Trait
 
@@ -72,11 +72,11 @@ Nine of ten formatters implement `Format`. `TreeFormatter` uses direct method di
 
 #### Feature Configuration
 
-The `default` feature is empty — all formatters are opt-in. The `enabled` feature activates core dependencies and four default formatters: `table_plain`, `expanded_postgres`, `tree_hierarchical`, and `format_logfmt`. The `full` feature enables everything including `all_formats` and `terminal_size`. Each formatter meta-feature aggregates its variant flags (e.g., `format_table` includes all nine table variants). JSON, YAML, and TOML formatters require serde and pull it in via `serde_support` internally.
+The `default` feature activates `enabled` and `quantity`, so core dependencies, four default formatters, and the quantity module are available without any feature flags; every other formatter remains opt-in. The `enabled` feature activates core dependencies and four default formatters: `table_plain`, `expanded_postgres`, `tree_hierarchical`, and `format_logfmt`. The `full` feature enables everything including `all_formats` and `terminal_size`. Each formatter meta-feature aggregates its variant flags (e.g., `format_table` includes all nine table variants). JSON, YAML, and TOML formatters require serde and pull it in via `serde_support` internally.
 
 #### Cargo.toml Usage
 
-Standard workspace integration uses the `enabled` feature for core dependencies and default visual formatters. Adding any formatter meta-feature (e.g., `format_json`) to the features list activates that formatter. Use `full` for all formatters including `terminal_size`. For the smallest binary, specify only the specific variant flag needed (e.g., `table_plain`) without `enabled`.
+Standard workspace integration uses the `enabled` feature for core dependencies and default visual formatters. Adding any formatter meta-feature (e.g., `format_json`) to the features list activates that formatter. Use `full` for all formatters including `terminal_size`. `enabled` is the mandatory base for every formatter — the `formatters` module itself is gated on it, so a bare variant flag like `table_plain` has no effect without it. The smallest working configuration is `enabled` alone, which brings in all four default variants (`table_plain`, `expanded_postgres`, `tree_hierarchical`, `format_logfmt`) together; there is no finer-grained flag to select just one of them.
 
 #### Usage Pattern
 

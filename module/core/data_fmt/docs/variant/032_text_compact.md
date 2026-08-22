@@ -55,8 +55,8 @@
 
 - **has_borders**: No
 - **border_style**: None
-- **column_separator**: Comma
-- **row_separator**: Semicolon
+- **column_separator**: Space
+- **row_separator**: Comma
 - **header_separator**: None
 - **outer_padding**: No
 - **inner_padding**: 0
@@ -113,5 +113,5 @@
 ### Example Output
 
 ```
-Alice,30,NYC;Bob,25,LA
+Alice 30 NYC, Bob 25 LA
 ```

@@ -56,7 +56,7 @@
 - **has_borders**: No
 - **border_style**: None
 - **column_separator**: Comma
-- **row_separator**: Semicolon
+- **row_separator**: Comma+Newline
 - **header_separator**: None
 - **outer_padding**: No
 - **inner_padding**: 0
@@ -113,6 +113,7 @@
 ### Example Output
 
 ```sql
-INSERT INTO table_name (Name, Age, City) VALUES ('Alice', '30', 'NYC');
-INSERT INTO table_name (Name, Age, City) VALUES ('Bob', '25', 'LA');
+INSERT INTO "table_name" ("Name", "Age", "City") VALUES
+  ('Alice', 30, 'NYC'),
+  ('Bob', 25, 'LA');
 ```

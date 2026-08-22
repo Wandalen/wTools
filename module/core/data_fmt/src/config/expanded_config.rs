@@ -1,6 +1,6 @@
 //! Expanded (vertical record) formatter configuration types
 
-use super::PaddingSide;
+use super::{ PaddingSide, Heading };
 
 /// Formatter parameters for expanded (vertical record) output
 ///
@@ -24,6 +24,10 @@ pub struct ExpandedConfig
   pub padding_side : PaddingSide,
   /// Prefix string prepended to each key-value line (default: empty)
   pub indent_prefix : String,
+  /// Optional titled rule rendered above the formatted output (`None` = no heading)
+  pub heading : Option< Heading >,
+  /// Optional titled rule rendered below the formatted output (`None` = no footer)
+  pub footer : Option< Heading >,
 }
 
 impl Default for ExpandedConfig
@@ -39,6 +43,8 @@ impl Default for ExpandedConfig
       key_color : "\x1b[90m".to_string(),  // Gray — default color when colorize_keys is enabled
       padding_side : PaddingSide::BeforeSeparator,
       indent_prefix : String::new(),
+      heading : None,
+      footer : None,
     }
   }
 }
@@ -70,6 +76,8 @@ impl ExpandedConfig
       key_color : "\x1b[90m".to_string(),  // Gray — default color when colorize_keys is enabled
       padding_side : PaddingSide::AfterSeparator,
       indent_prefix : String::new(),
+      heading : None,
+      footer : None,
     }
   }
 
@@ -126,6 +134,22 @@ impl ExpandedConfig
   pub fn with_indent_prefix( mut self, prefix : String ) -> Self
   {
     self.indent_prefix = prefix;
+    self
+  }
+
+  /// Attach a titled heading rule rendered above the formatted output
+  #[ must_use ]
+  pub fn with_heading( mut self, h : Heading ) -> Self
+  {
+    self.heading = Some( h );
+    self
+  }
+
+  /// Attach a titled rule rendered below the formatted output
+  #[ must_use ]
+  pub fn with_footer( mut self, f : Heading ) -> Self
+  {
+    self.footer = Some( f );
     self
   }
 }

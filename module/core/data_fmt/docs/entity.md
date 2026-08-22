@@ -4,16 +4,17 @@
 
 | Type | Purpose | Master File | Instances |
 |------|---------|-------------|----------:|
-| `algorithm/` | Registry and overview of all algorithm doc instances | [algorithm/readme.md](algorithm/readme.md) | 7 |
-| `api/` | Registry and overview of all API doc instances | [api/readme.md](api/readme.md) | 4 |
+| `algorithm/` | Registry and overview of all algorithm doc instances | [algorithm/readme.md](algorithm/readme.md) | 9 |
+| `api/` | Registry and overview of all API doc instances | [api/readme.md](api/readme.md) | 6 |
 | `builder/` | Registry and overview of all builder doc instances | [builder/readme.md](builder/readme.md) | 2 |
-| `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 1 |
-| `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 7 |
+| `data_structure/` | Registry and overview of all data structure doc instances | [data_structure/readme.md](data_structure/readme.md) | 2 |
+| `feature/` | Registry and overview of all feature doc instances | [feature/readme.md](feature/readme.md) | 8 |
 | `formatter/` | Registry and overview of all formatter doc instances | [formatter/readme.md](formatter/readme.md) | 10 |
 | `input_model/` | Registry and overview of all input model doc instances | [input_model/readme.md](input_model/readme.md) | 2 |
 | `input_type/` | Registry and overview of all input type doc instances | [input_type/readme.md](input_type/readme.md) | 2 |
 | `invariant/` | Registry and overview of all invariant doc instances | [invariant/readme.md](invariant/readme.md) | 5 |
 | `pattern/` | Registry and overview of all pattern doc instances | [pattern/readme.md](pattern/readme.md) | 4 |
+| `theme/` | Registry and overview of all theme doc instances | [theme/readme.md](theme/readme.md) | 8 |
 | `trait/` | Registry and overview of all trait doc instances | [trait/readme.md](trait/readme.md) | 3 |
 | `variant/` | Registry and overview of all variant doc instances | [variant/readme.md](variant/readme.md) | 33 |
 | `tests/docs/algorithm/` | Test spec coverage for algorithm doc instances | [tests/docs/algorithm/readme.md](../tests/docs/algorithm/readme.md) | 7 |
@@ -40,13 +41,18 @@
 | algorithm | 005 | Column Fold Detection | [algorithm/005_column_fold_detection.md](algorithm/005_column_fold_detection.md) |
 | algorithm | 006 | CLI Help Alignment | [algorithm/006_cli_help_alignment.md](algorithm/006_cli_help_alignment.md) |
 | algorithm | 007 | Heading Rendering | [algorithm/007_heading_rendering.md](algorithm/007_heading_rendering.md) |
+| algorithm | 008 | Quantity Formatting | [algorithm/008_quantity_formatting.md](algorithm/008_quantity_formatting.md) |
+| algorithm | 009 | Tree Aggregation | [algorithm/009_tree_aggregation.md](algorithm/009_tree_aggregation.md) |
 | api | 001 | Data Types | [api/001_data_types.md](api/001_data_types.md) |
 | api | 002 | Builders | [api/002_builders.md](api/002_builders.md) |
 | api | 003 | Config Types | [api/003_config_types.md](api/003_config_types.md) |
 | api | 004 | Formatters | [api/004_formatters.md](api/004_formatters.md) |
+| api | 005 | Theme Types | [api/005_theme_types.md](api/005_theme_types.md) |
+| api | 006 | Quantity Formatting | [api/006_quantity_formatting.md](api/006_quantity_formatting.md) |
 | builder | 001 | RowBuilder | [builder/001_row_builder.md](builder/001_row_builder.md) |
 | builder | 002 | TreeBuilder | [builder/002_tree_builder.md](builder/002_tree_builder.md) |
 | data_structure | 001 | Variant Attributes | [data_structure/001_variant_attributes.md](data_structure/001_variant_attributes.md) |
+| data_structure | 002 | Theme Attributes | [data_structure/002_theme_attributes.md](data_structure/002_theme_attributes.md) |
 | feature | 001 | Table Formatting | [feature/001_table_formatting.md](feature/001_table_formatting.md) |
 | feature | 002 | Word Wrap | [feature/002_word_wrap.md](feature/002_word_wrap.md) |
 | feature | 003 | Unified Format Interface | [feature/003_unified_format_interface.md](feature/003_unified_format_interface.md) |
@@ -54,6 +60,7 @@
 | feature | 005 | Auto-Fit | [feature/005_auto_fit.md](feature/005_auto_fit.md) |
 | feature | 006 | API Cleanup v0.3.0 | [feature/006_api_cleanup_v030.md](feature/006_api_cleanup_v030.md) |
 | feature | 007 | Table Heading | [feature/007_table_heading.md](feature/007_table_heading.md) |
+| feature | 008 | Quantity Formatting | [feature/008_quantity_formatting.md](feature/008_quantity_formatting.md) |
 | formatter | 001 | TableFormatter | [formatter/001_table_formatter.md](formatter/001_table_formatter.md) |
 | formatter | 002 | ExpandedFormatter | [formatter/002_expanded_formatter.md](formatter/002_expanded_formatter.md) |
 | formatter | 003 | TreeFormatter | [formatter/003_tree_formatter.md](formatter/003_tree_formatter.md) |
@@ -77,8 +84,16 @@
 | pattern | 002 | Design Principles | [pattern/002_design_principles.md](pattern/002_design_principles.md) |
 | pattern | 003 | Formatter Design | [pattern/003_formatter_design.md](pattern/003_formatter_design.md) |
 | pattern | 004 | Config Builder Pattern | [pattern/004_config_builder_pattern.md](pattern/004_config_builder_pattern.md) |
+| theme | 001 | Dark | [theme/001_dark.md](theme/001_dark.md) |
+| theme | 002 | Light | [theme/002_light.md](theme/002_light.md) |
+| theme | 003 | Monokai | [theme/003_monokai.md](theme/003_monokai.md) |
+| theme | 004 | Solarized | [theme/004_solarized.md](theme/004_solarized.md) |
+| theme | 005 | Nord | [theme/005_nord.md](theme/005_nord.md) |
+| theme | 006 | Dracula | [theme/006_dracula.md](theme/006_dracula.md) |
+| theme | 007 | None | [theme/007_none.md](theme/007_none.md) |
+| theme | 008 | Custom | [theme/008_custom.md](theme/008_custom.md) |
 | trait | 001 | Format | [trait/001_format.md](trait/001_format.md) |
-| trait | 002 | TableShapedFormatter | [trait/002_table_shaped_formatter.md](trait/002_table_shaped_formatter.md) |
+| trait | 002 | TableShapedFormatter (deprecated) | [trait/002_table_shaped_formatter.md](trait/002_table_shaped_formatter.md) |
 | trait | 003 | TableShapedView | [trait/003_table_shaped_view.md](trait/003_table_shaped_view.md) |
 | variant | 001 | Table Plain | [variant/001_table_plain.md](variant/001_table_plain.md) |
 | variant | 002 | Table Minimal | [variant/002_table_minimal.md](variant/002_table_minimal.md) |

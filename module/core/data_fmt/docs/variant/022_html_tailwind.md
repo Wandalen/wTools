@@ -114,12 +114,18 @@
 
 ```html
 <table class="min-w-full divide-y divide-gray-200">
-  <thead class="bg-gray-50">
-    <tr><th class="px-6 py-3">Name</th><th class="px-6 py-3">Age</th><th class="px-6 py-3">City</th></tr>
+  <thead>
+    <tr><th>Name</th><th>Age</th><th>City</th></tr>
   </thead>
-  <tbody class="divide-y divide-gray-200">
-    <tr><td class="px-6 py-4">Alice</td><td class="px-6 py-4">30</td><td class="px-6 py-4">NYC</td></tr>
-    <tr><td class="px-6 py-4">Bob</td><td class="px-6 py-4">25</td><td class="px-6 py-4">LA</td></tr>
+  <tbody>
+    <tr><td>Alice</td><td>30</td><td>NYC</td></tr>
+    <tr><td>Bob</td><td>25</td><td>LA</td></tr>
   </tbody>
 </table>
 ```
+
+Note: the current implementation applies the variant's CSS class only to the
+`<table>` tag itself; `<thead>`, `<th>`, `<tbody>`, and `<td>` are always
+emitted with no class attribute (verified via `variant_class()` and `format()`
+in `src/formatters/html.rs`, which never writes a class on any element other
+than `<table>`).

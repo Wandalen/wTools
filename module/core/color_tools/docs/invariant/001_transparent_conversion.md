@@ -9,11 +9,11 @@
 
 ### Abstract
 
-`DecoratedText::from(text)` — whether `text` is `String` or `&str` — produces a value with `color: None`. No ANSI prefix is injected, no allocation beyond the text itself occurs.
+`DecoratedText::from(text)` — whether `text` is `String` or `&str` — produces a value with `color: None, bold: false, dim: false`. No ANSI prefix is injected, no allocation beyond the text itself occurs.
 
 ### Invariant Statement
 
-`From<String>` and `From<&str>` implementations MUST set `color: None`. The resulting `DecoratedText` is a transparent wrapper around the input text with no escape code side effects.
+`From<String>` and `From<&str>` implementations MUST set `color: None, bold: false, dim: false`. The resulting `DecoratedText` is a transparent wrapper around the input text with no escape code side effects.
 
 ### Rationale
 
@@ -24,6 +24,7 @@ This invariant enables `DecoratedText` to be a transparent drop-in for `String` 
 - Test `t01_from_string_no_color` verifies `From<String>` sets `color: None`.
 - Test `t02_from_str_no_color` verifies `From<&str>` sets `color: None`.
 - Test `t10_roundtrip_uncolored` verifies `String → DecoratedText → String` round-trip preserves text.
+- Test `t49_no_decoration_at_all_returns_bare_text` verifies the `bold: false, dim: false` half of this invariant via `DecoratedText::from(&str)`.
 
 ### Violation Consequences
 

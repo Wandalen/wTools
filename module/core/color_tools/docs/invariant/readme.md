@@ -12,6 +12,6 @@
 | ID | Name | Purpose | Status |
 |----|------|---------|--------|
 | 001 | [Transparent Conversion](001_transparent_conversion.md) | `From<T>` produces no ANSI side effects | ✅ |
-| 002 | [Render Reset Contract](002_render_reset_contract.md) | Reset appended iff `color` is `Some` | ✅ |
+| 002 | [Render Reset Contract](002_render_reset_contract.md) | Reset appended iff active (`color` is `Some`, `bold`, or `dim`) | ✅ |
 | 003 | [Emptiness Semantics](003_emptiness_semantics.md) | `is_empty()` tests text field, not render output | ✅ |
 | 004 | [Render Is Canonical](004_render_is_canonical.md) | All string conversions delegate to `render()` | ✅ |

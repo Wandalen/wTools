@@ -195,27 +195,45 @@ impl TreeFormatter
         }
       }
       output.push( '\n' );
-      return output;
     }
-
     // If the root has no data and no children, always show root name
     // (even if show_root is false) to avoid empty output
-    if tree.children.is_empty()
-    {
-      output.push_str( &tree.name );
-      output.push( '\n' );
-      return output;
-    }
-
-    // Standard tree formatting
-    if self.config.show_root
+    else if tree.children.is_empty()
     {
       output.push_str( &tree.name );
       output.push( '\n' );
     }
+    else
+    {
+      // Standard tree formatting
+      if self.config.show_root
+      {
+        output.push_str( &tree.name );
+        output.push( '\n' );
+      }
 
-    self.format_node( tree, &mut output, "", true, 0, &render_item );
+      self.format_node( tree, &mut output, "", true, 0, &render_item );
+    }
 
+    self.wrap_with_heading_footer( output )
+  }
+
+  /// Prepend heading and/or append footer around an already-rendered tree body.
+  ///
+  /// Tree output has no fixed column width the way table output does (line lengths
+  /// vary with depth and content), so the titled rule fills to the widest rendered
+  /// line's display width instead of a precomputed `table_width`.
+  fn wrap_with_heading_footer( &self, body : String ) -> String
+  {
+    if self.config.heading_ref().is_none() && self.config.footer_ref().is_none()
+    {
+      return body;
+    }
+    let width = body.lines().map( crate::ansi_str::unicode_visual_len ).max().unwrap_or( 0 );
+    let mut output = String::with_capacity( body.len() + 64 );
+    crate::config::render_rule_if_present( &mut output, self.config.heading_ref(), width );
+    output.push_str( &body );
+    crate::config::render_rule_if_present( &mut output, self.config.footer_ref(), width );
     output
   }
 

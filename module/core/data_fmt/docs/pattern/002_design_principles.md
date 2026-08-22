@@ -30,7 +30,7 @@ Eleven named principles constrain specific design dimensions. Each principle gov
 | # | Principle | Scope |
 |---|-----------|-------|
 | 1 | **Single Data Structure** — `TreeNode` for all data (hierarchical and tabular) | Data layer |
-| 2 | **Unified Format Interface** — same API for all formatters via Format trait | Formatter layer |
+| 2 | **Unified Format Interface** — same API via Format trait for 9 of 10 formatters (`TreeFormatter` uses direct method dispatch instead) | Formatter layer |
 | 3 | **Canonical Data Format** — `TableView` struct for format-agnostic code | Builders layer |
 | 4 | **Granular Features** — zero-cost abstractions with optional formatters | Build system |
 | 5 | **Mutual Replaceability** — any data can be displayed in any format | Cross-layer |
@@ -38,8 +38,8 @@ Eleven named principles constrain specific design dimensions. Each principle gov
 | 7 | **Generic** — works with any data type via `TreeNode` | Data layer |
 | 8 | **ANSI-Aware** — proper alignment with color codes | Formatter layer |
 | 9 | **Flexible Output** — string return and write-target support | Formatter layer |
-| 10 | **Helper Traits** — ergonomic builders and traits for table-shaped trees | Builders layer |
-| 11 | **Modular Architecture** — separated concerns across 16 source modules | Code structure |
+| 10 | **Helper Traits** — ergonomic builders (`RowBuilder`, building `TableView` directly) and extraction traits (`TableShapedView`, for table-shaped trees) | Builders layer |
+| 11 | **Modular Architecture** — separated concerns across 33 source modules | Code structure |
 
 ### Applicability
 

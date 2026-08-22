@@ -2,7 +2,7 @@
 
 ### Scope
 
-- **Purpose**: Provide PostgreSQL-specific INSERT statements with extended syntax support.
+- **Purpose**: Provide PostgreSQL-targeted INSERT statements; quoting is currently identical to the Ansi variant (no PostgreSQL-specific syntax is implemented).
 - **Responsibility**: Complete attribute descriptor for this output variant preset.
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
 - **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
@@ -56,7 +56,7 @@
 - **has_borders**: No
 - **border_style**: None
 - **column_separator**: Comma
-- **row_separator**: Semicolon
+- **row_separator**: Comma+Newline
 - **header_separator**: None
 - **outer_padding**: No
 - **inner_padding**: 0
@@ -79,7 +79,7 @@
 
 ### Usage Context
 
-- **primary_use_case**: PostgreSQL-specific syntax
+- **primary_use_case**: PostgreSQL-targeted database export (identical to Ansi currently)
 - **terminal_optimized**: No
 - **file_export_suitable**: Primary
 - **streaming_friendly**: Yes
@@ -113,6 +113,7 @@
 ### Example Output
 
 ```sql
-INSERT INTO table_name (Name, Age, City) VALUES ('Alice', '30', 'NYC');
-INSERT INTO table_name (Name, Age, City) VALUES ('Bob', '25', 'LA');
+INSERT INTO "table_name" ("Name", "Age", "City") VALUES
+  ('Alice', 30, 'NYC'),
+  ('Bob', 25, 'LA');
 ```

@@ -9,7 +9,7 @@
 
 ### Abstract
 
-Public interface of `DecoratedText` — a typed text wrapper with optional ANSI color. Provides builder-style color attachment, rendering to terminal-ready strings, and transparent conversions to and from plain strings.
+Public interface of `DecoratedText` — a typed text wrapper with optional ANSI color, bold, and dim styling. Provides builder-style style attachment, rendering to terminal-ready strings, and transparent conversions to and from plain strings.
 
 ### Operations
 
@@ -17,8 +17,10 @@ Public interface of `DecoratedText` — a typed text wrapper with optional ANSI 
 |-----------|---------|------------|---------|
 | `with_color` | Attach a raw ANSI color prefix | ANSI escape string (e.g. `"\x1b[33m"`) | `Self` for builder chaining |
 | `with_color_named` | Attach a semantic color | `Color` variant (e.g. `Color::Yellow`) | `Self`; stores named_color for HTML output |
-| `render` | Produce terminal-ready string | — | Colored: `prefix + text + reset`; uncolored: plain text |
-| `render_html` | Produce HTML output (feature `html_support`) | — | Named-color: `<span style="color: css">text</span>`; plain/raw: escaped text |
+| `with_bold` | Set the bold weight flag | — | `Self` for builder chaining |
+| `with_dim` | Set the dim weight flag | — | `Self` for builder chaining |
+| `render` | Produce terminal-ready string | — | Active (`color.is_some() \|\| bold \|\| dim`): prefix (bold → dim → color, each its own SGR sequence) + text + reset; inactive: plain text |
+| `render_html` | Produce HTML output (feature `html_support`) | — | One `<span style="...">` combining color/`font-weight: bold`/`opacity: 0.7` (dim) declarations present, joined by `"; "`; plain text when none apply |
 | `is_colored` | Query whether a color is attached | — | Boolean |
 | `is_empty` | Query whether the text content is empty | — | Boolean (tests text field, not render output) |
 
@@ -26,11 +28,11 @@ Public interface of `DecoratedText` — a typed text wrapper with optional ANSI 
 
 | Conversion | Direction | Behavior |
 |------------|-----------|----------|
-| `From<String>` | String → DecoratedText | Transparent — `color: None` |
-| `From<&str>` | &str → DecoratedText | Transparent — `color: None`, text owned |
+| `From<String>` | String → DecoratedText | Transparent — `color: None, bold: false, dim: false` |
+| `From<&str>` | &str → DecoratedText | Transparent — `color: None, bold: false, dim: false`, text owned |
 | `From<DecoratedText> for String` | DecoratedText → String | Delegates to `render()` |
 | `Display` | DecoratedText → formatted output | Delegates to `render()` |
-| `Default` | — → DecoratedText | Empty text, no color |
+| `Default` | — → DecoratedText | Empty text, no color, not bold, not dim |
 
 **Derives:** `Debug`, `Clone`, `PartialEq`, `Eq`, `Default`.
 Optional: `Serialize`, `Deserialize` (feature `serde_support`).
@@ -70,7 +72,7 @@ All operations are infallible by design. No ANSI validation is performed — `wi
 
 ### Compatibility Guarantees
 
-- **Public fields:** `text: String`, `color: Option<String>`, and (under `html_support`) `named_color: Option<Color>` are public. Changing their types is a breaking change.
+- **Public fields:** `text: String`, `color: Option<String>`, `bold: bool`, `dim: bool`, and (under `html_support`) `named_color: Option<Color>` are public. Changing their types is a breaking change. `bold` and `dim` each carry `#[serde(default)]` under `serde_support` so old serialized payloads without these fields still deserialize.
 - **Semantic versioning:** Major version bump required for field type changes, method removal, or behavioral changes to `render()`.
 - **No ANSI validation contract:** `with_color` will never validate or reject input — callers may rely on this pass-through behavior.
 

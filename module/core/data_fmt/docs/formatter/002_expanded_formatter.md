@@ -31,7 +31,7 @@
 | File | Relationship |
 |------|-------------|
 | [`src/formatters/expanded.rs`](../../src/formatters/expanded.rs) | `ExpandedFormatter` implementation |
-| [`src/config.rs`](../../src/config.rs) | `ExpandedConfig` struct and preset methods |
+| [`src/config/expanded_config.rs`](../../src/config/expanded_config.rs) | `ExpandedConfig` struct and preset methods |
 
 ### Trait
 

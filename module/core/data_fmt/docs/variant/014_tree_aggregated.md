@@ -7,6 +7,12 @@
 - **In Scope**: All 46 variant attributes, example output, feature flag, compatibility.
 - **Out of Scope**: Formatter implementation (see source), attribute schema (see `../data_structure/001_variant_attributes.md`).
 
+### Algorithms
+
+| File | Relationship |
+|------|-------------|
+| [009_tree_aggregation.md](../algorithm/009_tree_aggregation.md) | Recursive aggregate computation and rendering algorithm backing this variant |
+
 ### DataStructures
 
 | File | Relationship |
@@ -23,13 +29,13 @@
 
 | File | Relationship |
 |------|-------------|
-| [`src/formatters/tree.rs`](../../src/formatters/tree.rs) | TreeFormatter implementation |
+| [`src/formatters/tree/aggregated.rs`](../../src/formatters/tree/aggregated.rs) | TreeFormatter implementation (`format_with_aggregation()`) |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
-| [`tests/aligned_tree_basic.rs`](../../tests/aligned_tree_basic.rs) | Tree alignment and rendering tests |
+| [`tests/variant_014_tree_aggregated_test.rs`](../../tests/variant_014_tree_aggregated_test.rs) | Spec tests VT-1..VT-4 for the aggregated variant |
 
 ### Identity & Classification
 
@@ -113,9 +119,17 @@
 ### Example Output
 
 ```
-Root (2 items, total: 55)
-├── Alice (age: 30)
-│   └── Subtotal: 30
-└── Bob (age: 25)
-    └── Subtotal: 25
+src/ (450 lines, 90.0%)
+│   ├── main.rs (150 lines, 30.0%)
+│   └── lib.rs (300 lines, 60.0%)
+tests/ (50 lines, 10.0%)
+    └── test.rs (50 lines, 10.0%)
 ```
+
+Note: `format_with_aggregation()` never renders the root node (the recursive
+helper hardcodes `is_root = true` for the top call and skips the directory-line
+branch unconditionally, regardless of `TreeConfig`), and directory roll-up
+lines (e.g. `src/ (...)`) are emitted flush-left with no tree-branch prefix or
+connector — only leaf value lines are indented and prefixed with `├──`/`└──`.
+Verified by running `TreeFormatter::new().format_with_aggregation()` against
+`src/formatters/tree/aggregated.rs`.

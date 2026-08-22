@@ -12,7 +12,8 @@ Typed text-with-optional-ANSI-color abstraction.
 Key properties:
 - `From<String>` and `From<&str>` are transparent (no color, no overhead)
 - `.with_color( "\x1b[33m" )` attaches a color prefix via builder
-- `.render()` appends `"\x1b[0m"` (ANSI reset) only when colored
+- `.with_bold()` / `.with_dim()` attach SGR text weight, cumulative with `.with_color()`
+- `.render()` appends `"\x1b[0m"` (ANSI reset) whenever color, bold, or dim is set
 - `From<DecoratedText> for String` delegates to `.render()`
 
 ## Quick Start

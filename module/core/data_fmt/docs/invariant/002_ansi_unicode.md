@@ -12,12 +12,14 @@
 | File | Relationship |
 |------|-------------|
 | [`src/ansi_str.rs`](../../src/ansi_str.rs) | ANSI escape handling implementation |
+| [`src/formatters/table/row_rendering.rs`](../../src/formatters/table/row_rendering.rs) | `format_row_colored` — DecoratedText Detail-Line Rule enforcement point, `restyle()` helper (BUG-024) |
 
 ### Tests
 
 | File | Relationship |
 |------|-------------|
 | [`tests/unicode_display_width_alignment.rs`](../../tests/unicode_display_width_alignment.rs) | Unicode width and ANSI handling tests |
+| [`tests/decorated_cells_test.rs`](../../tests/decorated_cells_test.rs) | Per-cell `DecoratedText` styling survival tests, including BUG-024 bold/dim regression coverage (P05-P07) |
 
 ### Algorithms
 
@@ -41,7 +43,7 @@
 | CJK | "日本語" | 9 | 3 | **6** |
 | Emoji | "🎉" | 4 | 1 | **2** |
 | Combining | "e\u{0301}" (é) | 3 | 2 | 1 |
-| ANSI | "\x1b[31mtext\x1b[0m" | 14 | 4 (visible) | 4 |
+| ANSI | "\x1b[31mtext\x1b[0m" | 13 | 4 (visible) | 4 |
 
 **Key insight**: multi-byte encoding (byte count > char count) does NOT imply wide display. Cyrillic is multi-byte but 1 display width per character. Only CJK and emoji have display width = 2.
 
@@ -63,7 +65,9 @@ For cells containing newlines, each sub-line is wrapped separately. The row buff
 
 #### DecoratedText Detail-Line Rule
 
-When rendering `DecoratedText` detail lines, always iterate over the raw text lines — never render first and then split on line breaks. Rendering produces color prefix + text + ANSI_RESET as a single string; splitting that result places the ANSI_RESET only after the last sub-line, causing intermediate lines to bleed the terminal's background color across line boundaries. The correct approach iterates the raw text lines and wraps each independently with its own color/reset pair.
+When rendering `DecoratedText` detail lines, always iterate over the raw text lines — never render first and then split on line breaks. Rendering produces style prefix (color and/or bold/dim) + text + ANSI_RESET as a single string; splitting that result places the ANSI_RESET only after the last sub-line, causing intermediate lines to bleed the terminal's background color across line boundaries. The correct approach iterates the raw text lines and wraps each independently with its own style/reset pair.
+
+**Fix(BUG-024)**: Cell-reconstruction points that build a fresh `DecoratedText` from a transformed text string (Markdown pipe-escaping, per-line multiline splitting in `format_row_colored`) must carry forward ALL styling fields — color, bold, and dim — not color alone. Before the fix, both reconstruction sites in `src/formatters/table/row_rendering.rs` copied only `.color`, and the multiline branch's dispatch condition (`if let Some(color) = ct.color`) skipped styling entirely for bold- or dim-only cells with no color set, silently dropping their styling. The fix centralizes reconstruction through a `restyle()` helper that chains `.with_color()`/`.with_bold()`/`.with_dim()` for whichever flags are actually set, and widens the dispatch condition to `ct.color.is_some() || ct.bold || ct.dim`.
 
 ### Enforcement Mechanism
 
@@ -78,3 +82,4 @@ When rendering `DecoratedText` detail lines, always iterate over the raw text li
 | ANSI reset per-line | Terminal background color bleeds across subsequent output lines |
 | Per-line multiline wrapping | Intermediate multiline cell sub-lines inherit prior row's background color |
 | DecoratedText line iteration | Detail annotation lines bleed color across line boundaries |
+| DecoratedText reconstruction field parity | Bold/dim-only cells (no color) silently lose all styling on Markdown-escape or multiline-split reconstruction (BUG-024) |

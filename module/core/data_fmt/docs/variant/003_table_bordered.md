@@ -68,7 +68,7 @@
 - **supports_hierarchical**: No
 - **supports_tabular**: Yes
 - **preserves_structure**: Yes
-- **supports_multiline_values**: No
+- **supports_multiline_values**: Yes
 
 ### Output Characteristics
 

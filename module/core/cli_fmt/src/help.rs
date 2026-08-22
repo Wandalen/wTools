@@ -6,6 +6,7 @@
 
 use core::fmt::Write as _;
 use std::io::IsTerminal;
+use color_tools::{ Color, DecoratedText };
 
 // ─── Style ───────────────────────────────────────────────────────────────────
 
@@ -13,6 +14,11 @@ use std::io::IsTerminal;
 ///
 /// `CliHelpStyle::default()` reproduces the layout and ANSI codes used by
 /// `claude_profile::print_usage()` (`cmd_indent=4`, `cmd_name_width=20`, etc.).
+///
+/// Color fields are `color_tools::DecoratedText` style descriptors: only their
+/// `color`/`bold`/`dim` fields are meaningful here. `text` is always empty and
+/// is replaced with the actual span content at render time via struct-update
+/// syntax (see the private `decorate()` helper below).
 #[ derive( Debug, Clone ) ]
 pub struct CliHelpStyle
 {
@@ -32,16 +38,14 @@ pub struct CliHelpStyle
   pub col_gap        : usize,
   /// Left margin (spaces) before example invocation lines.
   pub example_indent : usize,
-  /// ANSI code for section headers and the usage line (bold).
-  pub color_tagline  : &'static str,
-  /// ANSI codes for group header lines (yellow+bold).
-  pub color_group    : &'static str,
-  /// ANSI code for command and option names (bold cyan).
-  pub color_option   : &'static str,
-  /// ANSI code for example invocation lines (dim).
-  pub color_example  : &'static str,
-  /// ANSI reset sequence applied after each colored span.
-  pub color_reset    : &'static str,
+  /// Style for section headers and the usage line (bold).
+  pub color_tagline  : DecoratedText,
+  /// Style for group header lines (yellow+bold).
+  pub color_group    : DecoratedText,
+  /// Style for command and option names (bold cyan).
+  pub color_option   : DecoratedText,
+  /// Style for example invocation lines (dim).
+  pub color_example  : DecoratedText,
   /// When `true`, suppress ANSI codes when stdout is not a terminal; when `false`, always suppress.
   pub tty_detect     : bool,
 }
@@ -60,13 +64,29 @@ impl Default for CliHelpStyle
       opt_name_width : 18,
       col_gap        : 2,
       example_indent : 2,
-      color_tagline  : "\x1b[1m",
-      color_group    : "\x1b[33m\x1b[1m",
-      color_option   : "\x1b[1;36m",
-      color_example  : "\x1b[2m",
-      color_reset    : "\x1b[0m",
+      color_tagline  : DecoratedText::default().with_bold(),
+      color_group    : DecoratedText::default().with_bold().with_color_named( Color::Yellow ),
+      color_option   : DecoratedText::default().with_bold().with_color_named( Color::Cyan ),
+      color_example  : DecoratedText::default().with_dim(),
       tty_detect     : true,
     }
+  }
+}
+
+/// Apply a style role to a text span, honoring `use_color`.
+///
+/// `role.text` is discarded — the caller's `text` becomes the actual content via
+/// struct-update. When `use_color` is `false`, returns `text` unchanged with no
+/// escape codes injected, regardless of what `role` carries.
+fn decorate( use_color : bool, role : &DecoratedText, text : &str ) -> String
+{
+  if use_color
+  {
+    DecoratedText { text : text.to_owned(), ..role.clone() }.render()
+  }
+  else
+  {
+    text.to_owned()
   }
 }
 
@@ -300,28 +320,22 @@ impl CliHelpTemplate
   pub fn render( &self ) -> String
   {
     let use_color = self.style.tty_detect && std::io::stdout().is_terminal();
-    let s         = &self.style;
-    let c         = | code : &'static str | -> &str { if use_color { code } else { "" } };
-    let bold      = c( s.color_tagline );
-    let grp       = c( s.color_group   );
-    let opt       = c( s.color_option  );
-    let ex        = c( s.color_example );
-    let rst       = c( s.color_reset   );
     let mut out   = String::new();
-    self.emit_header( &mut out, bold, rst );
-    self.emit_arguments( &mut out, bold, opt, rst );
-    self.emit_groups( &mut out, grp, opt, rst );
-    self.emit_option_groups( &mut out, bold, opt, rst );
+    self.emit_header( &mut out, use_color );
+    self.emit_arguments( &mut out, use_color );
+    self.emit_groups( &mut out, use_color );
+    self.emit_option_groups( &mut out, use_color );
     if self.data.option_groups.is_empty() && !self.data.options.is_empty()
     {
-      self.emit_options( &mut out, bold, opt, rst );
+      self.emit_options( &mut out, use_color );
     }
-    if !self.data.examples.is_empty() { self.emit_examples( &mut out, bold, ex, rst ); }
+    if !self.data.examples.is_empty() { self.emit_examples( &mut out, use_color ); }
     out
   }
 
-  fn emit_header( &self, out : &mut String, bold : &str, rst : &str )
+  fn emit_header( &self, out : &mut String, use_color : bool )
   {
+    let s = &self.style;
     if !self.data.usage_lines.is_empty()
     {
       for line in &self.data.usage_lines
@@ -331,26 +345,32 @@ impl CliHelpTemplate
     }
     else
     {
-      let _ = writeln!( out, "{bold}Usage:{rst} {} <command>", self.data.binary );
+      let usage = decorate( use_color, &s.color_tagline, "Usage:" );
+      let _ = writeln!( out, "{usage} {} <command>", self.data.binary );
     }
     let _ = writeln!( out );
     let _ = writeln!( out, "{}", self.data.tagline );
     let _ = writeln!( out );
-    let _ = writeln!( out, "{bold}Commands:{rst}" );
+    let commands = decorate( use_color, &s.color_tagline, "Commands:" );
+    let _ = writeln!( out, "{commands}" );
   }
 
-  fn emit_arguments( &self, out : &mut String, bold : &str, opt_color : &str, rst : &str )
+  fn emit_arguments( &self, out : &mut String, use_color : bool )
   {
+    let s = &self.style;
     if self.data.arguments.is_empty() { return; }
     let max_len = self.data.arguments.iter().map( |e| e.name.len() ).max().unwrap_or( 0 );
-    let _ = writeln!( out, "\n{bold}Arguments:{rst}" );
+    let header = decorate( use_color, &s.color_tagline, "Arguments:" );
+    let _ = writeln!( out, "\n{header}" );
     for e in &self.data.arguments
     {
-      let _ = writeln!( out, "  {opt_color}{:<width$}{rst}  {}", e.name, e.desc, width = max_len );
+      let padded = format!( "{:<width$}", e.name, width = max_len );
+      let name   = decorate( use_color, &s.color_option, &padded );
+      let _ = writeln!( out, "  {name}  {}", e.desc );
     }
   }
 
-  fn emit_groups( &self, out : &mut String, grp_color : &str, opt_color : &str, rst : &str )
+  fn emit_groups( &self, out : &mut String, use_color : bool )
   {
     let s  = &self.style;
     let gi = " ".repeat( s.grp_indent );
@@ -366,36 +386,41 @@ impl CliHelpTemplate
       .max( s.cmd_name_width );
     for group in &self.data.groups
     {
-      let _ = writeln!( out, "\n{gi}{grp_color}{}{rst}", group.name );
+      let name = decorate( use_color, &s.color_group, &group.name );
+      let _ = writeln!( out, "\n{gi}{name}" );
       for entry in &group.entries
       {
         let padded = format!( "{:<width$}", entry.name, width = width );
-        let _ = writeln!( out, "{ci}{opt_color}{padded}{rst}{gp}{}", entry.desc );
+        let opt    = decorate( use_color, &s.color_option, &padded );
+        let _ = writeln!( out, "{ci}{opt}{gp}{}", entry.desc );
       }
     }
   }
 
-  fn emit_option_group( &self, out : &mut String, bold : &str, opt_color : &str, rst : &str,
-                        name : &str, entries : &[ OptionEntry ] )
+  fn emit_option_group( &self, out : &mut String, use_color : bool, name : &str, entries : &[ OptionEntry ] )
   {
+    let s = &self.style;
     if entries.is_empty() { return; }
     let max_len = entries.iter().map( |e| e.name.len() ).max().unwrap_or( 0 );
-    let _ = writeln!( out, "\n{bold}{name}:{rst}" );
+    let header = decorate( use_color, &s.color_tagline, &format!( "{name}:" ) );
+    let _ = writeln!( out, "\n{header}" );
     for e in entries
     {
-      let _ = writeln!( out, "  {opt_color}{:<width$}{rst}  {}", e.name, e.desc, width = max_len );
+      let padded = format!( "{:<width$}", e.name, width = max_len );
+      let opt    = decorate( use_color, &s.color_option, &padded );
+      let _ = writeln!( out, "  {opt}  {}", e.desc );
     }
   }
 
-  fn emit_option_groups( &self, out : &mut String, bold : &str, opt_color : &str, rst : &str )
+  fn emit_option_groups( &self, out : &mut String, use_color : bool )
   {
     for group in &self.data.option_groups
     {
-      self.emit_option_group( out, bold, opt_color, rst, &group.name, &group.entries );
+      self.emit_option_group( out, use_color, &group.name, &group.entries );
     }
   }
 
-  fn emit_options( &self, out : &mut String, bold : &str, opt_color : &str, rst : &str )
+  fn emit_options( &self, out : &mut String, use_color : bool )
   {
     let s  = &self.style;
     let oi = " ".repeat( s.opt_indent );
@@ -408,17 +433,19 @@ impl CliHelpTemplate
       .unwrap_or( 0 )
       .max( s.opt_name_width );
     let _ = writeln!( out );
-    let _ = writeln!( out, "{bold}Options:{rst}" );
+    let header = decorate( use_color, &s.color_tagline, "Options:" );
+    let _ = writeln!( out, "{header}" );
     for opt in &self.data.options
     {
       let padded = format!( "{:<width$}", opt.name, width = width );
-      let _ = writeln!( out, "{oi}{opt_color}{padded}{rst}{gp}{}", opt.desc );
+      let name   = decorate( use_color, &s.color_option, &padded );
+      let _ = writeln!( out, "{oi}{name}{gp}{}", opt.desc );
     }
   }
 
-  fn emit_examples( &self, out : &mut String, bold : &str, ex_color : &str, rst : &str )
+  fn emit_examples( &self, out : &mut String, use_color : bool )
   {
-    emit_examples_section( out, self.style.example_indent, bold, ex_color, rst, &self.data.examples );
+    emit_examples_section( out, &self.style, use_color, &self.data.examples );
   }
 }
 
@@ -428,21 +455,23 @@ impl CliHelpTemplate
 //   ignoring desc: Option<String> despite being documented as annotation field
 // Pitfall: Option-typed renderer fields need a test asserting the Some branch
 //   appears in output — compiling without error is not proof it renders
-fn emit_examples_section( out : &mut String, example_indent : usize, bold : &str, ex_color : &str, rst : &str, examples : &[ ExampleEntry ] )
+fn emit_examples_section( out : &mut String, style : &CliHelpStyle, use_color : bool, examples : &[ ExampleEntry ] )
 {
-  let ei = " ".repeat( example_indent );
+  let ei = " ".repeat( style.example_indent );
   let _ = writeln!( out );
-  let _ = writeln!( out, "{bold}Examples:{rst}" );
+  let header = decorate( use_color, &style.color_tagline, "Examples:" );
+  let _ = writeln!( out, "{header}" );
   for ex in examples
   {
-    if let Some( ref desc ) = ex.desc
+    // invocation + optional annotation share ONE color span, matching the
+    // pre-typed-style behaviour where both sat between one open code and one reset
+    let line_text = match &ex.desc
     {
-      let _ = writeln!( out, "{ei}{ex_color}{}  # {desc}{rst}", ex.invocation );
-    }
-    else
-    {
-      let _ = writeln!( out, "{ei}{ex_color}{}{rst}", ex.invocation );
-    }
+      Some( desc ) => format!( "{}  # {desc}", ex.invocation ),
+      None         => ex.invocation.clone(),
+    };
+    let line = decorate( use_color, &style.color_example, &line_text );
+    let _ = writeln!( out, "{ei}{line}" );
   }
 }
 
@@ -480,11 +509,6 @@ impl DetailPageTemplate
   {
     let use_color = self.style.tty_detect && std::io::stdout().is_terminal();
     let s         = &self.style;
-    let c         = | code : &'static str | -> &str { if use_color { code } else { "" } };
-    let bold      = c( s.color_tagline );
-    let opt       = c( s.color_option  );
-    let ex        = c( s.color_example );
-    let rst       = c( s.color_reset   );
     let oi        = " ".repeat( s.opt_indent );
     let ei        = " ".repeat( s.example_indent );
     let gp        = " ".repeat( s.col_gap );
@@ -492,13 +516,27 @@ impl DetailPageTemplate
     match ( self.data.label.is_empty(), self.data.name.is_empty() )
     {
       ( true, true )   => {},
-      ( true, false )  => { let _ = writeln!( out, "{opt}{}{rst}", self.data.name ); },
-      ( false, true )  => { let _ = writeln!( out, "{bold}{}:{rst}", self.data.label ); },
-      ( false, false ) => { let _ = writeln!( out, "{bold}{}:{rst} {opt}{}{rst}", self.data.label, self.data.name ); },
+      ( true, false )  =>
+      {
+        let name = decorate( use_color, &s.color_option, &self.data.name );
+        let _ = writeln!( out, "{name}" );
+      },
+      ( false, true )  =>
+      {
+        let label = decorate( use_color, &s.color_tagline, &format!( "{}:", self.data.label ) );
+        let _ = writeln!( out, "{label}" );
+      },
+      ( false, false ) =>
+      {
+        let label = decorate( use_color, &s.color_tagline, &format!( "{}:", self.data.label ) );
+        let name  = decorate( use_color, &s.color_option, &self.data.name );
+        let _ = writeln!( out, "{label} {name}" );
+      },
     }
     for line in &self.data.usage
     {
-      let _ = writeln!( out, "{ei}{ex}{line}{rst}" );
+      let text = decorate( use_color, &s.color_example, line );
+      let _ = writeln!( out, "{ei}{text}" );
     }
     if !self.data.description.is_empty()
     {
@@ -517,23 +555,27 @@ impl DetailPageTemplate
       let _ = writeln!( out );
       if !section.title.is_empty()
       {
-        let _ = writeln!( out, "{bold}{}:{rst}", section.title );
+        let title = decorate( use_color, &s.color_tagline, &format!( "{}:", section.title ) );
+        let _ = writeln!( out, "{title}" );
       }
       for e in &section.entries
       {
         if e.desc.is_empty()
         {
-          let _ = writeln!( out, "{oi}{opt}{}{rst}", e.name );
+          let name = decorate( use_color, &s.color_option, &e.name );
+          let _ = writeln!( out, "{oi}{name}" );
         }
         else
         {
-          let _ = writeln!( out, "{oi}{opt}{:<width$}{rst}{gp}{}", e.name, e.desc, width = width );
+          let padded = format!( "{:<width$}", e.name, width = width );
+          let name   = decorate( use_color, &s.color_option, &padded );
+          let _ = writeln!( out, "{oi}{name}{gp}{}", e.desc );
         }
       }
     }
     if !self.data.examples.is_empty()
     {
-      emit_examples_section( &mut out, s.example_indent, bold, ex, rst, &self.data.examples );
+      emit_examples_section( &mut out, s, use_color, &self.data.examples );
     }
     out
   }

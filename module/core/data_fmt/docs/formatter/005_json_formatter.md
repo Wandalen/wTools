@@ -54,7 +54,7 @@ Selection mechanism: constructor function. Both variants compile under the same 
 
 | Variant | Selector | Feature Flag |
 |---------|----------|--------------|
-| pretty | `JsonFormatter::new()` or `JsonFormatter::pretty()` | `format_json` |
+| pretty | `JsonFormatter::new()` (pretty-printing is the default) | `format_json` |
 | compact | `JsonFormatter::compact()` | `format_json` |
 
 Note: enabling `format_json` compiles both variants. There is no way to exclude one variant at compile time.

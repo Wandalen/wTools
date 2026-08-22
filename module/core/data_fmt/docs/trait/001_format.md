@@ -38,7 +38,7 @@
 | Formatter | Feature Gate | Dependencies |
 |-----------|-------------|--------------|
 | `TableFormatter` | `table_*` (9 flags) | none |
-| `ExpandedFormatter` | `format_expanded` | none |
+| `ExpandedFormatter` | `expanded_*` (2 flags) | none |
 | `LogfmtFormatter` | `format_logfmt` | none |
 | `HtmlFormatter` | `html_*` (4 flags) | none |
 | `SqlFormatter` | `sql_*` (4 flags) | none |

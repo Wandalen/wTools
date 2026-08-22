@@ -24,7 +24,7 @@
 
 | File | Relationship |
 |------|-------------|
-| [003_auto_wrap_backward_compat.md](../invariant/003_auto_wrap_backward_compat.md) | auto_wrap(false) backward compatibility guarantee |
+| [003_auto_wrap_backward_compat.md](../invariant/003_auto_wrap_backward_compat.md) | with_auto_wrap(false) backward compatibility guarantee |
 | [004_column_fold_invariants.md](../invariant/004_column_fold_invariants.md) | Fold behavioral invariants |
 
 ### Sources
@@ -34,7 +34,8 @@
 | [`src/formatters/table/mod.rs`](../../src/formatters/table/mod.rs) | `format_internal` orchestration; dispatches to auto_fit and rendering |
 | [`src/formatters/table/auto_fit.rs`](../../src/formatters/table/auto_fit.rs) | Column classification, budget allocation, fold detection and rendering |
 | [`src/formatters/table/rendering.rs`](../../src/formatters/table/rendering.rs) | Row and border rendering primitives used during fold output |
-| [`src/config.rs`](../../src/config.rs) | ColumnFlex, FoldStyle enums; auto-fit TableConfig fields |
+| [`src/config/table_enums.rs`](../../src/config/table_enums.rs) | `ColumnFlex`, `FoldStyle` enums |
+| [`src/config/table_config.rs`](../../src/config/table_config.rs) | Auto-fit `TableConfig` fields (`auto_wrap`, `auto_fold`, `column_flex`, `fold_style`, `fold_indent`) |
 | [`src/wrap.rs`](../../src/wrap.rs) | WrapFormatter for cell wrapping |
 
 ### Tests
@@ -42,7 +43,7 @@
 | File | Relationship |
 |------|-------------|
 | [`tests/auto_wrap_test.rs`](../../tests/auto_wrap_test.rs) | Auto-wrap test suite T01–T23 (23 tests) |
-| [`tests/auto_wrap_budget_test.rs`](../../tests/auto_wrap_budget_test.rs) | Budget allocation acceptance criteria BA AC-6–AC-8 + invariant WC IN-3 (13 tests) |
+| [`tests/auto_wrap_budget_test.rs`](../../tests/auto_wrap_budget_test.rs) | Budget allocation acceptance criteria BA AC-6–AC-11 + invariants WC IN-3–IN-10 (14 tests) |
 | [`tests/auto_fold_test.rs`](../../tests/auto_fold_test.rs) | Column folding test suite T01–T25 (25 tests) |
 | [`tests/auto_fold_acceptance_test.rs`](../../tests/auto_fold_acceptance_test.rs) | Fold acceptance criteria CF AC-6–AC-8 + additional (7 tests) |
 
@@ -79,7 +80,7 @@ b1  governance.rulebook.md  120    23
     Path: /home/user1/pro/genai/governance/governance.rulebook.md
 ```
 
-Column folding reuses the sub-row detail line infrastructure (see `table_formatting.md § Sub-Row Detail Lines`).
+Column folding reuses the sub-row detail line infrastructure (see `001_table_formatting.md § Sub-Row Detail Lines`).
 
 #### Combination
 
@@ -122,7 +123,7 @@ The auto-fit pipeline begins by resolving the effective terminal width. The `res
 
 | Priority | Source | Condition | Example |
 |----------|--------|-----------|---------|
-| 0 | `terminal_width` config field | Caller sets `TableConfig::terminal_width( Some(80) )` | Fixed width for tests or embedded use |
+| 0 | `terminal_width` config field | Caller sets `TableConfig::with_terminal_width( Some(80) )` | Fixed width for tests or embedded use |
 | 1 | `$COLUMNS` environment variable | `COLUMNS` is set to a positive integer | CI/CD pipelines, scripts, non-TTY environments |
 | 2 | `terminal_size` crate | Feature `terminal_size` enabled and stdout is a TTY | Runtime detection via the terminal size library |
 | 3 | Hardcoded fallback | None of the above | 120 columns |
@@ -169,7 +170,7 @@ All fields have sensible defaults — auto-fit works without any configuration.
 
 #### Disabling Auto-Fit
 
-Auto-fit can be partially or fully disabled via `TableConfig` builder methods: set `auto_wrap(false)` to disable Strategy 2 only, `auto_fold(false)` to disable Strategy 1 only, or both to restore unlimited-width pre-auto-fit behavior.
+Auto-fit can be partially or fully disabled via `TableConfig` builder methods: set `with_auto_wrap(false)` to disable Strategy 2 only, `with_auto_fold(false)` to disable Strategy 1 only, or both to restore unlimited-width pre-auto-fit behavior.
 
 #### Progressive Degradation
 
@@ -192,6 +193,6 @@ Strategy 2 (✅ implemented); Strategy 1 (✅ implemented).
 
 #### See Also
 
-- `table_formatting.md` — base table features (multiline cells, truncation, coloring, sub-rows)
-- `../api/config_types.md § TableConfig` — field reference and builder API
-- `word_wrap.md` — underlying WrapFormatter used by Strategy 2
+- `001_table_formatting.md` — base table features (multiline cells, truncation, coloring, sub-rows)
+- `../api/003_config_types.md § TableConfig` — field reference and builder API
+- `002_word_wrap.md` — underlying WrapFormatter used by Strategy 2

@@ -38,7 +38,7 @@ A generic tree node with three public fields: `name : String` (node label), `dat
 
 #### TableView
 
-The canonical interchange format for the `Format` trait. Holds `metadata : TableMetadata`, `rows : Vec< Vec< String > >`, and `row_details : Vec< Option< DecoratedText > >`. The primary construction path is `RowBuilder::build_view()`. Two direct constructors exist for advanced use: `TableView::new( metadata, rows )` (defaults `row_details` to empty) and `TableView::with_details( metadata, rows, row_details )` (explicit parallel vector). Converts back to `TreeNode< Vec< String > >` via `TableView::to_tree_node()` for visual formatters that predate the `Format` trait.
+The canonical interchange format for the `Format` trait. Holds `metadata : TableMetadata`, `rows : Vec< Vec< DecoratedText > >` (each cell may carry an optional ANSI color plus independent bold/dim weight flags), and `row_details : Vec< Option< DecoratedText > >` (parallel to `rows`, one optional detail line per row). The primary construction path is `RowBuilder::build_view()`. Two direct constructors exist for advanced use: `TableView::new( metadata, rows )` (defaults `row_details` to empty) and `TableView::with_details( metadata, rows, row_details )` (explicit parallel vector). Conversion is one-directional: `conversions::flatten_to_table_tree()` builds a `TableView` from a `TreeNode< T >`, but no method converts a `TableView` back into a `TreeNode`.
 
 #### TableMetadata
 

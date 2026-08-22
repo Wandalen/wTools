@@ -52,9 +52,9 @@ Controlled by two `TableConfig` fields:
 - `max_column_width` — cells wider than this value are truncated. Disabled by default.
 - `truncation_marker` — appended to truncated content. Defaults to `"..."`.
 
-For example, a 20-character limit with a `"..."` marker shortens `"Very long content that exceeds twenty characters"` to `"Very long conten..."` (20 chars total, marker included).
+For example, a 20-character limit with a `"..."` marker shortens `"Very long content that exceeds twenty characters"` to `"Very long content..."` (20 chars total, marker included).
 
-Truncation is ANSI-aware: `visual_len()` excludes escape codes from the width count and `strs_tools::ansi::truncate()` preserves color codes in the truncated output. Truncation applies to both header and data cells during `format_row()`.
+Truncation is ANSI-aware: `unicode_visual_len()` excludes escape codes from the width count and `truncate_cell()` preserves color codes in the truncated output. Truncation applies to both header and data cells during `format_row()`.
 
 #### Multiline + Truncation Interaction
 
@@ -74,9 +74,9 @@ When `TableConfig::column_widths` is set explicitly, it replaces calculated widt
 
 Two independent color features controlled via `TableConfig` builder methods:
 
-**Header coloring** -- `colorize_header( true )` + `header_color( code )` wraps the header row in the given ANSI code. Each output line is wrapped individually: `color + content + \x1b[0m + \n`.
+**Header coloring** -- `with_colorize_header( true )` + `with_header_color( code )` wraps the header row in the given ANSI code. Each output line is wrapped individually: `color + content + \x1b[0m + \n`.
 
-**Alternating row colors** -- `alternating_rows( true )` + `row_colors( color1, color2 )` alternates between two ANSI codes for data rows.
+**Alternating row colors** -- `with_alternating_rows( true )` + `with_row_colors( color1, color2 )` alternates between two ANSI codes for data rows.
 
 Every colored line ends with `\x1b[0m` before the trailing `\n` to prevent terminal background-color bleed. For multiline cells, each sub-line is wrapped with its own color/RESET pair.
 
@@ -103,7 +103,7 @@ Optional annotation lines that appear below a data row, outside the cell grid. E
 Rendering behavior:
 
 - Detail lines are emitted AFTER all row content lines (including multiline cells) and BEFORE any inter-row separator.
-- Each detail line is prefixed with `sub_row_indent` (default: 2 spaces). Configure via `TableConfig::sub_row_indent( indent )`.
+- Each detail line is prefixed with `sub_row_indent` (default: 2 spaces). Configure via `TableConfig::with_sub_row_indent( indent )`.
 - Multi-line details (containing `\n`) are split on newlines; every resulting line receives the indent prefix and its own color/reset pair independently (no ANSI bleed across line boundaries).
 - Detail lines do NOT participate in column width calculation — they are metadata, not cell values.
 - Detail lines are NOT colored by alternating row colors — only by the detail's own color field.

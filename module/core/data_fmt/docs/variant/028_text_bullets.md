@@ -46,7 +46,7 @@
 
 ### Character Set & Encoding
 
-- **charset**: ASCII
+- **charset**: UTF-8
 - **border_charset**: None
 - **requires_unicode_terminal**: No
 - **supports_ansi_colors**: Yes
@@ -55,7 +55,7 @@
 
 - **has_borders**: No
 - **border_style**: None
-- **column_separator**: None
+- **column_separator**: Space
 - **row_separator**: Newline
 - **header_separator**: None
 - **outer_padding**: No
@@ -90,7 +90,7 @@
 - **escaping_rules**: None
 - **output_format**: text/plain
 - **standards_compliance**: None
-- **supports_custom_colors**: Yes
+- **supports_custom_colors**: No
 
 ### API & Construction
 
@@ -113,6 +113,6 @@
 ### Example Output
 
 ```
-• Name: Alice, Age: 30, City: NYC
-• Name: Bob, Age: 25, City: LA
+  • Alice 30 NYC
+  • Bob 25 LA
 ```

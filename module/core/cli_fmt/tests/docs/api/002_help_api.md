@@ -4,7 +4,7 @@
 
 - **Purpose**: Verify the API contract documented in `docs/api/002_help_api.md`.
 - **Responsibility**: Test spec for render infallibility, `CliHelpStyle::default()` field values, column padding semantics, conditional section omission, and `ExampleEntry.desc` annotation rendering.
-- **In Scope**: Render infallibility (AP-1), `CliHelpStyle::default()` layout field values (AP-2), column padding as minimum width (AP-3), section omission when vecs empty (AP-4), `ExampleEntry.desc` Some/None rendering (AP-5), `CliHelpStyle::default()` color field values and `tty_detect` (AP-6), `OptionGroup` struct construction (AP-7), `CliHelpData::default()` constructs with empty Vecs (AP-8), `CliHelpData` struct-literal rejection under `#[non_exhaustive]` (AP-9), prelude re-export surface (AP-10), OptionGroup with empty entries list omitted entirely including header (AP-11).
+- **In Scope**: Render infallibility (AP-1), `CliHelpStyle::default()` layout field values (AP-2), column padding as minimum width (AP-3), section omission when vecs empty (AP-4), `ExampleEntry.desc` Some/None rendering (AP-5), `CliHelpStyle::default()` typed color/style field values and `tty_detect` (AP-6), `OptionGroup` struct construction (AP-7), `CliHelpData::default()` constructs with empty Vecs (AP-8), `CliHelpData` struct-literal rejection under `#[non_exhaustive]` (AP-9), prelude re-export surface (AP-10), OptionGroup with empty entries list omitted entirely including header (AP-11).
 - **Out of Scope**: Behavioral rationale and style customization — see `tests/docs/feature/002_cli_help_template.md` for feature-level behavioral specs.
 
 ### AP-1: CliHelpTemplate::render() is infallible — accepts any valid input without panic
@@ -37,11 +37,11 @@
 - **When:** `CliHelpTemplate::new(style, data).render()`
 - **Then:** line containing `"myapp cmd-one"` includes `"# run one"`; line containing `"myapp cmd-two"` contains no `'#'` character
 
-### AP-6: CliHelpStyle::default() produces the documented color field values and tty_detect
+### AP-6: CliHelpStyle::default() produces the documented color/style values and tty_detect
 
 - **Given:** `CliHelpStyle::default()`
-- **When:** each color field and `tty_detect` are read directly
-- **Then:** `color_tagline == "\x1b[1m"`; `color_group == "\x1b[33m\x1b[1m"`; `color_option == "\x1b[1;36m"`; `color_example == "\x1b[2m"`; `color_reset == "\x1b[0m"`; `tty_detect == true`
+- **When:** each color-role field (a `color_tools::DecoratedText` style descriptor) is rendered via `.clone().render()` — exercising the same code path used at real render time, since the field's own `text` is empty — and `tty_detect` is read directly
+- **Then:** `color_tagline.clone().render() == "\x1b[1m\x1b[0m"` (bold only); `color_group.clone().render() == "\x1b[1m\x1b[33m\x1b[0m"` (bold + yellow); `color_option.clone().render() == "\x1b[1m\x1b[36m\x1b[0m"` (bold + cyan); `color_example.clone().render() == "\x1b[2m\x1b[0m"` (dim only); `tty_detect == true`. Bold/dim always precede color in a combined role's rendered sequence — see `color_tools::DecoratedText::render()`'s field order. There is no separate `color_reset` field to assert on; the reset is appended automatically by `render()`.
 
 ### AP-7: OptionGroup can be constructed with name and entries
 

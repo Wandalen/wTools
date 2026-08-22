@@ -25,6 +25,16 @@ pub struct DecoratedText
   pub text  : String,
   /// Optional ANSI escape prefix (e.g. `"\x1b[33m"` for yellow).
   pub color : Option< String >,
+  /// Whether bold (SGR 1) is applied. Combines with `color` into one leading
+  /// escape sequence at render time. Not intended to be combined with `dim`:
+  /// both are intensity modifiers and most terminals honor only whichever of
+  /// the two was applied last, so mixing them is a caller error, not a
+  /// supported style.
+  #[ cfg_attr( feature = "serde_support", serde( default ) ) ]
+  pub bold : bool,
+  /// Whether dim/faint (SGR 2) is applied. See `bold` for the mutual-exclusion note.
+  #[ cfg_attr( feature = "serde_support", serde( default ) ) ]
+  pub dim : bool,
   /// Semantic color intent, preserved for HTML rendering via `render_html()`.
   /// Only available when the `html_support` feature is enabled.
   /// Skipped in serde serialization to preserve JSON schema stability.
@@ -82,6 +92,38 @@ impl DecoratedText
     result
   }
 
+  /// Apply bold (SGR 1). Returns `self` for builder chaining.
+  ///
+  /// # Example
+  ///
+  /// ```
+  /// use color_tools::DecoratedText;
+  /// let ct = DecoratedText::from( "title" ).with_bold();
+  /// assert_eq!( ct.render(), "\x1b[1mtitle\x1b[0m" );
+  /// ```
+  #[ must_use ]
+  pub fn with_bold( mut self ) -> Self
+  {
+    self.bold = true;
+    self
+  }
+
+  /// Apply dim/faint (SGR 2). Returns `self` for builder chaining.
+  ///
+  /// # Example
+  ///
+  /// ```
+  /// use color_tools::DecoratedText;
+  /// let ct = DecoratedText::from( "note" ).with_dim();
+  /// assert_eq!( ct.render(), "\x1b[2mnote\x1b[0m" );
+  /// ```
+  #[ must_use ]
+  pub fn with_dim( mut self ) -> Self
+  {
+    self.dim = true;
+    self
+  }
+
   /// Produce browser-usable HTML output.
   ///
   /// Plain text (no `with_color_named`): returns HTML-escaped text with no wrapper.
@@ -100,6 +142,9 @@ impl DecoratedText
   ///
   /// let plain = DecoratedText::from( "ok" );
   /// assert_eq!( plain.render_html(), "ok" );
+  ///
+  /// let bold = DecoratedText::from( "title" ).with_bold();
+  /// assert_eq!( bold.render_html(), "<span style=\"font-weight: bold\">title</span>" );
   /// # }
   /// ```
   #[ cfg( feature = "html_support" ) ]
@@ -110,17 +155,31 @@ impl DecoratedText
       .replace( '&', "&amp;" )
       .replace( '<', "&lt;" )
       .replace( '>', "&gt;" );
-    match &self.named_color
+    let mut styles = Vec::new();
+    if let Some( c ) = &self.named_color { styles.push( format!( "color: {}", c.to_css() ) ); }
+    if self.bold { styles.push( "font-weight: bold".to_owned() ); }
+    // CSS has no native SGR-dim/faint equivalent; reduced opacity is the
+    // closest visual analogue and mirrors how `to_css()` already documents
+    // lossy terminal-to-web mappings for the Bright variants.
+    if self.dim { styles.push( "opacity: 0.7".to_owned() ); }
+    if styles.is_empty()
     {
-      Some( c ) => format!( "<span style=\"color: {}\">{escaped}</span>", c.to_css() ),
-      None      => escaped,
+      escaped
+    }
+    else
+    {
+      format!( "<span style=\"{}\">{escaped}</span>", styles.join( "; " ) )
     }
   }
 
   /// Render to a terminal string.
   ///
-  /// When colored: `color_prefix + text + "\x1b[0m"`.
-  /// When uncolored: plain `text` clone with no escape codes injected.
+  /// When colored and/or styled (bold/dim): `bold_prefix + dim_prefix + color_prefix + text + "\x1b[0m"`.
+  /// Bold and dim are emitted as their own SGR sequences ahead of `color`, cumulative
+  /// with it rather than merged into one combined SGR parameter list — every real
+  /// terminal treats consecutive SGR sequences as cumulative state, so this is
+  /// visually identical to a single combined sequence.
+  /// When neither color, bold, nor dim is set: plain `text` clone with no escape codes injected.
   ///
   /// # Example
   ///
@@ -131,15 +190,25 @@ impl DecoratedText
   ///
   /// let colored = DecoratedText::from( "ok" ).with_color( "\x1b[32m" );
   /// assert_eq!( colored.render(), "\x1b[32mok\x1b[0m" );
+  ///
+  /// let bold_colored = DecoratedText::from( "warn" ).with_bold().with_color( "\x1b[33m" );
+  /// assert_eq!( bold_colored.render(), "\x1b[1m\x1b[33mwarn\x1b[0m" );
   /// ```
   #[ must_use ]
   pub fn render( &self ) -> String
   {
-    match self.color
+    // `color.is_some()` alone (even `Some("")`) must still trigger a reset —
+    // see t44 in tests/decorated_text_test.rs for the documented design boundary.
+    let active = self.color.is_some() || self.bold || self.dim;
+    if !active
     {
-      Some( ref c ) => format!( "{}{}\x1b[0m", c, self.text ),
-      None          => self.text.clone(),
+      return self.text.clone();
     }
+    let mut prefix = String::new();
+    if self.bold { prefix.push_str( "\x1b[1m" ); }
+    if self.dim  { prefix.push_str( "\x1b[2m" ); }
+    if let Some( ref c ) = self.color { prefix.push_str( c ); }
+    format!( "{prefix}{}\x1b[0m", self.text )
   }
 
   /// Returns `true` when an ANSI color prefix is attached.
@@ -188,6 +257,8 @@ impl From< String > for DecoratedText
     {
       text,
       color : None,
+      bold : false,
+      dim : false,
       #[ cfg( feature = "html_support" ) ]
       named_color : None,
     }
@@ -202,6 +273,8 @@ impl From< &str > for DecoratedText
     {
       text : text.to_owned(),
       color : None,
+      bold : false,
+      dim : false,
       #[ cfg( feature = "html_support" ) ]
       named_color : None,
     }

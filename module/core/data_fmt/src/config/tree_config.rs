@@ -1,5 +1,7 @@
 //! Tree formatter configuration types
 
+use super::Heading;
+
 /// Formatter parameters for tree output
 ///
 /// Defines customizable parameters for tree rendering including branch symbols,
@@ -21,6 +23,10 @@ pub struct TreeConfig
   pub min_column_width : usize,
   /// ANSI color code for branch symbols (default: none)
   pub branch_color : String,
+  /// Optional titled rule rendered above the tree (None = no heading)
+  heading : Option< Heading >,
+  /// Optional titled rule rendered below the tree (None = no footer)
+  footer : Option< Heading >,
 }
 
 impl Default for TreeConfig
@@ -36,6 +42,8 @@ impl Default for TreeConfig
       column_separator : "  ".to_string(),
       min_column_width : 0,
       branch_color : String::new(),
+      heading : None,
+      footer : None,
     }
   }
 }
@@ -102,6 +110,34 @@ impl TreeConfig
   {
     self.branch_color = color.into();
     self
+  }
+
+  /// Attach a titled heading rule rendered above the tree
+  #[ must_use ]
+  pub fn with_heading( mut self, h : Heading ) -> Self
+  {
+    self.heading = Some( h );
+    self
+  }
+
+  /// Attach a titled rule rendered below the tree
+  #[ must_use ]
+  pub fn with_footer( mut self, f : Heading ) -> Self
+  {
+    self.footer = Some( f );
+    self
+  }
+
+  /// Heading reference (accessor)
+  pub( crate ) fn heading_ref( &self ) -> Option< &Heading >
+  {
+    self.heading.as_ref()
+  }
+
+  /// Footer reference (accessor)
+  pub( crate ) fn footer_ref( &self ) -> Option< &Heading >
+  {
+    self.footer.as_ref()
   }
 }
 

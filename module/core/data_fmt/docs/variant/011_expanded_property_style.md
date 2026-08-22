@@ -96,7 +96,7 @@
 
 - **constructor**: `ExpandedConfig::property_style()`
 - **config_type**: ExpandedConfig
-- **customizable_parameters**: 8+
+- **customizable_parameters**: 7
 - **builder_pattern**: Yes
 
 ### Performance & Size

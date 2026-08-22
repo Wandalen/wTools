@@ -4,7 +4,7 @@
 
 - **Purpose**: Provide test coverage specifications for all feature doc instances.
 - **Responsibility**: Registry and overview of all feature test spec instances.
-- **In Scope**: FT-N / FC-N feature test cases in Given/When/Then format for all 7 feature elements; minimum 4 cases per spec; behavioral contracts that must hold across all supported use cases.
+- **In Scope**: FT-N / FC-N feature test cases in Given/When/Then format for all 8 feature elements; minimum 4 cases per spec; behavioral contracts that must hold across all supported use cases.
 - **Out of Scope**: Algorithm correctness cases (see `../algorithm/`), invariant enforcement cases (see `../invariant/`), manual test procedures (see `tests/manual/`).
 
 ### Overview Table
@@ -18,3 +18,4 @@
 | 005 | [Auto-Fit](005_auto_fit.md) | Feature spec for terminal-aware auto-wrapping and column folding | ✅ |
 | 006 | [API Cleanup v0.3.0](006_api_cleanup_v030.md) | Feature spec for v0.3.0 breaking-change boundary validation | ✅ |
 | 007 | [Table Heading](007_table_heading.md) | Feature spec for table heading | ✅ |
+| 008 | [Quantity Formatting](008_quantity_formatting.md) | Feature spec for quantity/duration/byte formatting | ⏳ |

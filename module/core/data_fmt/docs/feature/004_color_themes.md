@@ -12,6 +12,7 @@
 | File | Relationship |
 |------|-------------|
 | [003_config_types.md](../api/003_config_types.md) | Config types that themes apply to |
+| [005_theme_types.md](../api/005_theme_types.md) | `ColorTheme`/`ColorThemeBuilder` type signatures |
 
 ### Sources
 
@@ -56,7 +57,7 @@ Popular code editor theme.
 
 - Headers: Bright magenta
 - Borders: Dark gray
-- Alternating rows: Black + dark gray background
+- Alternating rows: White + dark gray background
 - Tree branches: Green
 
 #### Solarized
@@ -83,24 +84,24 @@ Dark theme with vibrant colors.
 
 - Headers: Purple
 - Borders: Comment gray
-- Alternating rows: Background + selection background
+- Alternating rows: White + selection background
 - Tree branches: Pink
 
 #### Usage
 
-Themes work with all three visual formatter configs. Applying a theme to a config instance sets all relevant color fields automatically — the caller does not need to configure individual ANSI codes. Each visual formatter config type exposes a method to apply a theme and returns a configured instance ready for use.
+Themes work with all three visual formatter configs. Applying a theme to a config instance sets all relevant color fields automatically — the caller does not need to configure individual ANSI codes. `ColorTheme` exposes one method per visual formatter (`apply_to_table`, `apply_to_expanded`, `apply_to_tree`), each taking a config instance and returning a configured instance ready for use.
 
 #### Theme Application
 
 Themes automatically configure the relevant fields on each config type:
 
 - **Table config**: header color, alternating row colors, border colors — all border and separator characters (`|`, `+`, box-drawing chars, horizontal-rule fill) are ANSI-decorated with `ColorTheme::border_color` when non-empty
-- **Expanded config**: key color, record separator colors
-- **Tree config**: branch symbol colors, data colors
+- **Expanded config**: key color only — `ExpandedConfig` has no separate record-separator color field
+- **Tree config**: branch symbol color only — `TreeConfig` has no separate data color field
 
 #### Custom Theme Creation
 
-Build a custom theme by specifying individual color components: header color, border color, and alternating row colors. The resulting theme is applied to any visual formatter config instance the same way as a predefined theme.
+Build a custom theme by specifying individual color components: header color, border color, alternating row colors, and branch color. The resulting theme is applied to any visual formatter config instance the same way as a predefined theme.
 
 #### Color Reset Behavior
 

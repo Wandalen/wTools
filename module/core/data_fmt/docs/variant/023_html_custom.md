@@ -114,10 +114,10 @@
 
 ```html
 <table class="my-custom-table">
-  <thead class="my-header">
+  <thead>
     <tr><th>Name</th><th>Age</th><th>City</th></tr>
   </thead>
-  <tbody class="my-body">
+  <tbody>
     <tr><td>Alice</td><td>30</td><td>NYC</td></tr>
     <tr><td>Bob</td><td>25</td><td>LA</td></tr>
   </tbody>

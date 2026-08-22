@@ -39,8 +39,8 @@ Controls how lines are broken when text exceeds the configured width. Three mode
 
 | Variant | Description |
 |---------|-------------|
-| `Word` | Break at last space before limit; if no space exists in the segment, the whole word wraps to the next line |
-| `Hard` | Split at exactly `width` characters regardless of word boundaries |
+| `Word` | Break at last space before limit; an overlong token is hard-broken when `break_long_words=true` (default), otherwise wraps whole to the next line |
+| `Hard` | Split at exactly `width` display columns regardless of word boundaries |
 | `WordThenHard` | Word-boundary first; hard-break only when a single token exceeds available width (default) |
 
 #### Overflow Policy

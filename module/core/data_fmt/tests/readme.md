@@ -56,6 +56,10 @@ Contains all functional and integration tests for data_fmt library. Tests valida
 | `table_styles_outputs.rs` | Test table style outputs |
 | `table_config_corner_cases.rs` | Test TableConfig API corner cases: builder chain, padding, alignment, width overrides, presets |
 | `table_heading_test.rs` | Test Heading type and TableConfig::with_heading() builder API |
+| `table_footer_test.rs` | Test TableConfig::with_footer() builder API and heading+footer coexistence |
+| `tree_heading_test.rs` | Test TreeConfig::with_heading()/with_footer() builder API on TreeFormatter |
+| `expanded_heading_test.rs` | Test ExpandedConfig::with_heading()/with_footer() builder API on ExpandedFormatter |
+| `text_heading_test.rs` | Test TextFormatter::with_heading()/with_footer() builder API (no separate config type) |
 | `table_config_validation_test.rs` | min_column_width floor enforcement and table-line alignment correctness tests |
 | `table_rendering_borders.rs` | Test border variant rendering: top/bottom borders, inter-row separators, AsciiGrid corners |
 | `table_rendering_colors.rs` | Test ANSI header coloring and alternating-row coloring |

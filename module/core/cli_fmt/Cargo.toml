@@ -1,6 +1,6 @@
 [package]
 name = "cli_fmt"
-version = "0.13.3"
+version = "0.14.0"
 edition = "2021"
 authors = [ "wTools Contributors" ]
 license = "MIT"
@@ -12,6 +12,7 @@ categories = [ "command-line-utilities", "development-tools" ]
 
 [dependencies]
 strs_tools = { workspace = true, default-features = true, features = [ "ansi", "string_split", "std" ], optional = true }
+color_tools = { workspace = true, default-features = false, features = [ "enabled" ], optional = true }
 
 [dev-dependencies]
 
@@ -36,7 +37,7 @@ output = [ "enabled", "std", "string_split" ]
 output_passthrough = [ "enabled", "std" ]
 
 # Structured CLI help template (data model + colour-aware renderer)
-cli_help_template = [ "std" ]
+cli_help_template = [ "std", "dep:color_tools" ]
 
 # Composite features - enables all functionality
 full = [ "enabled", "output", "ansi_unicode", "cli_help_template" ]

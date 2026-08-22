@@ -80,7 +80,7 @@ codebase — one API, one data model, one trait.
 | `conversions::flatten_to_table_tree` | returns `TableView` instead of `TreeNode<String>` | Removes internal dependency on deleted TreeNode-building path |
 | `TableFormatter::write_to` | accepts `&TableView` instead of `&TreeNode<String>` | Aligns with Format trait input type |
 | `ExpandedFormatter::write_to` | accepts `&TableView` instead of `&TreeNode<String>` | Same |
-| `src/ansi_str.rs` comment | removes "backward compatibility" framing | Re-exports are active, not compat shims |
+| `src/ansi_str.rs` comment | not applied — comment still reads "for backward compatibility" in current source | Re-exports are active, not compat shims |
 
 #### Migration Guide
 
