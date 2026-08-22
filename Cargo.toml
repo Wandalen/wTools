@@ -463,7 +463,7 @@ version = "~0.29.1"
 path = "module/core/crates_tools"
 
 [workspace.dependencies.benchkit]
-version = "~0.27.1"
+version = "~0.28.1"
 path = "module/experimental/benchkit"
 
 [workspace.dependencies.multiline_input]
