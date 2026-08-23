@@ -42,7 +42,17 @@ enabled = []
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true }
+# Features must be declared explicitly: [workspace.dependencies] sets default-features = false,
+# so a bare `{ workspace = true }` inherits nothing. That built fine in the workspace only
+# because sibling members enabled these features and cargo unified them — a packaged or
+# standalone build applies this crate's own declaration alone, leaving `macro_tools::exposed`
+# and `macro_tools::prelude` (both gated on "enabled") absent and failing `cargo package`
+# verification with 64 unresolved imports.
+#   enabled — the own/orphan/exposed/prelude namespaces, plus `qt`, `parse_qt`, `syn`, `Token`
+#   attr    — `AttributesInner`/`AttributesOuter`; transitively pulls in
+#             `diag` (`syn_err`, `code_to_str`, `err`) and
+#             `quantifier` (`Pair`, `Many`, `AsMuchAsPossibleNoDelimiter`)
+macro_tools = { workspace = true, features = [ "enabled", "attr" ] }
 derive_tools = { workspace = true, features = [ "enabled", "derive_is_variant" ] }
 
 [dev-dependencies]
