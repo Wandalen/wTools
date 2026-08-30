@@ -41,7 +41,7 @@
 #### Choosing a Number/Byte Formatter
 
 - **`number_compact`** — generic counts (item counts, request counts); SI magnitudes, compact single-letter form.
-- **`bytes_iec`** / **`bytes_human`** — binary byte sizes (RAM, buffer capacities) where 1 KiB genuinely is 1024 bytes; compact single-letter (`bytes_iec`) vs verbose two-decimal (`bytes_human`, tops out at `GB`).
+- **`bytes_iec`** / **`bytes_human`** — binary byte sizes (RAM, buffer capacities) where 1 KiB genuinely is 1024 bytes; compact single-letter (`bytes_iec`) vs verbose two-decimal (`bytes_human`, `KB`/`MB`/`GB`/`TB`).
 - **`bytes_si`** / **`bytes_compact_si`** — decimal byte sizes (disk-vendor figures, network throughput, or any source already using a decimal convention); verbose two-decimal extending to `TB` (`bytes_si`) vs compact magnitude-adaptive precision (`bytes_compact_si`).
 
 The IEC and SI byte families are not interchangeable on the same raw count — pick the base matching the value's own origin, not by habit (see `../algorithm/008_quantity_formatting.md § SI-vs-IEC Contrast` for the concrete divergence).

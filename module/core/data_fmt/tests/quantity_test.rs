@@ -494,6 +494,37 @@ fn bytes_human_scales_with_two_decimals()
   assert_eq!( bytes_human( 1_610_612_736, QuantityStyle::Plain ), "1.50 GB" );
 }
 
+#[ test ]
+fn bytes_human_promotes_to_tb_at_one_tebibyte()
+{
+  // Task 020: the base-1024 verbose formatter carries a TB tier, matching its
+  // base-1000 sibling `bytes_si`. Before this, 1 TiB rendered "1024.00 GB".
+  assert_eq!( bytes_human( 1_099_511_627_776, QuantityStyle::Plain ), "1.00 TB" );   // 1024^4
+  assert_eq!( bytes_human( 1_649_267_441_664, QuantityStyle::Plain ), "1.50 TB" );
+  assert_eq!( bytes_human( 2_199_023_255_552, QuantityStyle::Plain ), "2.00 TB" );
+}
+
+#[ test ]
+fn bytes_human_gb_band_holds_below_one_tebibyte()
+{
+  // Promotion is driven by the raw byte count, not by the rendered mantissa.
+  assert_eq!( bytes_human( 1_098_437_885_952, QuantityStyle::Plain ), "1023.00 GB" );
+  // One byte below the boundary: `{:.2}` rounds the mantissa up to a four-digit
+  // "1024.00", but the value still does not promote. This is the same
+  // tier-edge mantissa artifact `bytes_si` already exhibits (docs/algorithm/
+  // 008_quantity_formatting.md, Key Properties) — pre-existing and unchanged.
+  assert_eq!( bytes_human( 1_099_511_627_775, QuantityStyle::Plain ), "1024.00 GB" );
+}
+
+#[ test ]
+fn bytes_human_still_diverges_from_bytes_si_at_tb_scale()
+{
+  // Both formatters now reach TB, so the tier is no longer what separates them —
+  // only the 1024-vs-1000 divisor is, which is exactly task 017's design intent.
+  assert_eq!( bytes_human( 1_099_511_627_776, QuantityStyle::Plain ), "1.00 TB" );
+  assert_eq!( bytes_si( 1_099_511_627_776, QuantityStyle::Plain ), "1.10 TB" );
+}
+
 // ── bytes_si: verbose SI decimal sizes (Plain) ─────────────────────────────────
 
 #[ test ]
@@ -562,7 +593,7 @@ fn prose_formatters_colored_stripped_equals_plain()
     );
   }
 
-  let sizes : [ u64; 6 ] = [ 0, 1, 512, 1536, 1_048_576, 1_073_741_824 ];
+  let sizes : [ u64; 7 ] = [ 0, 1, 512, 1536, 1_048_576, 1_073_741_824, 1_099_511_627_776 ];
   for n in sizes
   {
     assert_eq!

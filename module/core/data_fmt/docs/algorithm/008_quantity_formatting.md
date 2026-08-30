@@ -31,7 +31,7 @@
 
 Three formatters share one style policy. `duration_6ch` selects a two-unit layout by magnitude band so its **visible** width is always exactly 6 columns (`NNuNNu`), clamping at `99w06d`. `number_compact` and `bytes_iec` scale a value into the largest fitting magnitude (base 1000 / base 1024 respectively) and render a short mantissa, promoting on a rounding roll-over so the mantissa never grows a spurious fourth digit. Under `QuantityStyle::Colored` the unit letters are dimmed via a gray SGR while the digits stay unstyled; the visible glyph count is identical to `Plain` because the ANSI escapes carry zero display width.
 
-`bytes_si` (also in `number.rs`) is the decimal/SI sibling of `bytes_human`: identical verbose `N.NN UNIT` layout and singular/plural sub-`KB` rendering, but base 1000 rather than 1024, extended to a `TB` tier — see § SI-vs-IEC Contrast below.
+`bytes_si` (also in `number.rs`) is the decimal/SI sibling of `bytes_human`: identical verbose `N.NN UNIT` layout, singular/plural sub-`KB` rendering, and `KB`/`MB`/`GB`/`TB` band set — the divisor (1000 rather than 1024) is the only difference between them. See § SI-vs-IEC Contrast below.
 
 ### Algorithm
 
@@ -56,7 +56,9 @@ Three formatters share one style policy. `duration_6ch` selects a two-unit layou
 2. `>= 1 KB`, select the magnitude among `KB`/`MB`/`GB`/`TB` (1000-based) by comparing the raw `bytes` value against each threshold in descending order — not by scaling a running mantissa like `number_compact`/`bytes_iec` — and render with exactly 2 fractional digits (`{:.2}`). There is no roll-over promotion step, so a value just below a tier's threshold can still round up to a 4-digit mantissa after formatting: `999_999_999_999` (just under the 1 TB threshold) renders `"1000.00 GB"`, not `"1.00 TB"` — `number_compact`/`bytes_iec` avoid this via their `starts_with("1000"/"1024")` rollover check; `bytes_si` has none.
 3. Same `styled_unit` dimming as every other formatter in this module — the unit token is dimmed under `Colored`, the digits and separating space are not.
 
-This is the decimal/SI counterpart to `bytes_human` (base 1024, identical verbose layout, tops out at `GB`) — see § SI-vs-IEC Contrast.
+**bytes_human(bytes, style)** (base 1024, verbose layout, units `KB`/`MB`/`GB`/`TB`): step-for-step identical to `bytes_si` above — same sub-`KB` singular/plural counts, same descending threshold comparison against the raw `bytes` value, same 2-decimal mantissa, same absent roll-over promotion, same `styled_unit` dimming — with `1024` substituted for `1000` at every threshold. Because it too lacks a promotion step, it shows the same tier-edge artifact: `1_099_511_627_775` (one byte under 1 TiB) renders `"1024.00 GB"`, not `"1.00 TB"`.
+
+The two are pure decimal/binary counterparts — see § SI-vs-IEC Contrast.
 
 **Styling**: `styled_unit(unit, style)` returns the unit unchanged under `Plain`; under `Colored` it wraps the unit in a gray SGR via `DecoratedText` (digits are never wrapped). `QuantityStyle::resolve(is_tty)` returns `Colored` only when `is_tty` is true **and** `NO_COLOR` is unset, else `Plain`.
 
@@ -67,7 +69,7 @@ Two byte-size bases coexist in this module, each with a real, distinct consumer:
 | | `bytes_iec` / `bytes_human` (IEC, base 1024) | `bytes_si` (SI, base 1000) |
 |---|---|---|
 | Divisor | 1024 per step | 1000 per step |
-| Units | `K`/`M`/`G`/`T` (`bytes_iec`), `KB`/`MB`/`GB` (`bytes_human`, tops out at `GB`) | `KB`/`MB`/`GB`/`TB` |
+| Units | `K`/`M`/`G`/`T` (`bytes_iec`), `KB`/`MB`/`GB`/`TB` (`bytes_human`) | `KB`/`MB`/`GB`/`TB` |
 | Layout | compact single-letter (`bytes_iec`) or verbose 2-decimal (`bytes_human`) | verbose 2-decimal |
 | Use when | reporting actual binary sizes (RAM pages, buffer capacities) where 1 KiB genuinely is 1024 bytes | reporting a figure already computed in decimal (disk vendors, network throughput, or an existing decimal convention such as `glassbox`'s memory report) |
 
@@ -77,7 +79,7 @@ Two byte-size bases coexist in this module, each with a real, distinct consumer:
 
 - **Fixed 6-column duration**: `duration_6ch` output is always exactly 6 visible columns (verified via the crate's `visual_len`), independent of magnitude and style — the property columnar callers depend on for alignment.
 - **Digits never dimmed**: only unit letters carry color; a colored result and its plain counterpart have identical visible glyph counts because ANSI SGR escapes have zero display width.
-- **No spurious width from rounding (except `bytes_si`)**: `number_compact`/`bytes_iec`/`bytes_compact_si` promote to the next unit on a rounding roll-over rather than emitting a four-digit mantissa (`1000k`, `1024K`); `bytes_si` has no such promotion step and can render a 4-digit mantissa at a tier boundary (see Algorithm above, e.g. `"1000.00 GB"`).
+- **No spurious width from rounding (except the verbose pair)**: `number_compact`/`bytes_iec`/`bytes_compact_si` promote to the next unit on a rounding roll-over rather than emitting a four-digit mantissa (`1000k`, `1024K`). The two verbose formatters — `bytes_si` and `bytes_human` — have no such promotion step and can each render a 4-digit mantissa at a tier boundary (see Algorithm above: `"1000.00 GB"` and `"1024.00 GB"` respectively).
 - **Pure formatting path**: the environment (`NO_COLOR`) is consulted only in `resolve`; the formatters themselves are deterministic pure functions of `(value, style)`.
 - **Std-only**: assembly uses `format!` and integer/float arithmetic plus the crate's existing `DecoratedText`; no additional dependencies.
 
