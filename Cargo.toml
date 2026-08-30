@@ -263,7 +263,7 @@ path = "module/deprecated/impls_index_meta"
 default-features = false
 
 [workspace.dependencies.mod_interface]
-version = "~0.66.1"
+version = "~0.67.1"
 path = "module/core/mod_interface"
 default-features = false
 
