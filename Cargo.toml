@@ -455,7 +455,7 @@ path = "module/experimental/willbe"
 
 
 [workspace.dependencies.deterministic_rand]
-version = "~0.12.1"
+version = "~0.13.1"
 path = "module/experimental/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
