@@ -1,0 +1,51 @@
+[package]
+name = "sqlx_query"
+version = "0.3.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Mysnyk <wandalen@obox.systems>",
+  "Viktor Dudnik <viktor.d@obox.systems>",
+]
+license = "MIT"
+readme = "readme.md"
+documentation = "https://docs.rs/sqlx_query"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/experimental/sqlx_query"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/experimental/sqlx_query"
+description = """
+Keep sqlx's offline query cache (.sqlx/) honest: forces SQLX_OFFLINE=true from your
+own build.rs, and warns -- before CI or a teammate without a database ever finds out --
+when a query's cached metadata no longer matches its SQL text.
+"""
+categories = [ "development-tools::build-utils", "database" ]
+keywords = [ "sqlx", "offline", "build-script", "cache", "database" ]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled", "auto_regen" ]
+enabled = [ "dep:syn", "dep:sha2", "dep:proc-macro2", "dep:dotenvy", "dep:toml_edit" ]
+
+# Attempt a real, isolated `cargo check` to regenerate stale `.sqlx` entries
+# when a live DATABASE_URL is available. Off by default: every attempt adds a
+# nested `cargo check` in its own target directory, the first one from scratch.
+# See docs/feature/002_auto_regeneration.md.
+auto_regen = [ "enabled" ]
+
+[dependencies]
+syn = { workspace = true, optional = true }
+sha2 = { workspace = true, optional = true }
+proc-macro2 = { workspace = true, optional = true, features = [ "span-locations" ] }
+# Settings are read from `.env` files and `sqlx.toml` exactly as sqlx reads them.
+dotenvy = { workspace = true, optional = true }
+toml_edit = { workspace = true, optional = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+tokio = { workspace = true, features = [ "rt-multi-thread", "macros" ] }
+sqlx = { workspace = true, features = [ "sqlite", "runtime-tokio", "tls-rustls-ring", "macros" ] }

@@ -14,10 +14,10 @@ Layers are ordered bottom-up: lower layers have fewer internal dependencies; hig
 | 5 | Collections | 6 | Containers, iterators, async traits |
 | 6 | String & Format | 8 | Strings, colors, data display, markdown, type aggregation |
 | 7 | Path & Process | 7 | Paths, filesystem, processes, workspace, config |
-| 8 | Tooling | 8 | Testing, benchmarking, genfile, CLI, crates analysis |
-| 9 | Application | 5 | willbe, unitore, sqlx, aggregators |
+| 8 | Tooling | 9 | Testing, benchmarking, genfile, CLI, crates analysis, sqlx offline-cache enforcement |
+| 9 | Application | 4 | willbe, unitore, aggregators |
 
-Total: 68 crates (0 alias + 28 core + 19 deprecated + 21 experimental)
+Total: 68 crates (0 alias + 28 core + 18 deprecated + 22 experimental)
 Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-located in `module/deprecated/` but have no layer assignments and are excluded from this table.
 
 ## Crate Layer Assignments
@@ -105,7 +105,7 @@ Note: 22 additional legacy crates (formerly in `module/postponed/`) are co-locat
 | `multiline_input` | experimental | 8 | Tooling | Collect multiline terminal input with interactive key editing and Builder-configured validation | 4 | 1 | 0 | 1 | 0 | stable | stable | TDCFREMS |
 | `test_tools` | experimental | 8 | Tooling | Aggregate workspace testing utilities into one dev-dependency via a circular-dependency-safe standalone build mode | 11 | 3 | 0 | 3 | 0 | stable | stable | TDCFREMS |
 | `wca` | experimental | 8 | Tooling | Aggregate CLI commands as typed Rust routines with a parse-verify-execute pipeline | 7 | 4 | 0 | 4 | 0 | stable | stable | TDCFREMS |
-| `sqlx_query` | deprecated | 9 | Application | Switch between SQLx compile-time and runtime query macros by feature | 0 | 0 | 0 | 0 | 0 | experimental | deprecated | TDCFR·MS |
+| `sqlx_query` | experimental | 8 | Tooling | Force sqlx's SQLX_OFFLINE mode from a consumer's build.rs and warn when the .sqlx cache has drifted | 4 | 0 | 0 | 0 | 0 | experimental | experimental | TDCFREMS |
 | `unitore` | deprecated | 9 | Application | Subscribe to RSS and Atom feeds from TOML configs, persist entries in embedded SQL, and browse from the terminal | 20 | 3 | 0 | 3 | 0 | deprecated | deprecated | TDCFR··S |
 | `willbe` | experimental | 9 | Application | Publish multi-crate workspaces in topological order, run feature-matrix tests, generate CI/CD workflows, and renew readme headers | 40 | 14 | 0 | 14 | 0 | stable | stable | TDCFREMS |
 | `willbe2` | deprecated | 9 | Application | Expose the willbe workspace tool under the willbe2 binary and crate name via complete re-export | 1 | 1 | 1 | 0 | 0 | deprecated | deprecated | TDCFR·MS |
@@ -130,7 +130,6 @@ Unreachable from any application (willbe, unitore, wca) or test infrastructure (
 | `meta_tools` | deprecated | ↑L=3 arch violation; zero dependents | — |
 | `multiline_input` | deprecated | Excluded from workspace (Cargo.toml exclude); moved to module/experimental | `multiline_input` (experimental) |
 | `proper_tools` | deprecated | Alias; no dependencies; `enabled` feature declares nothing | — |
-| `sqlx_query` | deprecated | Feature-flag toggle between two sqlx macros; 0 deps; 0 workspace consumers; trivially inlineable | — |
 | `time_tools` | deprecated | Zero dependents | — |
 | `typing_tools` | deprecated | Zero dependents | — |
 | `willbe2` | deprecated | Entire `src/lib.rs` is `pub use ::willbe::*`; zero independent development | `willbe` |
@@ -147,7 +146,6 @@ Complete dependency chains where every crate is unreachable:
 3. `impls_index_meta` → `impls_index` → (nobody)
 4. `file_tools` → `fs_tools` → (nobody)
 5. `async_tools` → (nobody)
-6. `sqlx_query` → (nobody)
 
 ## Promotion Readiness
 
@@ -199,7 +197,7 @@ Already-stable crates that do not meet all 8 criteria. Not promotion blockers, b
 
 ## Usefulness Assessment
 
-Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
+Utility ranking for 50 non-deprecated crates. Evaluates: internal dependent count, external adopter value, unique functionality (not trivially replaceable), API surface depth.
 
 ### Tier Definitions
 
@@ -207,7 +205,7 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 |------|-------|----------|-------|
 | 1 | Core | Essential to workspace; 5+ internal dependents; breakage cascades widely | 10 |
 | 2 | High | Significant standalone utility; meaningful API surface; active consumers | 15 |
-| 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 13 |
+| 3 | Moderate | Useful in domain; narrower audience; some unique functionality | 14 |
 | 4 | Low | Thin wrapper or narrow utility; few/zero consumers; easy to inline | 9 |
 | 5 | Minimal | Stub, unimplemented, or fully supersedable; future deprecation review candidate | 2 |
 
@@ -253,6 +251,7 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | `inspect_type` | 2 | 3 | Runtime type name + size printing; simple but unique |
 | `program_tools` | 7 | 3 | Rust script runner; compile + execute Rust files |
 | `multiline_input` (experimental) | 8 | 3 | Interactive multiline terminal input |
+| `sqlx_query` (experimental) | 8 | 3 | Closes a real gap sqlx itself leaves open; 0 workspace consumers so far |
 | `cli_fmt` | 6 | 4 | Thin output filtering wrapper; 0 external deps |
 | `for_each` | 5 | 4 | Thin compile-time list macro; easily inlined |
 | `async_from` | 5 | 4 | Trivial async trait definitions; 0 live internal deps |
@@ -276,9 +275,9 @@ Utility ranking for 49 non-deprecated crates. Evaluates: internal dependent coun
 | 5 | Collections | 1 | 0 | 0 | 3 | 0 | 4 |
 | 6 | String & Format | 0 | 1 | 2 | 1 | 1 | 5 |
 | 7 | Path & Process | 0 | 3 | 2 | 0 | 0 | 5 |
-| 8 | Tooling | 0 | 4 | 3 | 0 | 0 | 7 |
+| 8 | Tooling | 0 | 4 | 4 | 0 | 0 | 8 |
 | 9 | Application | 0 | 2 | 0 | 0 | 0 | 2 |
-| | **Total** | **10** | **15** | **13** | **9** | **2** | **49** |
+| | **Total** | **10** | **15** | **14** | **9** | **2** | **50** |
 
 
 ## Crate Profiles
@@ -1187,6 +1186,20 @@ Per-crate attributes for promotion and publishing.
 - **categories**: command-line-interface, text-editors
 - **pitch**: Collect multiline terminal text with ENTER-to-submit, CTRL+ENTER newlines, trait-based terminal abstraction, Builder API, 4 usage examples, and 9 test files.
 
+#### `sqlx_query`
+- **module**: experimental
+- **layer**: 8 · Tooling
+- **state**: experimental
+- **target**: experimental
+- **readiness**: TDCFREMS
+- **purpose**: Force sqlx's SQLX_OFFLINE mode from a consumer's build.rs and warn when the .sqlx cache has drifted
+- **deps**: 4 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
+- **version**: 0.3.0
+- **no_std**: no
+- **keywords**: sqlx, offline, build-script, cache, database
+- **categories**: development-tools::build-utils, database
+- **pitch**: Force sqlx's own offline mode from your build.rs and catch a stale `.sqlx` cache entry on the machine that broke it — before CI or a teammate without a database ever finds out. Fails fast by default; opt out with `SQLX_QUERY_SOFT_WARN=1`.
+
 #### `test_tools`
 - **module**: experimental
 - **layer**: 8 · Tooling
@@ -1218,20 +1231,6 @@ Per-crate attributes for promotion and publishing.
 ---
 
 ### Layer 9 · Application
-
-#### `sqlx_query`
-- **module**: deprecated
-- **layer**: 9 · Application
-- **state**: experimental
-- **target**: deprecated
-- **readiness**: TDCFR·MS
-- **purpose**: Switch between SQLx compile-time and runtime query macros by feature
-- **deps**: 0 · **int**: 0 · **=L**: 0 · **↓L**: 0 · **↑L**: 0
-- **version**: 0.2.1
-- **no_std**: yes
-- **keywords**: sqlx, sql, query, compile-time, feature-flag
-- **categories**: database, development-tools
-- **pitch**: Feature-flag switch between SQLx compile-time `query!` and runtime `query` — same call site, swappable modes.
 
 #### `unitore`
 - **module**: deprecated

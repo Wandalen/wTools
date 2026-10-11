@@ -21,6 +21,7 @@ Workspace crates in active development. Included in workspace via `module/experi
 | `program_tools/` | Run Rust files and projects as scripts. |
 | `reflect_tools/` | Runtime reflection for struct fields. |
 | `reflect_tools_meta/` | Procedural macros for `reflect_tools`. |
+| `sqlx_query/` | Forces sqlx offline mode from build.rs; warns on stale query cache. |
 | `test_tools/` | Test harness with standalone build support. |
 | `unitore/` | Feed aggregation and storage engine. |
 | `wca/` | CLI command aggregation framework. |

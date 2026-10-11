@@ -471,6 +471,11 @@ version = "~0.6.1"
 path = "module/experimental/multiline_input"
 default-features = false
 
+[workspace.dependencies.sqlx_query]
+version = "~0.3.0"
+path = "module/experimental/sqlx_query"
+default-features = false
+
 ## steps
 
 [workspace.dependencies.procedural_macro]
@@ -627,6 +632,19 @@ default-features = false
 
 [workspace.dependencies.syn]
 version = "~3.0.3"
+default-features = false
+
+## External - sqlx_query (sha2: real runtime dependency, cache-key hashing; dotenvy: real runtime dependency, the `.env` parser sqlx itself uses; sqlx: dev-dependency only, test fixtures -- sqlx_query itself has no runtime sqlx dependency)
+
+[workspace.dependencies.sha2]
+version = "0.11.0"
+default-features = false
+
+[workspace.dependencies.dotenvy]
+version = "0.15.7"
+
+[workspace.dependencies.sqlx]
+version = "0.9.0"
 default-features = false
 
 [workspace.dependencies.const_format]

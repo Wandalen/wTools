@@ -3,10 +3,10 @@
 Excluded from the workspace (`Cargo.toml` exclude list). Not compiled, not tested, not published. Retained only to preserve git history before final deletion.
 
 Two groups co-located here:
-- **Architecture-tracked** (19): assigned layers in `doc/layers.md`; targeted for deprecation via reachability analysis
+- **Architecture-tracked** (18): assigned layers in `doc/layers.md`; targeted for deprecation via reachability analysis
 - **Legacy postponed** (22): pre-architecture crates that were never assigned layers; moved here from `module/postponed/`
 
-## Architecture-Tracked (19)
+## Architecture-Tracked (18)
 
 | Path | Responsibility |
 |------|----------------|
@@ -23,7 +23,6 @@ Two groups co-located here:
 | `meta_tools/` | Deprecated macro bundle facade |
 | `multiline_input/` | Deprecated core multiline terminal input (moved to experimental) |
 | `proper_tools/` | Deprecated alias for general-purpose wTools |
-| `sqlx_query/` | Deprecated sqlx feature-flag toggle |
 | `time_tools/` | Deprecated UNIX epoch timestamp functions |
 | `typing_tools/` | Deprecated type-checking aggregator |
 | `willbe2/` | Deprecated transparent re-export of willbe |

@@ -1,0 +1,49 @@
+last_updated: 2026_10_09
+
+nodes:
+  - feature/001
+  - feature/002
+  - api/001
+  - invariant/001
+  - invariant/002
+  - invariant/003
+  - invariant/004
+
+edges:
+  # feature/001 (Offline Mode Enforcement) -- central hub
+  - { from: feature/001,   to: api/001,       via: typed_reference }
+  - { from: api/001,       to: feature/001,   via: typed_reference }
+  - { from: feature/001,   to: feature/002,   via: typed_reference }
+  - { from: feature/002,   to: feature/001,   via: typed_reference }
+  - { from: feature/001,   to: invariant/001, via: typed_reference }
+  - { from: invariant/001, to: feature/001,   via: typed_reference }
+  - { from: feature/001,   to: invariant/002, via: typed_reference }
+  - { from: invariant/002, to: feature/001,   via: typed_reference }
+  - { from: feature/001,   to: invariant/003, via: typed_reference }
+  - { from: invariant/003, to: feature/001,   via: typed_reference }
+  - { from: feature/001,   to: invariant/004, via: typed_reference }
+  - { from: invariant/004, to: feature/001,   via: typed_reference }
+
+  # feature/002 (Auto Regeneration)
+  - { from: feature/002,   to: api/001,       via: typed_reference }
+  - { from: api/001,       to: feature/002,   via: typed_reference }
+  - { from: feature/002,   to: invariant/002, via: typed_reference }
+  - { from: invariant/002, to: feature/002,   via: typed_reference }
+
+  # api/001 (Ensure Offline Mode)
+  - { from: api/001,       to: invariant/001, via: typed_reference }
+  - { from: invariant/001, to: api/001,       via: typed_reference }
+  - { from: api/001,       to: invariant/002, via: typed_reference }
+  - { from: invariant/002, to: api/001,       via: typed_reference }
+  - { from: api/001,       to: invariant/003, via: typed_reference }
+  - { from: invariant/003, to: api/001,       via: typed_reference }
+  - { from: api/001,       to: invariant/004, via: typed_reference }
+  - { from: invariant/004, to: api/001,       via: typed_reference }
+
+  # invariant/003 (Resolution Parity with sqlx)
+  - { from: invariant/003, to: invariant/001, via: typed_reference }
+  - { from: invariant/001, to: invariant/003, via: typed_reference }
+  - { from: invariant/003, to: invariant/002, via: typed_reference }
+  - { from: invariant/002, to: invariant/003, via: typed_reference }
+  - { from: invariant/003, to: invariant/004, via: typed_reference }
+  - { from: invariant/004, to: invariant/003, via: typed_reference }
